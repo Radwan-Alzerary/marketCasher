@@ -1,0 +1,31 @@
+<%- include('header'); %>
+<div class="flex justify-center items-center gap-4 h-[80%]">
+  <%storge.forEach((storges)=>{%>
+  <div
+  onclick="boxClick(storges.id)"
+    class="h-72 w-72 bg-white flex justify-center shadow-md rounded-md hover:opacity-70 cursor-pointer items-center"
+  >
+    <div>
+      <div  class="text-center text-2xl text-green-600 font-semibold">
+        <%if (storges.name == "منتجات"){%>
+        افتراضي
+        <%}%>
+      </div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="9em"
+        viewBox="0 0 448 512"
+      >
+        <path
+          d="M50.7 58.5L0 160H208V32H93.7C75.5 32 58.9 42.3 50.7 58.5zM240 160H448L397.3 58.5C389.1 42.3 372.5 32 354.3 32H240V160zm208 32H0V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192z"
+        />
+      </svg>
+
+      <div class="text-center text-2xl font-semibold"><%=storges.name%></div>
+    </div>
+  </div>
+
+  <%})%>
+</div>
+
+<%- include('footer',{currentpage:'storge'}); %>

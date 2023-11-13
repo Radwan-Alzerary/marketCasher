@@ -1,0 +1,166 @@
+<html lang="en">
+
+            <head>
+            
+                <style>
+                    * {
+                        font-size: 1.2rem;
+                        font-family: 'Times New Roman';
+                    }
+                
+                    .footerpos {
+                        display: flex;
+                        text-align: right;
+                        align-items: right;
+                        justify-content: flex-end;
+                    }
+                
+                    td,
+                    th,
+                    tr,
+                    table {
+                        width: 100%;
+                        border-top: 1px solid black;
+                        border-collapse: collapse;
+                    }
+                
+                    td.description,
+                    th.description {
+                        width: 40%;
+                        max-width: 75px;
+                    }
+                
+                    td.quantity,
+                    th.quantity {
+                        width: 40px;
+                        max-width: 40px;
+                        word-break: break-all;
+                    }
+                
+                    td.price,
+                    th.price {
+                        width: 30%;
+                        max-width: 40px;
+                        word-break: break-all;
+                    }
+
+                    td.finalprice,
+                    th.finalprice {
+                
+                        font-weight: bold;
+                    }
+            
+                    .centered {
+                        font-size: 3.2rem;
+                        text-align: center;
+                        align-content: center;
+                    }
+                    main{
+                        padding: 6px;
+                        width: 480px;
+                    }
+
+                    .ticket {
+                        padding: 6px;
+                        width: 480px;
+                        max-width: 480px;
+                    }
+                
+                    .logoimg {
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                
+                    td {
+                        text-align: center;
+                    }
+                
+                    img {
+                        height: 100px;
+                        max-width: inherit;
+                        width: inherit;
+                    }
+                
+                
+                    @media print {
+                
+                        .hidden-print,
+                        .hidden-print * {
+                            display: none !important;
+                        }
+                    }
+                </style>
+                
+            </head>
+
+            <body>
+                <main class="ticket">
+                    <div class="logoimg">
+                        <img src="/img/websiteimg/1689007856293-863644656.png" alt="Logo">
+                    </div>
+                    <p class="centered">الفاتورة
+                    </p>
+                    <div class="footerpos">
+                        <a>العنوان : الموصل حي الزهور</a>
+                    </div>
+                    <div class="footerpos">
+                        <a>رقم الهاتف : 77056231</a>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="description">الاسم</th>
+            
+                                <th class="quantity">#</th>
+            
+                                <th class="price">السعر</th>
+                                <th class="price">الكلي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                <tr>
+                <td class="description">سمك تونة</td>
+                <td class="quantity">10</td>
+                <td class="price">1000</td>
+                <td class="price">10000</td>
+            </tr>
+                
+                <tr>
+                <td class="description">سمك سردين</td>
+                <td class="quantity">5</td>
+                <td class="price">22000</td>
+                <td class="price">110000</td>
+            </tr>
+                
+                            <tr>
+                                <td class="quantity"></td>
+                                <td class="quantity"></td>
+                                <td class="description">المجموع</td>
+                                <td class="finalprice ">120000</td>
+                            </tr>
+            
+                            <tr>
+                                <td class="quantity"></td>
+                                <td class="quantity"></td>
+                                <td class="description">الخصومات</td>
+                                <td class="finalprice ">0</td>
+                            </tr>
+            
+                            <tr>
+                                <td class="quantity"></td>
+                                <td class="quantity"></td>
+                                <td class="description">الكلي</td>
+                                <td class="finalprice ">120000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="centered">شكرا لتعاملكم معنا
+                    </p>
+            
+                </div>
+            </body>
+            
+            </html>

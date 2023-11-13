@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Invoice Example</title>
+  <style>
+    /* CSS styles for the invoice */
+    .invoice {
+      font-family: Arial, sans-serif;
+      width: 300px;
+    }
+
+    .invoice-header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .invoice-details {
+      margin-bottom: 10px;
+    }
+
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .invoice-table th, .invoice-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    .invoice-table th {
+      background-color: #f2f2f2;
+    }
+
+    .invoice-total {
+      margin-top: 10px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice">
+    <div class="invoice-header">
+      <h1>Invoice</h1>
+    </div>
+    <div class="invoice-details">
+      <p><strong>Customer:</strong> John Doe</p>
+      <p><strong>Date:</strong> July 9, 2023</p>
+    </div>
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Quantity</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Product 1</td>
+          <td>2</td>
+          <td>$10</td>
+        </tr>
+        <tr>
+          <td>Product 2</td>
+          <td>1</td>
+          <td>$15</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2">Total:</td>
+          <td>$35</td>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="invoice-total">
+      <p><strong>Total:</strong> $35</p>
+    </div>
+    <button onclick="printInvoice()">Print Invoice</button>
+  </div>
+
+  <script>
+    function printInvoice() {
+      const printerIP = '192.168.1.100'; // Replace with your printer's IP address
+      const invoiceContent = document.getElementById('invoice').innerHTML;
+
+      fetch(`http://${printerIP}/print?content=${encodeURIComponent(invoiceContent)}`, {
+        method: 'GET',
+      })
+        .then(response => {
+          console.log('Print request sent successfully.');
+        })
+        .catch(error => {
+          console.error('Error sending print request:', error);
+        });
+    }
+  </script>
+</body>
+</html>

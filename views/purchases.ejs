@@ -1,0 +1,675 @@
+<%- include('header'); %>
+
+<div id="shadedbackground" onclick="hideAddForm()" class="hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"></div>
+
+<form action="/food/addpurchasesfood" method="POST" enctype="multipart/form-data" id="addfoodform"
+    class="hidden fixed flex flex-col justify-center gap-5 items-center  w-1/2  bg-white p-5 rounded-xl z-50"
+    style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%);">
+
+    <select
+    id="countries"
+    name="foodcategoryid"
+    class="bg-gray-50 w-full text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+  >
+    <%categorys.forEach(function(category,index) { %>
+    <option selected value="<%=category.id%>"><%=category.name%></option>
+    <%})%>
+  </select>
+
+
+    <div class="mb-2 w-full">
+        <label for="default-input"
+            class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الاسم</label>
+        <input type="text" placeholder="قم بادخال اسم الصنف" name="name" id="default-input"
+            class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            required>
+    </div>
+    <div class="mb-2 w-full">
+        <label for="default-input"
+            class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الباركود</label>
+        <input type="text" placeholder="قم بادخال الباركود" name="barcode"
+            class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            >
+    </div>
+
+<div class="flex w-full gap-4">
+  <div class="w-full">
+    <label for="price" class="block text-right text-sm font-medium leading-6 text-gray-900">سعر البيع</label>
+    <div class="relative mt-2 rounded-md shadow-sm ">
+        <div class="absolute inset-y-0 right-0 flex items-center">
+            <label for="currency" class="sr-only"></label>
+            <select id="currency" name="currency"
+                class="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                <option>IQD</option>
+                <option>USD</option>
+            </select>
+        </div>
+
+        <input type="text" name="price" id="price" required
+            class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            placeholder="0.00">
+
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <span class="text-gray-500 sm:text-sm">D</span>
+        </div>
+
+    </div>
+</div>
+
+<div class="w-full">
+    <label for="price" class="block text-right text-sm font-medium leading-6 text-gray-900">سعر الشراء</label>
+    <div class="relative mt-2 rounded-md shadow-sm ">
+        <div class="absolute inset-y-0 right-0 flex items-center">
+            <label for="currency" class="sr-only"></label>
+            <select id="currency" name="currency"
+                class="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+                <option>IQD</option>
+                <option>USD</option>
+            </select>
+        </div>
+
+        <input type="text" name="cost" id="cost"
+            class="block w-full rounded-md border-0  py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-400 sm:text-sm sm:leading-6"
+            placeholder="0.00">
+
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <span class="text-gray-500 sm:text-sm">D</span>
+        </div>
+
+    </div>
+</div>
+
+</div>
+
+
+    <label class="block mb-2 text-sm font-medium text-gray-900 ml-auto dark:text-white" for="file_input">اضافة صورة
+        المنتج</label>
+    <input name="image"
+        class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+        aria-describedby="file_input_help" id="file_input" type="file">
+    <div class="flex items-center pr-4 w-full border border-gray-200 rounded dark:border-gray-700">
+        <label for="bordered-checkbox-1"
+            class="w-full text-right py-4 mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الكمية
+            محدودة</label>
+        <input name="unlimitecheck" type="checkbox" id="unlimite" value="true" onchange="handleCheckboxChange()">
+    </div>
+
+    <div class="mb-2 w-full  hidden" id="quantetyform">
+        <label for="default-input"
+            class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الكمية</label>
+        <input type="number" placeholder="قم بادخال الكمية المتوفرة" name="quantety" value="" id="default-input"
+            class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+    </div>
+
+    <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
+        value="اضافة">
+</form>
+
+
+<div>
+  <div class="flex flex-col h-full" style="direction: rtl">
+    <div class="bg-white p-4 overflow-hidden shadow mb-2 h-[14vh]">
+      <div class="w-full flex items-center justify-around gap-4">
+        <div>
+          <label
+            for="first_name"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >رقم الوصل</label
+          >
+
+          <input
+            type="text"
+            oninput="dataInputChange(event,'serialNumber','<%=invoice.id%>')"
+          value="<%=invoice.serialNumber%>"
+            id="first_name"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="رقم الوصل"
+            required
+          />
+        </div>
+        <div>
+          <label
+            for="supplyerName"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >اسم المورد</label
+          >
+          <input
+            type="text"
+            id="supplyerName"
+            oninput="dataInputChange(event,'Supplier','<%=invoice.id%>')"
+            value="<%=invoice.Supplier%>"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="اسم المورد"
+            required
+          />
+        </div>
+        <div>
+          <label
+            for="invoiceDate"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >تاريخ الوصل</label
+          >
+          <input
+            type="date"
+            id="invoiceDate"
+            oninput="dataInputChange(event,'invoiceDate','<%=invoice.id%>')"
+            value="<%=invoice.invoiceDate%>"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="تاريخ الوصل"
+            required
+          />
+          <script>
+            var originalDate = new Date("<%=invoice.invoiceDate%>");
+            var formattedDate = originalDate.toISOString().split('T')[0];
+
+            // Set the formatted date as the value for the input element
+            document.getElementById("invoiceDate").value = formattedDate;
+        </script>
+        
+        </div>
+        <div>
+          <label
+            for="countries"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >نوع الدفع</label
+          >
+          <select
+            id="countries"
+            onchange="dataInputChange(event,'PaymentType','<%=invoice.id%>')"
+
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <%paymentType.forEach(function(payment,index) { %>
+
+
+            <option <%if(invoice.PaymentType==payment.id) {%>
+              <%='selected'%>
+              <%}%> 
+             value="<%= payment.id %>"><%= payment.name %></option>
+            <% }) %>
+                      </select>
+        </div>
+        <div>
+          <label
+            for="countries"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >المخزن</label
+          >
+          <select
+            id="countries"
+            onchange="dataInputChange(event,'storge','<%=invoice.id%>')"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            <option>اختيار المخزن</option>
+
+            <% storge.forEach(function(storgeName, index) { %>
+              <option <%if(invoice.storge==storgeName.id) {%>
+              <%='selected'%>
+              <%}%> 
+             value="<%= storgeName.id %>"><%= storgeName.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <button onclick="showAddForm()" class="w-24 h-8 bg-green-400 rounded-lg hover:bg-green-300">
+          منتج جديد
+        </button>
+      </div>
+    </div>
+    <div class="overflow-scroll overflow-y-scroll overflow-x-auto w-full h-[30rem]">
+      <div class="relative ">
+        <table
+          class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+        >
+          <thead
+            class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400"
+          >
+            <tr>
+              <th scope="col" class="px-6 py-3 text-center rounded-s-lg ">
+                اسم المنتج
+              </th>
+              <th scope="col" class="px-6 py-3 text-center">العدد الحالي في المخزن</th>
+              <th scope="col" class="px-6 py-3 text-center">العدد</th>
+              <th scope="col" class="px-6 py-3 text-center  rounded-e-lg">السعر</th>
+              <th scope="col" class="px-6 py-3 text-center rounded-e-lg">الخصم</th>
+              <th scope="col" class="px-6 py-3 text-center rounded-e-lg">القطع المجانية</th>
+              <th scope="col" class="px-6 py-3 text-center rounded-e-lg">عدد الراجع</th>
+              <th scope="col" class="px-6 py-3 text-center rounded-e-lg">السعر الكلي</th>
+            </tr>
+          </thead>
+          <tbody id="itemInside">
+            </tbody>
+          <tfoot >
+            <tr class="font-semibold text-gray-900 dark:text-white">
+              <th scope="row" class="px-6 py-3 text-base">المجموع</th>
+              <td class="px-6 py-3 text-center"></td>
+              <td class="px-6 py-3 text-center"></td>
+              <td class="px-6 py-3 text-center"></td>
+              <td class="px-6 py-3 text-center"></td>
+              <td class="px-6 py-3 text-center"></td>
+              <td class="px-6 py-3 text-center"></td>
+              <td class="px-6 py-3 text-center text-xl ">40000</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div>
+        <input id="autoComplete" />
+      </div>
+    </div>
+    <div class="absolute w-full bottom-0 left-0">
+      <div class="h-16 w-full bg-white">
+        <div class="flex items-center h-full justify-between">
+          <div class="flex w-[33%] gap-4 justify-center items-center">
+            <div>
+              <button
+                type="button"
+                onclick="sumbitInvoice('<%=invoice.id%>')"
+                class="text-black w-full bg-green-400 hover:bg-green-500 font-normal rounded-lg text-lg px-5 py-2.5 mr-2"
+              >
+                اكمال
+              </button>
+            </div>
+            <div>
+              <button
+                type="button"
+                onclick="canceleInvoice('<%=invoice.id%>')"
+
+                class="text-black w-full bg-red-400 hover:bg-red-500 font-normal rounded-lg text-lg px-5 py-2.5 mr-2"
+              >
+                الغاء
+              </button>
+            </div>
+          </div>
+
+          <div class="flex w-[33%] gap-4 justify-center items-center">
+            <!-- <div>
+              <button
+                type="button"
+                class="text-black w-full bg-blue-400 hover:bg-blue-500 font-normal rounded-lg text-lg px-5 py-2.5 mr-2"
+              >
+                طباعة الفاتورة
+              </button>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+
+function sumbitInvoice(id){
+  const url = '/purchases/finish';
+
+// Make the fetch request
+fetch(url, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({id:id}),
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    return response.json();
+  })
+  .then(data => {
+    location.reload() 
+
+    console.log('Success:', data);
+    // Handle success response here
+  })
+  .catch(error => {
+    location.reload() 
+
+    console.error('Error:', error);
+    // Handle error here
+  });
+
+}
+function canceleInvoice(id){
+  const url = '/purchases/cancele';
+
+// Make the fetch request
+fetch(url, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({id:id}),
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    location.reload() 
+
+    console.log('Success:', data);
+    // Handle success response here
+  })
+  .catch(error => {
+    location.reload() 
+
+    console.error('Error:', error);
+    // Handle error here
+  });
+
+}
+
+  function dataInputChange(event,type,invoiceId){
+    const dataToUpdate = {
+      id: invoiceId,
+      type: type,
+      value: event.target.value
+    };
+
+// Define the URL of your API endpoint
+const url = '/purchases/updatedata';
+
+// Make the fetch request
+fetch(url, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(dataToUpdate),
+})
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Success:', data);
+    // Handle success response here
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    // Handle error here
+  });
+
+  }
+
+  document.querySelector("#autoComplete").addEventListener("selection", function (event) {
+
+    fetch("/purchases/add-item/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({id:event.detail.selection.value._id}),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          fetchDataAndPopulateTable()
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          // Handle errors
+        });
+
+        console.log(event.detail.selection.value._id );
+        console.log(event.detail.selection.value._id );
+        console.log(event.detail.selection.value._id );
+  });
+  
+  </script>
+
+
+
+<script>
+function showAddForm (){
+            $(`#addfoodform`).show();
+            $("#shadedbackground").show();
+}
+          function handleCheckboxChange() {
+            var checkbox = document.getElementById("unlimite");
+            if (checkbox.checked) {
+                $("#unlimite").val("false")
+                $("#quantetyform").show()
+            } else {
+                // Checkbox is unchecked, perform your action here
+                $("#unlimite").val("true")
+                $("#quantetyform").hide()
+            }
+        }
+          function hideAddForm (){
+            $(`#addfoodform`).hide();
+            $("#shadedbackground").hide();
+          }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    fetchDataAndPopulateTable();
+  });
+
+  function fetchDataAndPopulateTable() {
+    // Replace 'your_api_endpoint_here' with the actual URL of your API endpoint
+    fetch('/purchases/items')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Assuming data is an array of objects with properties like 'total', 'quantity', etc.
+        var tbody = document.getElementById('itemInside');
+        let tableBody = ""
+        let invoiceId = data._id
+        // Iterate over the data array and create a row for each item
+        data.items.forEach(function (item) {
+          tableBody+= `
+              <tr class="bg-white dark:bg-gray-800" style="direction: rtl">
+              <th
+                scope="row"
+                class="px-6 py-4 text-center font-medium w-24 text-gray-900 whitespace-nowrap dark:text-white"
+              >
+                ${item.id? item.id.name : ""}
+              </th>
+              <td class="px-6 py-4 text-center">${item.id.quantety ? item.id.quantety: 0 }</td>
+              <td class="px-6 py-4 text-center">
+                <input
+                type="number"
+                oninput="inputChange(event,'quantity','${invoiceId}')"
+                id="${item.id._id}"
+                
+                value = "${item.quantity ? item.quantity:0}"
+                class="bg-gray-50 border border-gray-300 text-gray-900 w-24 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required
+              />
+    
+              </td>
+              <td class="px-6 py-4 text-center">
+                <input
+                oninput="inputChange(event,'cost','${invoiceId}')"
+                type="number"
+
+                id="${item.id._id}"
+                value = "${item.cost ? item.cost : 0}"
+
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-24 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required
+              />
+    
+              </td>
+              <td class="px-6 py-4 text-center">
+                <input
+                type="number"
+
+                id="${item.id._id}"
+
+                oninput="inputChange(event,'discount','${invoiceId}')"
+
+                value = "${item.discount}"                
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required
+              />
+    
+              </td>
+              <td class="px-6 py-4 text-center">          
+                <input
+                type="number"
+
+                id="${item.id._id}"
+
+                oninput="inputChange(event,'gift','${invoiceId}')"
+                value = "${item.gift}"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required
+              />
+             </td>
+              <td class="px-6 py-4 text-center">          
+                <input
+                type="number"
+
+                id="${item.id._id}"
+                oninput="inputChange(event,'return','${invoiceId}')"
+                value = "${item.return}"
+
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-24 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required
+              />
+             </td>
+              <td id="total-${item.id._id}" class="px-6 py-4 text-center text-lg font-bold text-black">${(item.quantity*item.cost)-item.discount}</td>
+              <td id="total-${item.id._id}" class="px-6 py-4 text-center text-lg font-bold  cursor-pointer flex justify-center items-center text-black ">
+                <div onclick="deleteItem('${item.id._id}','${invoiceId}')" class="h-12 w-12 rounded-full hover:bg-gray-50 flex justify-center items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" height="1em" class="fill-red-600" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></td>
+
+                  </div>
+            </tr>
+            
+` });
+        tbody.innerHTML = tableBody
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }
+
+</script>
+
+<script>
+async function deleteItem(itemId,invoiceId){
+  try {
+    const response = await fetch(`/purchases/delete/${invoiceId}/items/${itemId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to remove item. Status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    fetchDataAndPopulateTable()
+
+    console.log('Item removed successfully:', result);
+    return result;
+  } catch (error) {
+    console.error('Error removing item:', error.message);
+    throw error;
+  }}
+
+
+
+
+  function inputChange(event,inputType,invoiceId){
+    console.log(invoiceId)
+    const inputElement = event.target;
+
+    const inputId = inputElement.id;
+
+    const value = event.target.value
+    console.log(event)
+    fetch("/purchases/editvalue/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({inputType,invoiceId,inputId,value}),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // $("#finalcost").text();
+          // $("#totalprice").text();
+          const totalTd = document.getElementById(`total-${inputId}`);
+          totalTd.innerHTML = data.newTotal;
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          // Handle errors
+        });
+
+  }
+</script>
+
+<script>
+  // Initialize variables to store barcode data
+let barcode = "";
+let originBarcode = "";
+
+// Function to handle key press events
+const handleKeyPress = (event) => {
+  // Check for a special character (e.g., Enter) to determine the end of the barcode
+  if (event.key === "Enter") {
+    // Do something with the barcode data (e.g., send it to a server)
+    if (barcode !== "") {
+      console.log("Barcode Scanned:", barcode );
+      
+      fetch("/purchases/add-item-barcode/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({id:barcode}),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          fetchDataAndPopulateTable()
+        })
+        .catch((error) => {
+          alert("هذا العنصر غير متاح")
+          console.error("Error:", error);
+          // Handle errors
+        });
+
+
+
+
+      originBarcode = barcode;
+      barcode = "";
+    }
+  } else {
+    // Append the scanned character to the barcode string
+    barcode += event.key;
+  }
+};
+
+// Function to reset the barcode after a timeout
+const resetBarcode = () => {
+  barcode = "";
+};
+
+// Set a timeout to reset the barcode after 20 milliseconds
+setTimeout(resetBarcode, 20);
+
+// Add an event listener to capture keyboard input
+window.addEventListener("keypress", handleKeyPress);
+
+// Function to clean up the event listener when needed
+const removeKeyListener = () => {
+  window.removeEventListener("keypress", handleKeyPress);
+};
+</script>
+  
+<%- include('footer',{currentpage:'purchases'}); %>

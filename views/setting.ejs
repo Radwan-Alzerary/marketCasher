@@ -1,0 +1,418 @@
+<%- include('header'); %>
+    <div id="shadedbackground" class="hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"></div>
+
+    <form action="/table/editable" method="POST" enctype="multipart/form-data" id="editableform"
+        class="hidden fixed flex flex-col justify-center gap-5 items-center  w-1/2  bg-white p-5 rounded-xl z-50"
+        style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%);">
+        <div class="mb-6 w-full">
+            <label for="default-input"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الاسم</label>
+            <input type="text" placeholder="قم بادخال اسم الصنف" name="name" id="default-input"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+        </div>
+        <input type="text" id="tablecategoryid" name="tablecategoryid" class="hidden">
+
+        <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
+            value="اضافة">
+    </form>
+
+
+
+    <div class="flex rounded-md  py-2 shadow-sm justify-center items-center" role="group">
+        <button type="button" onclick="showDeleverySetting()"
+            class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            اعدادات الدلفري
+        </button>
+        <button type="button" onclick="showWorkerSetting()"
+            class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            اعدادات العمال
+        </button>
+        <button type="button" onclick="showStorgeSetting()"
+            class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            اعدادات المخزن
+        </button>
+        <button type="button" onclick="showDiscountSetting()"
+            class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            اعدادات الخصوم
+        </button>
+        <button type="button" onclick="showDeviceSetting()"
+            class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            اعدادات الاجهزة
+        </button>
+        <button type="button" onclick="showAdminSetting()"
+            class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            اعدادات الادمنية
+        </button>
+        <button type="button" onclick="showTableSetting()"
+            class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            اعدادات الطاولات
+        </button>
+        <button type="button" onclick="showSystemSetting()"
+            class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            اعدادات النضام
+        </button>
+
+    </div>
+
+    <div class="w-full p-5  overflow-auto px-5" style="height: 89%;">
+        <div id="TableSetting" class="hidden">
+            <form method="POST" action="/table/addtable">
+                <div class="text-right font-medium text-lg mb-4">
+                    <a>اضافة طاولة</a>
+                </div>
+                <div class="text-right font-medium text-lg flex justify-end">
+
+                    <select id="countries" name="tablenum"
+                        class="bg-gray-50 border border-gray-300 text-right w-1/2 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <% for (var i=1; i <=100; i++) { %>
+                            <% var found=false; %>
+                                <% table.forEach(function(tables) { %>
+                                    <% if (tables.number===i) { %>
+                                        <% found=true; %>
+                                            <% } %>
+                                                <% }) %>
+                                                    <% if (found) { continue; } %>
+                                                        <%= i %>
+                                                            <option value="<%=i%>">
+                                                                <%=i%>
+                                                            </option>
+                                                            <%}%>
+                    </select>
+                </div>
+                <div class="w-full flex items-center justify-end">
+                    <input type="submit" value="اضافة طاولة"
+                        class="w-1/4 rounded-lg h-12 bg-green-200 cursor-pointer hover:bg-green-400">
+                </div>
+            </form>
+            <div class="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:py-1.5 lg:max-w-7xl ">
+                <div class="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2   lg:grid-cols-3 xl:grid-cols-6 xl:gap-x-8 overflow-y-scroll "
+                    style="height: 90vh;">
+                    <%if(table[0]){%>
+                        <%table.forEach(function(tables,index) { %>
+                            <% if (tables.number> 100) {
+                                return; // Stop the forEach loop
+                                }
+                                %>
+                                <a class="group  text-cente <%if(!(tables.active)){%> opacity-40 <%}%>">
+                                    <div
+                                        class="hover:bg-slate-200<%if(tables.invoice[0]){%> bg-green-200 <%}else{%> bg-white<%}%> aspect-h-1  aspect-w-1 w-full  overflow-hidden rounded-lg  xl:aspect-h-5 xl:aspect-w-5">
+                                        <div class="text-center flex flex-col justify-center items-center">
+                                            <img class="w-3/4 h-3/4 mx-auto" src="/img/websiteimg/table.svg">
+                                            <p class="text-black font-bold">طاولة رقم : <%=tables.number%>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between">
+                                        <div id="editable<%=tables.id%>"
+                                            class="cursor-pointer  p-3 bg-green-200 hover:bg-green-400 w-1/3 flex items-center justify-center">
+                                            <svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" height="1em"
+                                                viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                                                <path
+                                                    d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z" />
+                                            </svg>
+                                        </div>
+                                        <div id="unactivetable<%=tables.id%>"
+                                            class="cursor-pointer  p-3 bg-blue-200 hover:bg-blue-400 w-1/3 items-center justify-center">
+
+                                            <svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" height="1em"
+                                                viewBox="0 0 576 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                                                <path
+                                                    d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128H192c-70.7 0-128-57.3-128-128s57.3-128 128-128H384zM576 256c0-106-86-192-192-192H192C86 64 0 150 0 256S86 448 192 448H384c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z" />
+                                            </svg>
+                                        </div>
+                                        <div id='removetable<%=tables.id%>'
+                                            class="cursor-pointer p-3 bg-red-200 hover:bg-red-400 w-1/3 items-center justify-center">
+                                            <svg class="mx-auto" id="remove56442dfsd13"
+                                                xmlns="http://www.w3.org/2000/svg" height="1em"
+                                                viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                                                <path
+                                                    d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+
+
+                                </a>
+                                <%})}else{%>
+                                    <div
+                                        class="h-8 cursor-pointer flex items-center p-3 hover:bg-orange-300 bg-orange-100   rounded-xl ">
+                                        لا يوجد طاولات
+                                    </div>
+                                    <%}%>
+                                        <!-- More products... -->
+                </div>
+            </div>
+        </div>
+        <div id="SystemSetting" class=" w-full overflow-auto flex">
+            <div class="w-1/4 flex justify-center items-center">
+                <img src="<%=setting[0].shoplogo%>">
+            </div>
+            <form action="/setting/update" method="POST" enctype="multipart/form-data"
+                class="flex flex-col my-4 pb-5 float-right justify-center gap-5 items-center  w-3/4 h-5/6 bg-white p-5 rounded-xl z-50">
+                <div class="text-right w-full font-medium text-lg mb-4">
+                    <a class="text-right">اعدادات المتجر</a>
+                </div>
+
+                <div class="mb-6 w-full">
+                    <label for="default-input"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">اسم
+                        المتجر</label>
+                    <input value="<%=setting[0].shopname%>" type="text" placeholder="قم بادخال الاسم" name="name"
+                        id="default-input"
+                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required>
+                </div>
+
+                <div class="mb-6 w-full">
+                    <label for="default-input"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">العنوان</label>
+                    <input value="<%=setting[0].adress%>" type="text" placeholder="قم بادخال العنوان" name="adress"
+                        id="default-input"
+                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required>
+                </div>
+                <div class="mb-6 w-full">
+                    <label for="default-input"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">رقم
+                        الهاتف</label>
+                    <input value="<%=setting[0].phonnumber%>" type="text" placeholder="قم بادخال رقم الهاتف"
+                        name="phonnumber" id="default-input"
+                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required>
+                </div>
+                <div class="mb-6 w-full">
+                    <label for="default-input"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">نهاية القائمة</label>
+                    <input value="<%=setting[0].invoicefooter%>" type="text" placeholder="قم بادخال كتابة نهاية القائمة"
+                        name="invoicefooter" id="default-input"
+                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required>
+                </div>
+
+                <div class="mb-6 w-full">
+                    <label for="default-input"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">ايبي جهاز
+                        الطباعة</label>
+                    <input value="<%=setting[0].printerip%>" type="text" placeholder="قم بادخال الايبي" name="printerip"
+                        id="default-input"
+                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required>
+                </div>
+                <label class="block mb-2 text-sm font-medium text-gray-900 ml-auto dark:text-white"
+                    for="file_input">اضافة
+                    صورة
+                    الوكو</label>
+                <input name="image"
+                    class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                    aria-describedby="file_input_help" id="file_input" type="file">
+                <input type="text" id="foodcategoryid" name="foodcategoryid" class="hidden">
+                <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
+                    value="تعديل">
+            </form>
+        </div>
+
+        <div id="DeleverySetting" class="hidden w-full h-full">
+            <form action="/delevery/addelavery" method="POST"
+                class="flex flex-col my-4 pb-5 float-right justify-center gap-5 items-center  w-3/4  bg-white p-5 rounded-xl z-50">
+                <div class="text-right w-full font-medium text-lg mb-4">
+                    <a class="text-right">اعدادات الدلفري</a>
+                </div>
+
+                <div class="mb-6 w-full">
+                    <label for="default-input"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">اسم عامل
+                        النقل</label>
+                    <input type="text" placeholder="قم بادخال الاسم" name="deliveryname" id="default-input"
+                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required>
+                </div>
+
+                <div class="mb-6 w-full">
+                    <label for="default-input"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">رقم عامل
+                        النقل</label>
+                    <input type="text" placeholder="قم بادخال رقم عامل التوصيل" name="deliverynumber" id="default-input"
+                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required>
+                </div>
+                <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
+                    value="اضافة">
+
+            </form>
+
+        </div>
+    </div>
+
+
+
+    <script>
+        function showWorkerSetting() {
+            $(`#StorgeSetting`).addClass('hidden');
+            $(`#DiscountSetting`).addClass('hidden');
+            $(`#DeviceSetting`).addClass('hidden');
+            $(`#AdminSetting`).addClass('hidden');
+            $(`#TableSetting`).addClass('hidden');
+            $(`#SystemSetting`).addClass('hidden');
+            $(`#DeleverySetting`).addClass('hidden');
+            $(`#WorkerSetting`).removeClass('hidden');
+
+        }
+
+        function showStorgeSetting() {
+            $(`#StorgeSetting`).removeClass('hidden');
+            $(`#DiscountSetting`).addClass('hidden');
+            $(`#DeviceSetting`).addClass('hidden');
+            $(`#AdminSetting`).addClass('hidden');
+            $(`#TableSetting`).addClass('hidden');
+            $(`#SystemSetting`).addClass('hidden');
+            $(`#DeleverySetting`).addClass('hidden');
+            $(`#contents`).addClass('hidden');
+
+        }
+        function showDiscountSetting() {
+            $(`#StorgeSetting`).addClass('hidden');
+            $(`#DiscountSetting`).removeClass('hidden');
+            $(`#DeviceSetting`).addClass('hidden');
+            $(`#AdminSetting`).addClass('hidden');
+            $(`#TableSetting`).addClass('hidden');
+            $(`#SystemSetting`).addClass('hidden');
+            $(`#DeleverySetting`).addClass('hidden');
+            $(`#contents`).addClass('hidden');
+
+        }
+        function showDeviceSetting() {
+            $(`#StorgeSetting`).addClass('hidden');
+            $(`#DiscountSetting`).addClass('hidden');
+            $(`#DeviceSetting`).removeClass('hidden');
+            $(`#AdminSetting`).addClass('hidden');
+            $(`#TableSetting`).addClass('hidden');
+            $(`#SystemSetting`).addClass('hidden');
+            $(`#DeleverySetting`).addClass('hidden');
+            $(`#contents`).addClass('hidden');
+
+        }
+        function showAdminSetting() {
+            $(`#StorgeSetting`).addClass('hidden');
+            $(`#DiscountSetting`).addClass('hidden');
+            $(`#DeviceSetting`).addClass('hidden');
+            $(`#AdminSetting`).removeClass('hidden');
+            $(`#TableSetting`).addClass('hidden');
+            $(`#SystemSetting`).addClass('hidden');
+            $(`#DeleverySetting`).addClass('hidden');
+            $(`#contents`).addClass('hidden');
+
+        }
+        function showTableSetting() {
+            $(`#StorgeSetting`).addClass('hidden');
+            $(`#DiscountSetting`).addClass('hidden');
+            $(`#DeviceSetting`).addClass('hidden');
+            $(`#AdminSetting`).addClass('hidden');
+            $(`#TableSetting`).removeClass('hidden');
+            $(`#SystemSetting`).addClass('hidden');
+            $(`#DeleverySetting`).addClass('hidden');
+            $(`#contents`).addClass('hidden');
+
+        }
+        function showSystemSetting() {
+            $(`#StorgeSetting`).addClass('hidden');
+            $(`#DiscountSetting`).addClass('hidden');
+            $(`#DeviceSetting`).addClass('hidden');
+            $(`#AdminSetting`).addClass('hidden');
+            $(`#TableSetting`).addClass('hidden');
+            $(`#SystemSetting`).removeClass('hidden');
+            $(`#DeleverySetting`).addClass('hidden');
+            $(`#contents`).addClass('hidden');
+
+        }
+        function showDeleverySetting() {
+            $(`#StorgeSetting`).addClass('hidden');
+            $(`#DiscountSetting`).addClass('hidden');
+            $(`#DeviceSetting`).addClass('hidden');
+            $(`#AdminSetting`).addClass('hidden');
+            $(`#TableSetting`).addClass('hidden');
+            $(`#SystemSetting`).addClass('hidden');
+            $(`#DeleverySetting`).removeClass('hidden');
+            $(`#contents`).addClass('hidden');
+
+        }
+    </script>
+
+
+    <script>
+
+        $(document).on('click', '[id^=removetable]', function () {
+            var id = this.id;
+            const tableid = id.replace('removetable', '');
+            fetch(`/table/${tableid}/tableremove/`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload();
+                        console.log('Food item removed successfully');
+                    } else {
+                        throw new Error('Failed to remove food item');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+
+        
+
+
+        $(document).on('click', '[id^=unactivetable]', function () {
+            var id = this.id;
+            const tableid = id.replace('unactivetable', '');
+            fetch(`/table/${tableid}/active/`, {
+                method: 'PATCH',
+            })
+                .then(response => {
+                    if (response.ok) {
+
+                        location.reload();
+
+
+                        console.log('Food item removed successfully');
+                    } else {
+                        throw new Error('Failed to remove food item');
+                    }
+                }).catch(error => {
+                    console.error('Error updating user:', error);
+                });
+        });
+
+        $(document).on('click', '[id^=editable]', function () {
+            var id = this.id;
+            var tableid = id.replace('editable', '');
+            fetch(`/table/${tableid}/gettabledata`, {
+                method: 'POST',
+            })
+                .then(response => response.json())
+                .then(data => {
+                    $(`#editableform`).removeClass('hidden');
+                    $("#shadedbackground").show();
+                    $("#tableid").val(`${data._id}`)
+                    console.log(data.number)
+                })
+                .catch(error => {
+                    // Handle any errors that occurred during the request
+                    console.error('Error:', error);
+                });
+        });
+
+        $("#shadedbackground").on('click', () => {
+            $(`#editableform`).addClass('hidden');
+            $("#shadedbackground").hide();
+        })
+
+
+
+
+
+    </script>
+    <%- include('footer',{currentpage:'setting'}); %>
