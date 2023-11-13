@@ -17,7 +17,6 @@ router.post('/addtable', async (req, res) => {
     }
 })
 
-
 router.patch('/:tableId/active/', async (req, res) => {
     try {
         const table = await Table.findById(req.params.tableId);

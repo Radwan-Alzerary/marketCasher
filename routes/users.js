@@ -4,12 +4,6 @@ const router = express.Router();
 const User = require("../models/user");
 
 const passport = require('passport');
-const ensureAuthenticated = require("../config/auth").userlogin
-const isfulladmin = require("../config/auth").isfulladmin
-const iscoadmin = require("../config/auth").iscoadmin
-const iswrieradmin = require("../config/auth").iswrieradmin
-const isfacebookadmin = require("../config/auth").isfacebookadmin
-const isposteradmin = require("../config/auth").isposteradmin
 const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
@@ -42,7 +36,7 @@ router.get('/register', (req, res) => {
 })
 
 router.post('/login', passport.authenticate('local', {
-  successRedirect: '/admin/dashboard',
+  successRedirect: '/cashier',
   failureRedirect: '/admin/login',
   failureFlash: true,
 }), (req, res, next) => {
@@ -103,11 +97,11 @@ router.post('/register', async (req, res) => {
 
 //logout
 router.get('/logout', (req, res) => {
-  req.logout();
-  req.flash('success_msg', 'Now logged out');
-  res.redirect('/admin/login');
-
-})
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
+});
 
 
 

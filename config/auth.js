@@ -18,7 +18,22 @@ exports.isfulladmin = async(req,res,next) => {
         return next();    
         }
         else{
-        res.redirect('/admin/dashboard');
+        res.redirect('/');
+        }
+    }catch(err){
+        console.error(err);
+        res.render('login')
+    }
+}
+exports.isCashire = async(req,res,next) => {
+    try{
+        user=await User.findById(req.user.id)
+        console.log(user.id)
+        if(user.role == "cashire"){
+        return next();    
+        }
+        else{
+        res.redirect('/');
         }
     }catch(err){
         console.error(err);
@@ -26,66 +41,4 @@ exports.isfulladmin = async(req,res,next) => {
     }
 }
     
-exports.iscoadmin =async (req,res,next) => {
-    try{
-        user=await User.findById(req.user.id)
-        console.log(user.id)
-        if(user.role == "assistant" || user.role == "full" ){
-        return next();    
-        }
-        else{
-        res.redirect('/admin/dashboard');
-        }
-    }catch(err){
-        console.error(err);
-        res.render('login')
-    }
-}
 
-exports.iswrieradmin =async (req,res,next) => {
-    try{
-        user=await User.findById(req.user.id)
-        console.log(user.id)
-        if(user.role == "Writer" || user.role == "assistant" || user.role == "full" ){
-        return next();    
-        }
-        else{
-        res.redirect('/admin/dashboard');
-        }
-    }catch(err){
-        console.error(err);
-        res.render('login')
-    }
-}
-
-exports.isfacebookadmin =async (req,res,next) => {
-    try{
-        user=await User.findById(req.user.id)
-        console.log(user.id)
-        if(user.role == "facebook" || user.role == "Writer" || user.role == "assistant" || user.role == "full"){
-        return next();    
-        }
-        else{
-        res.redirect('/admin/dashboard');
-        }
-    }catch(err){
-        console.error(err);
-        res.render('login')
-    }
-}
-
-exports.isposteradmin =async (req,res,next) => {
-    try{
-        user=await User.findById(req.user.id)
-        console.log(user.id)
-        if(user.role == "poster" || user.role == "Writer" || user.role == "assistant" || user.role == "full"){
-        return next();    
-        }
-        else{
-        res.redirect('/admin/dashboard');
-        }
-    }catch(err){
-        console.error(err);
-        res.render('login')
-    }
-}

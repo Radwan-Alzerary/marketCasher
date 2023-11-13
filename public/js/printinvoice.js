@@ -124,7 +124,7 @@ function printinvoice(
       if (data.tablenumber < 100) {
         tablenum = `
     <div style="margin-left: 27px;">
-    ر.الطاولة: ${data.tablenumber}
+  
     </div>
     `;
       } else {
@@ -220,7 +220,7 @@ function printinvoice(
             <tr>
                 <th>السعر</th>
                 <th>العدد</th>
-                <th>الوجبة</th>
+                <th>المنتج</th>
                 <th>الاجمالي</th>
             </tr>
             ${items}

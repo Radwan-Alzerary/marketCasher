@@ -5,6 +5,11 @@ const Table = require("../models/table");
 const Delevery = require("../models/delevery");
 const Setting = require("../models/pagesetting");
 const Invoice = require("../models/invoice");
+const User = require('../models/user');
+
+const isfulladmin = require("../config/auth").isfulladmin;
+const isCashire = require("../config/auth").isCashire;
+const ensureAuthenticated = require("../config/auth").userlogin;
 
 
 router.get('/', async (req, res) => {
@@ -21,9 +26,12 @@ router.get('/menu/', async (req, res) => {
     let tableid = req.query.tableid || '_id';
     const table = await Table.find();
     const delevery = await Delevery.find()
+    const user = await User.findById(req.user);
+
     const category = await Category.find().populate("foods");
     console.log(category)
-    res.render('delevery-food.ejs', { category, delevery,table, tableid });
+    res.render('delevery-food.ejs', { category, delevery,table, tableid,role: user.role
+    });
 })
 
 router.post('/addelavery', async (req, res) => {

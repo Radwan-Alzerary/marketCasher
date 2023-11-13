@@ -4,6 +4,11 @@ const Food = require("../models/food");
 const foodcontroll = require("../controllers/food.controll");
 const multer = require("multer");
 const fs = require("fs");
+const User = require("../models/user");
+const isfulladmin = require("../config/auth").isfulladmin;
+const isCashire = require("../config/auth").isCashire;
+const ensureAuthenticated = require("../config/auth").userlogin;
+
 
 // Set up multer storage engine for image upload
 const storage = multer.diskStorage({
@@ -22,7 +27,10 @@ const upload = multer({ storage: storage });
 router.get("/", async (req, res) => {
   const category = await Category.find().populate("foods");
   console.log(category);
-  res.render("food", { category });
+  const user = await User.findById(req.user);
+
+  res.render("food", { category,role: user.role
+  });
 });
 
 router.patch("/:foodId/active/", async (req, res) => {

@@ -12,8 +12,13 @@ const {
   CharacterSet,
   BreakLine,
 } = require("node-thermal-printer");
+const isfulladmin = require("../config/auth").isfulladmin
+const isCashire = require("../config/auth").isCashire
+const ensureAuthenticated = require("../config/auth").userlogin
+
 const puppeteer = require("puppeteer");
 const purchasesInvoice = require("../models/purchasesInvoice");
+const User = require("../models/user");
 const browserPromise = puppeteer.launch(); // Launch the browser once
 async function printImageAsync(imagePath, printincount) {
   const setting = await Setting.findOne();
@@ -44,7 +49,8 @@ async function printImageAsync(imagePath, printincount) {
   }
 }
 
-router.get("/list", async (req, res) => {
+
+router.get("/list",ensureAuthenticated, async (req, res) => {
   try {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -123,9 +129,11 @@ router.get("/list", async (req, res) => {
       .populate("storge")
       .populate("PaymentType")
       .sort({ createdAt: -1 })
+      const user = await User.findById(req.user);
 
     const invoiceCount = await Invoice.countDocuments();
-    res.render("invoice-list", { invoice, invoiceCount, purchases });
+    res.render("invoice-list", { invoice, invoiceCount, purchases,role: user.role
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });

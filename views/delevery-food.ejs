@@ -161,36 +161,35 @@
                 </div>
 
                 </div>
-                <div id="insidelevery" class="w-24 h-10 rounded-lg bg-green-100">
-                    <div class="flex justify-center items-center  h-full">
-                        داخل صالة
+                <div id="insidelevery" class="w-24 h-10 rounded-lg bg-white">
+                </div>
+            </div>
+            <div id="invoicefood" class="bg-white relative overflow-auto h-40">
+
+            </div>
+            <div class="mt-5 w-full flex items-center justify-center h-36 z-20">
+                <div class=" w-full">
+                    <div class="flex justify-center items-center w-full">
+                        <input id="autoComplete" class="rounded-full" />
+                      </div>
+                      <div class="w-full flex">
+                        <input type="number" placeholder="سعر التوصيل" name="name" oninput="deleveryCostChange(event)" id="deleveryCost"
+                            class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <input type="text" placeholder="اسم المستلم" name="name" id="resivename"
+                            class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        
                     </div>
-                </div>
-            </div>
-            <div id="invoicefood" class="bg-white relative overflow-auto h-56">
-
-            </div>
-            <div class="mb-6 w-full">
-                <div class="flex justify-center items-center w-full">
-                    <input id="autoComplete" class="rounded-full" />
-                  </div>
-                  <div class="w-full flex">
-                    <input type="number" placeholder="سعر التوصيل" name="name" oninput="deleveryCostChange(event)" id="deleveryCost"
-                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <input type="text" placeholder="اسم المستلم" name="name" id="resivename"
-                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        
+                    <input
+                    type="text"
+                    placeholder="الملاحضات"
+                    name="name"
+                    id="comments"
+                    class="bg-gray-50  text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  />
+                    </div>
     
-                </div>
-    
-                <input
-                type="text"
-                placeholder="الملاحضات"
-                name="name"
-                id="comments"
-                class="bg-gray-50 my-2 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              />
-                </div>
-
+            </div>
             <div class="mt-5 w-full flex items-center justify-center h-12">
                 <div class="mb-6 w-3/4">
                     <input type="text" placeholder="خصم" name="name" oninput="discountchange(event)" id="discontinput"

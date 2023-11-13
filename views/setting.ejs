@@ -1,4 +1,4 @@
-<%- include('header'); %>
+<%- include('header', { role: role }); %>
     <div id="shadedbackground" class="hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"></div>
 
     <form action="/table/editable" method="POST" enctype="multipart/form-data" id="editableform"
@@ -32,21 +32,21 @@
             class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
             اعدادات المخزن
         </button>
-        <button type="button" onclick="showDiscountSetting()"
+        <!-- <button type="button" onclick="showDiscountSetting()"
             class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
             اعدادات الخصوم
-        </button>
-        <button type="button" onclick="showDeviceSetting()"
+        </button> -->
+        <!-- <button type="button" onclick="showDeviceSetting()"
             class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
             اعدادات الاجهزة
-        </button>
-        <button type="button" onclick="showAdminSetting()"
+        </button> -->
+        <!-- <button type="button" onclick="showAdminSetting()"
             class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
             اعدادات الادمنية
-        </button>
+        </button> -->
         <button type="button" onclick="showTableSetting()"
             class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
-            اعدادات الطاولات
+            اعدادات الزبائن
         </button>
         <button type="button" onclick="showSystemSetting()"
             class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-md hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
@@ -59,7 +59,7 @@
         <div id="TableSetting" class="hidden">
             <form method="POST" action="/table/addtable">
                 <div class="text-right font-medium text-lg mb-4">
-                    <a>اضافة طاولة</a>
+                    <a>اضافة زبون</a>
                 </div>
                 <div class="text-right font-medium text-lg flex justify-end">
 
@@ -98,8 +98,16 @@
                                     <div
                                         class="hover:bg-slate-200<%if(tables.invoice[0]){%> bg-green-200 <%}else{%> bg-white<%}%> aspect-h-1  aspect-w-1 w-full  overflow-hidden rounded-lg  xl:aspect-h-5 xl:aspect-w-5">
                                         <div class="text-center flex flex-col justify-center items-center">
-                                            <img class="w-3/4 h-3/4 mx-auto" src="/img/websiteimg/table.svg">
-                                            <p class="text-black font-bold">طاولة رقم : <%=tables.number%>
+                                            <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            height="5em"
+                                            viewBox="0 0 448 512"
+                                          >
+                                            <path
+                                              d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
+                                            />
+                                          </svg>
+                                                                          <p class="text-black font-bold">زبون رقم : <%=tables.number%>
                                             </p>
                                         </div>
                                     </div>
@@ -139,7 +147,7 @@
                                 <%})}else{%>
                                     <div
                                         class="h-8 cursor-pointer flex items-center p-3 hover:bg-orange-300 bg-orange-100   rounded-xl ">
-                                        لا يوجد طاولات
+                                        لا يوجد زبائن
                                     </div>
                                     <%}%>
                                         <!-- More products... -->
@@ -246,8 +254,6 @@
         </div>
     </div>
 
-
-
     <script>
         function showWorkerSetting() {
             $(`#StorgeSetting`).addClass('hidden');
@@ -342,7 +348,6 @@
 
 
     <script>
-
         $(document).on('click', '[id^=removetable]', function () {
             var id = this.id;
             const tableid = id.replace('removetable', '');

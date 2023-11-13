@@ -5,6 +5,7 @@ const PaymentType = require("../models/paymentType");
 const purchasesInvoice = require("../models/purchasesInvoice");
 const PurchasesInvoice = require("../models/purchasesInvoice");
 const Storge = require("../models/storge");
+const User = require("../models/user");
 
 const router = require("express").Router();
 
@@ -15,6 +16,8 @@ router.get("/", async (req, res) => {
   const categorys = await Category.find();
   const defaultStorge = await Storge.findOne({ name: "منتجات" });
   const defaultPayment = await PaymentType.findOne({ name: "نقدي" });
+  const user = await User.findById(req.user);
+
   try {
     const state = "قيد المعالجة"; // Set the desired state
     // Check if there is an existing purchase invoice with the specified state
@@ -27,6 +30,8 @@ router.get("/", async (req, res) => {
         paymentType,
         categorys,
         invoice: existingInvoice,
+        role: user.role
+
       });
     } else {
       const newInvoice = new PurchasesInvoice({
@@ -36,12 +41,15 @@ router.get("/", async (req, res) => {
         invoiceDate: new Date(),
       });
       await newInvoice.save();
+
       res.render("purchases", {
         supplier,
         storge,
         paymentType,
         categorys,
         invoice: newInvoice,
+        role: user.role
+
       });
     }
   } catch (error) {
@@ -111,6 +119,7 @@ router.get("/items/", async (req, res) => {
 
   res.json(existingInvoice);
 });
+
 router.post("/updatedata", async (req, res) => {
   try {
     await purchasesInvoice.findByIdAndUpdate(req.body.id, {
@@ -127,6 +136,7 @@ router.post("/add-item", async (req, res) => {
   try {
     const itemData = req.body; // Assuming you are sending the item data in the request body
     const item = await Food.findById(req.body.id);
+     itemData.cost = item.cost
     const state = "قيد المعالجة"; // Set the desired state
 
     // Check if there is an existing purchase invoice with the specified state

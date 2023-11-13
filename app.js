@@ -75,6 +75,8 @@ paymentType
     console.error("Error checking Customer collection:", err);
   });
 
+
+  
   const defaultStorges = [{ name: "معدات" }, { name: "منتجات" }];
   storge
   .countDocuments()
