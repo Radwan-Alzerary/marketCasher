@@ -116,10 +116,22 @@ function printinvoice(
       const invoicedateString = data.invoicedate;
       const invoicedate = new Date(invoicedateString);
 
-      const dateyear = `${invoicedate.getFullYear()}/${invoicedate.getMonth()}/${invoicedate.getDate()}`;
-      const dateclock = `${invoicedate.getHours()}:${invoicedate.getMinutes()}:${invoicedate.getSeconds()}`;
+      // Adding 1 to get the correct month
+// Get day, month, year, hours, minutes, and seconds
+const day = invoicedate.getDate();
+const month = invoicedate.getMonth() + 1; // Adding 1 to get the actual month
+const year = invoicedate.getFullYear();
+const hours = invoicedate.getHours() - 3;
+const minutes = invoicedate.getMinutes();
+const seconds = invoicedate.getSeconds();
 
-      let tablenum = "";
+// Create a formatted string
+const formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+let tablenum = "";
+const dateyear = `${day}/${month}/${year}`
+  const dateclock =`${hours}:${minutes}:${seconds}`;
+
+console.log(dateyear,dateclock);
 
       if (data.tablenumber < 100) {
         tablenum = `
