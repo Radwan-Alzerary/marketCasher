@@ -7,8 +7,6 @@
     "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tailwind:css": "postcss public/stylesheets/tailwind.css -o public/stylesheets/style.css"
-
-
   },
   "author": "radwan alzerary",
   "license": "ISC",

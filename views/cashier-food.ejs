@@ -149,7 +149,7 @@
   </div>
 </div>
 
-<div class="flex">
+<div class="flex justify-center">
   <div class="w-1/4" style="width: 30%">
     <div
       class="bg-white mb-0.5 items-center"
@@ -357,7 +357,8 @@
       class="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:py-1.5 lg:max-w-7xl lg:px-8"
     >
       <div
-        class="w-full flex items-center gap-2 h-16 bg-white rounded-lg mb-6 justify-end p-3"
+        class="flex items-center overflow-x-scroll gap-2 h-16 bg-white rounded-lg mb-6 p-3"
+        style="direction: rtl"
       >
         <%if(category[0]){%> <%category.forEach(function(categorys,index) { %>
         <div
@@ -441,7 +442,7 @@
         const url = new URL(currentUrl);
         const searchParams = new URLSearchParams(url.search);
         const table = searchParams.get("tableid");
-        const foodId = event.detail.selection.value._id
+        const foodId = event.detail.selection.value._id;
         console.log("ID:", table);
         const tableId = table; // Replace with the actual table ID
         fetch("/invoice/food/", {

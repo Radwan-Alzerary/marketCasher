@@ -22,9 +22,7 @@ const paymentType = require("./models/paymentType");
 const storge = require("./models/storge");
 
 // const Visitor = require('./models/visitor');
-
 app.use(express.static(path.join(__dirname, "public")));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

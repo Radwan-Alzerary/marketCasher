@@ -1419,6 +1419,14 @@ input:checked + .toggle-bg {
   height: 100vh;
 }
 
+.h-\[\] {
+  height: ;
+}
+
+.h-\[90\%\] {
+  height: 90%;
+}
+
 .w-1\/2 {
   width: 50%;
 }
@@ -1503,12 +1511,56 @@ input:checked + .toggle-bg {
   width: 33%;
 }
 
+.w-\[90\%\] {
+  width: 90%;
+}
+
 .w-full {
   width: 100%;
 }
 
 .w-screen {
   width: 100vw;
+}
+
+.w-96 {
+  width: 24rem;
+}
+
+.w-\[100\%\] {
+  width: 100%;
+}
+
+.w-\[40\%\] {
+  width: 40%;
+}
+
+.w-\[97\] {
+  width: 97;
+}
+
+.w-\[97\%\] {
+  width: 97%;
+}
+
+.w-\[78\%\] {
+  width: 78%;
+}
+
+.w-\[96\%\] {
+  width: 96%;
+}
+
+.w-\[\] {
+  width: ;
+}
+
+.w-\[98\%\] {
+  width: 98%;
+}
+
+.w-\[94\%\] {
+  width: 94%;
 }
 
 .max-w-2xl {
@@ -1735,6 +1787,10 @@ input:checked + .toggle-bg {
   overflow: hidden;
 }
 
+.overflow-clip {
+  overflow: clip;
+}
+
 .overflow-scroll {
   overflow: scroll;
 }
@@ -1749,6 +1805,10 @@ input:checked + .toggle-bg {
 
 .overflow-x-hidden {
   overflow-x: hidden;
+}
+
+.overflow-x-scroll {
+  overflow-x: scroll;
 }
 
 .overflow-y-scroll {
