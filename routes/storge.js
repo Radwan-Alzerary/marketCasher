@@ -30,4 +30,11 @@ router.get("/", ensureAuthenticated, isfulladmin, async (req, res) => {
   res.render("storge", { storge, role: user.role });
 });
 
+router.get("/item", ensureAuthenticated, isfulladmin, async (req, res) => {
+  const product = await Food.find();
+  const user = await User.findById(req.user);
+
+  res.render("itemStorge", { product, role: user.role });
+});
+
 module.exports = router;

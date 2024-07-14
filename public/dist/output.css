@@ -1395,12 +1395,8 @@ input:checked + .toggle-bg {
   height: 2rem;
 }
 
-.h-\[14vh\] {
-  height: 14vh;
-}
-
-.h-\[30rem\] {
-  height: 30rem;
+.h-\[15\%\] {
+  height: 15%;
 }
 
 .h-\[80\%\] {
@@ -1417,14 +1413,6 @@ input:checked + .toggle-bg {
 
 .h-screen {
   height: 100vh;
-}
-
-.h-\[\] {
-  height: ;
-}
-
-.h-\[90\%\] {
-  height: 90%;
 }
 
 .w-1\/2 {
@@ -1511,8 +1499,8 @@ input:checked + .toggle-bg {
   width: 33%;
 }
 
-.w-\[90\%\] {
-  width: 90%;
+.w-\[94\%\] {
+  width: 94%;
 }
 
 .w-full {
@@ -1521,46 +1509,6 @@ input:checked + .toggle-bg {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-96 {
-  width: 24rem;
-}
-
-.w-\[100\%\] {
-  width: 100%;
-}
-
-.w-\[40\%\] {
-  width: 40%;
-}
-
-.w-\[97\] {
-  width: 97;
-}
-
-.w-\[97\%\] {
-  width: 97%;
-}
-
-.w-\[78\%\] {
-  width: 78%;
-}
-
-.w-\[96\%\] {
-  width: 96%;
-}
-
-.w-\[\] {
-  width: ;
-}
-
-.w-\[98\%\] {
-  width: 98%;
-}
-
-.w-\[94\%\] {
-  width: 94%;
 }
 
 .max-w-2xl {
@@ -1785,10 +1733,6 @@ input:checked + .toggle-bg {
 
 .overflow-hidden {
   overflow: hidden;
-}
-
-.overflow-clip {
-  overflow: clip;
 }
 
 .overflow-scroll {
