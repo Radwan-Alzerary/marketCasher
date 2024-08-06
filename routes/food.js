@@ -63,7 +63,7 @@ router.get("/getall", async (req, res) => {
   }
 });
 router.get("/unlimiteDelete", ensureAuthenticated, async (req, res) => {
-  const result = await Food.updateMany({}, { $set: { unlimit: false } });
+  const result = await Food.updateMany({}, { $set: { unlimit: true } });
   res.json("hi")
 });
 
