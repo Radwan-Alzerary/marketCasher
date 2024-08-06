@@ -17,10 +17,11 @@ router.get("/", ensureAuthenticated, async (req, res) => {
   });
   const user = await User.findById(req.user);
   const systemSetting = await SystemSetting.findOne();
-
   console.log(category);
   res.render("dashboard", { category, food, role: user.role,systemSetting });
 });
+
+
 
 router.get("/updateinvoicecost", async (req, res) => {
   try {

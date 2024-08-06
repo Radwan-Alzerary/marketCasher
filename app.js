@@ -57,7 +57,7 @@ async function updateFoodCategories() {
 
     // Get all food items that do not have a category
     const foodsWithoutCategory = await Food.find({ category: { $exists: false } });
-    console.log(foodsWithoutCategory)
+    console.log(foodsWithoutCategory);
     if (foodsWithoutCategory.length === 0) {
       console.log("No foods without a category found.");
       return;
@@ -67,25 +67,33 @@ async function updateFoodCategories() {
     const categories = await Category.find().populate("foods");
 
     for (const food of foodsWithoutCategory) {
+      let categoryFound = false;
+
       for (const category of categories) {
         // Check if this category contains the food
         if (category.foods.some(f => f.equals(food._id))) {
           // Update the food with the category ID
           await Food.findByIdAndUpdate(food._id, { category: category._id });
           console.log(`Updated food ${food.name} with category ${category.name}`);
+          categoryFound = true;
           break; // Break the inner loop once the category is found
         }
+      }
+
+      // If no category was found for the food, mark it as deleted
+      if (!categoryFound) {
+        await Food.findByIdAndUpdate(food._id, { unlimit: true });
+        console.log(`Marked food ${food.name} as deleted.`);
       }
     }
 
     console.log("Finished updating food categories.");
   } catch (error) {
     console.error("Error updating food categories:", error);
-  } 
+  }
 }
 
-updateFoodCategories();updateFoodCategories();
-
+updateFoodCategories();
 
 paymentType
   .countDocuments()

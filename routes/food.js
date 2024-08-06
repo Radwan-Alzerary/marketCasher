@@ -62,6 +62,10 @@ router.get("/getall", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+router.get("/unlimiteDelete", ensureAuthenticated, async (req, res) => {
+  const result = await Food.updateMany({}, { $set: { unlimit: false } });
+  res.json("hi")
+});
 
 router.post("/addcategory", async (req, res) => {
   const feedCategory = new Category({
