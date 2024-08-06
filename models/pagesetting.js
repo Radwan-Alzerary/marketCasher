@@ -12,7 +12,6 @@ const SettingSchema = new mongoose.Schema({
     printerip: {
         type: String,
         default: ""
-
     },
     adress: {
         type: String,

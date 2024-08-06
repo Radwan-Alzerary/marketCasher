@@ -362,8 +362,7 @@
           </td>
 
           <td
-            onclick='printinvoice("<%=invoices.id%>","","","","","",1,"","")'            
-
+            onclick='printinvoice("<%=invoices.id%>","","","","","",1,"","")'
             class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-blue-200 hover:bg-blue-300"
           >
             <div class="font-medium dark:text-blue-500 hover:underline">
@@ -564,7 +563,6 @@
               </svg>
             </div>
           </td>
-
         </tr>
         <%})%>
       </tbody>
@@ -596,7 +594,11 @@
           </th>
           <td class="px-6 py-4">            ${element.quantity}
 </td>
-          <td class="px-6 py-4">${element.id.price * element.quantity}</td>
+          <td class="px-6 py-4">${
+            element.foodPrice
+              ? element.foodPrice
+              : element.id.price * element.quantity
+          }</td>
         </tr>`;
         console.log(data);
       });
@@ -639,8 +641,8 @@
     // Remove bg-green from both elements
     $("#selectSellerList").removeClass("bg-green-400");
     $("#selectSellerList").addClass("bg-white");
-    $("#sallerList").show()
-    $("#purchasesList").hide()
+    $("#sallerList").show();
+    $("#purchasesList").hide();
     // Add bg-green to the clicked element
     $(this).removeClass("bg-white").addClass("bg-green-400");
   });
@@ -651,8 +653,8 @@
 
     // Add bg-white to both elements
     $("#selectPurchasesList").addClass("bg-white");
-    $("#sallerList").hide()
-    $("#purchasesList").show()
+    $("#sallerList").hide();
+    $("#purchasesList").show();
 
     // Add bg-green to the clicked element
     $(this).removeClass("bg-white").addClass("bg-green-400");

@@ -1,34 +1,103 @@
 <%- include('header'); %>
 
-    <div class="bg-gray-100">
-        <div class="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:py-1.5 lg:max-w-7xl ">
-            <div class="grid h-3 grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2   lg:grid-cols-3 xl:grid-cols-6 xl:gap-x-8 overflow-y-scroll "
-                style="height: 90vh;">
-                <%if(table[0]){%>
-                    <%table.forEach(function(tables,index) { %>
-                        <% if (tables.number> 100) {
-                            return; // Stop the forEach loop
-                            }
-                            %>
-                            <%if(tables.active){%>
-                            <a href="/cashier/menu?tableid=<%=tables.id%>" class="group  text-cente ">
-                                <div
-                                    class="hover:bg-slate-200<%if(tables.invoice[0]){%> bg-green-200 <%}else{%> bg-white<%}%> aspect-h-1  aspect-w-1 w-full  overflow-hidden rounded-lg  xl:aspect-h-5 xl:aspect-w-5">
-                                    <div class="text-center flex flex-col justify-center items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="5em" viewBox="0 0 448 512"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>                                        <p class="text-black font-bold">زبون رقم  : <%=tables.number%>
-                                        </p>
-                                    </div>
-                                </div>
-                            </a>
-                            <%}%>
-                            <%})}else{%>
-                                <div
-                                    class="h-8 cursor-pointer flex items-center p-3 hover:bg-orange-300 bg-orange-100   rounded-xl ">
-                                    لا يوجد طاولات
-                                </div>
-                                <%}%>
-            </div>
-        </div>
-    </div>
+<div class="bg-gray-100">
+  <div class="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:py-1.5 lg:max-w-7xl">
+    <div
+      class="grid h-3 grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-x-8 overflow-y-scroll"
+      style="height: 90vh"
+    >
+      <%if(table[0]){%> <%table.forEach(function(tables,index) { %> <%
+      if(tables.number> 100) { return; } %> <%if(tables.active){%>
+      <div class="relative">
+        <a href="/cashier/menu?tableid=<%=tables.id%>" class="group text-cente">
+          <div
+          class="hover:bg-slate-200 <% if(tables.invoice[0]) { %> bg-green-200 <% } else if(tables.book.state) { %> bg-purple-200 <% } else { %> bg-white <% } %> aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg xl:aspect-h-5 xl:aspect-w-5"
+          >
+            <div class="text-center flex flex-col justify-center items-center">
+              <%if(systemSetting.type === "casher") {%>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="5em"
+                viewBox="0 0 448 512"
+              >
+                <path
+                  d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
+                />
+              </svg>
+              <%}else if(systemSetting.type === "restaurant"){%>
+              <img
+                class="w-3/4 h-3/4 mx-auto"
+                src="/img/websiteimg/table.svg"
+              />
 
-    <%- include('footer',{currentpage:'cashier'}); %>
+              <%}%>
+              <p class="text-black font-bold">زبون رقم : <%=tables.number%></p>
+            </div>
+          </div>
+        </a>
+        <%if(!tables.invoice[0]){%>
+        <div
+          class="absolute hover:opacity-50 cursor-pointer top-0 right-0 h-16 w-16 rounded-bl-xl bg-purple-200 flex justify-center items-center"
+          onclick="onBookedClickHandle('<%=tables.id%>')"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="1em"
+            viewBox="0 0 384 512"
+          >
+            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+            <path
+              d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"
+            />
+          </svg>
+        </div>
+
+        <%}%>
+      </div>
+      <%}})}else{%>
+      <div
+        class="h-8 cursor-pointer flex items-center p-3 hover:bg-orange-300 bg-orange-100 rounded-xl"
+      >
+        لا يوجد طاولات
+      </div>
+      <%}%>
+    </div>
+  </div>
+</div>
+
+<script>
+  const onBookedClickHandle = (id) => {
+    // Define the payload you want to send with the request
+    const payload = {
+      id: id,
+    };
+
+    // Make the POST request using fetch
+    fetch("/table/booking", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          // Handle HTTP errors
+          throw new Error("Network response was not ok " + response.statusText);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Handle success
+        console.log("Booking successful:", data);
+        // You can update the UI or state here based on the response
+      })
+      .catch((error) => {
+        // Handle error
+        console.error("Error booking the table:", error);
+        // You can show an error message to the user here
+      });
+  };
+</script>
+
+<%- include('footer',{currentpage:'cashier'}); %>

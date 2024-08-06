@@ -468,7 +468,7 @@
             } else {
               invoiceid = $("#invoiceidelement").text();
               console.log(data.food);
-              newitem(data.food, invoiceid, data.newquantity);
+              newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
               getprices($("#invoiceidelement").text());
             }
           })
@@ -536,8 +536,8 @@
                 getprices($("#invoiceidelement").text());
               } else {
                 invoiceid = $("#invoiceidelement").text();
-                console.log(data.food);
-                newitem(data.food, invoiceid, data.newquantity);
+                console.log(data);
+                newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
                 getprices($("#invoiceidelement").text());
               }
             })
@@ -602,11 +602,14 @@
           console.log(data);
           // Iterate over each food item and create the corresponding HTML
           data.food.forEach((food) => {
-            const foodTotalPrice = food.id.price * food.quantity;
+            console.log(food.foodPrice ? food.foodPrice : food.id.price);
+            const foodTotalPrice = food.foodPrice
+              ? food.foodPrice
+              : food.id.price * food.quantity;
             totalPrice += foodTotalPrice;
             fulldiscount += food.discount;
 
-            newitem(food.id, invoiceid, food.quantity);
+            newitem(food.id, invoiceid, food.quantity, food.foodPrice);
             getprices($("#invoiceidelement").text());
           });
           console.log("Overall total price:", totalPrice);
@@ -652,7 +655,7 @@
           } else {
             invoiceid = $("#invoiceidelement").text();
             console.log(data.food);
-            newitem(data.food, invoiceid, data.newquantity);
+            newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
             getprices($("#invoiceidelement").text());
           }
         })
@@ -937,6 +940,44 @@
 
           // $("#finalcost").text();
           // $("#totalprice").text();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          // Handle errors
+        });
+    }
+
+    function onPriceChange(event) {
+      const inputElement = event.target;
+
+      // Retrieve the ID of the input element
+      const inputId = inputElement.id;
+      var foodId = inputId.replace("price", "");
+
+      // Use the inputId as needed
+
+      const currentUrl = window.location.href;
+      console.log("Current URL:", currentUrl);
+      const url = new URL(currentUrl);
+      const searchParams = new URLSearchParams(url.search);
+      const tableId = searchParams.get("tableid");
+      const newPrice = $(`#${inputId}`).val();
+      const invoiceId = $("#invoiceidelement").text();
+      fetch("/invoice/changeprice/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tableId,
+          invoiceId,
+          foodId,
+          newPrice: newPrice,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          getprices(invoiceId);
         })
         .catch((error) => {
           console.error("Error:", error);

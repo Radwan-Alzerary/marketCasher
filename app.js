@@ -20,6 +20,9 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const paymentType = require("./models/paymentType");
 const storge = require("./models/storge");
+const systemSetting = require("./models/systemSetting");
+const Food = require("./models/food");
+const Category = require("./models/category");
 
 // const Visitor = require('./models/visitor');
 app.use(express.static(path.join(__dirname, "public")));
@@ -48,6 +51,42 @@ app.set("view engine", "ejs");
 
 const defaultPayment = [{ name: "نقدي" }, { name: "اجل" }];
 
+async function updateFoodCategories() {
+  try {
+    // Connect to MongoDB
+
+    // Get all food items that do not have a category
+    const foodsWithoutCategory = await Food.find({ category: { $exists: false } });
+    console.log(foodsWithoutCategory)
+    if (foodsWithoutCategory.length === 0) {
+      console.log("No foods without a category found.");
+      return;
+    }
+
+    // Get all categories
+    const categories = await Category.find().populate("foods");
+
+    for (const food of foodsWithoutCategory) {
+      for (const category of categories) {
+        // Check if this category contains the food
+        if (category.foods.some(f => f.equals(food._id))) {
+          // Update the food with the category ID
+          await Food.findByIdAndUpdate(food._id, { category: category._id });
+          console.log(`Updated food ${food.name} with category ${category.name}`);
+          break; // Break the inner loop once the category is found
+        }
+      }
+    }
+
+    console.log("Finished updating food categories.");
+  } catch (error) {
+    console.error("Error updating food categories:", error);
+  } 
+}
+
+updateFoodCategories();updateFoodCategories();
+
+
 paymentType
   .countDocuments()
   .then((count) => {
@@ -73,10 +112,8 @@ paymentType
     console.error("Error checking Customer collection:", err);
   });
 
-
-  
-  const defaultStorges = [{ name: "معدات" }, { name: "منتجات" }];
-  storge
+const defaultStorges = [{ name: "معدات" }, { name: "منتجات" }];
+storge
   .countDocuments()
   .then((count) => {
     if (count === 0) {
@@ -89,10 +126,7 @@ paymentType
             console.log(`defaultStorge ${index + 1} created.`);
           })
           .catch((err) => {
-            console.error(
-              `Error creating defaultStorge ${index + 1}:`,
-              err
-            );
+            console.error(`Error creating defaultStorge ${index + 1}:`, err);
           });
       });
     }
@@ -101,6 +135,24 @@ paymentType
     console.error("Error checking Customer collection:", err);
   });
 
+systemSetting.countDocuments()
+  .then((count) => {
+    if (count === 0) {
+      // Create default documents using a forEach loop
+      const defaultStorge = new systemSetting();
+      defaultStorge
+        .save()
+        .then(() => {
+          console.log(`defaultSitting created.`);
+        })
+        .catch((err) => {
+          console.error(`Error creating defaultStorge :`, err);
+        });
+    }
+  })
+  .catch((err) => {
+    console.error("Error checking Customer collection:", err);
+  });
 
 app.use(require("./routes"));
 

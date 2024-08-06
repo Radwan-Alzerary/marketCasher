@@ -1,551 +1,767 @@
 <%- include('header'); %>
-    <div class="h-5/6 overflow-y-scroll">
-        <%if(category[0]){%>
-            <%category.forEach(function(categorys,index) { %>
-
-                <div id="<%=categorys.id%>" class="w-full px-5 py-2">
-                    <div>
-                        <div id="category<%=categorys.id%>"
-                            class="w-full h-12 bg-white rounded-xl flex justify-center  items-center cursor-pointer hover:bg-zinc-200">
-                            <div class="flex gap-3 w-2/6 place-content-center">
-                                <div id="deletcatacury<%=categorys.id%>"
-                                    class="w-8 h-8 rounded-lg flex justify-center items-center hover:bg-red-200">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="fill-red-500" height="1em"
-                                        viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                                        <path
-                                            d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" />
-                                    </svg>
-                                </div>
-
-                                <div id="edit<%=categorys.id%>" class="w-8 h-8 flex justify-center items-center ">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em"
-                                        viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                                        <path
-                                            d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z" />
-                                    </svg>
-                                </div>
-
-                                <div class="w-8 h-8 flex justify-center items-center ">
-                                    <svg id="openarrow<%=categorys.id%>" xmlns="http://www.w3.org/2000/svg" height="1em"
-                                        viewBox="0 0 384 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                                        <path
-                                            d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" />
-                                    </svg>
-                                </div>
-
-                            </div>
-
-                            <div class="w-2/6 place-content-center text-center">
-                                <%=categorys.foods.length%>
-                            </div>
-                            <div class="text-xl font-bold w-2/6 place-content-center text-center">
-                                <a>
-                                    <%=categorys.name%>
-                                </a>
-                            </div>
-                        </div>
-                        <div id="contents<%=categorys.id%>"
-                            class="hidden transition-all py-2 px-2 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2   lg:grid-cols-3 xl:grid-cols-6 xl:gap-x-8 overflow-y-scroll "
-                            style="height: 76vh;">
-                            <%if(categorys.foods){%>
-                                <%for (let i=0; i < categorys.foods.length; i++) { %>
-                                    <a
-                                        class="group <%if(!(categorys.foods[i].active)){%> opacity-50 <%}%>   text-center bg-white ">
-                                        <div
-                                            class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
-                                            <img src="<%=categorys.foods[i].image.url%>"
-                                                alt="Tall slender porcelain bottle with natural clay textured body and cork stopper."
-                                                class="h-full w-full object-cover object-center group-hover:opacity-75">
-                                        </div>
-                                        <h3 class="mt-4  text-sm text-gray-700">
-                                            <%=categorys.foods[i].name%>
-                                        </h3>
-                                        <p class="mt-1 text-lg font-medium text-gray-900">
-                                            <%=categorys.foods[i].price%> IQD
-                                        </p>
-                                        <div class="flex items-center justify-between">
-                                            <div id="editonefood<%=categorys.foods[i].id%>"
-                                                class="cursor-pointer  p-3 bg-green-200 hover:bg-green-400 w-1/3 flex items-center justify-center">
-                                                <svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" height="1em"
-                                                    viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                                                    <path
-                                                        d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z" />
-                                                </svg>
-                                            </div>
-                                            <div id="unactive<%=categorys.foods[i].id%>"
-                                                class="cursor-pointer  p-3 bg-blue-200 hover:bg-blue-400 w-1/3 items-center justify-center">
-
-                                                <svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" height="1em"
-                                                    viewBox="0 0 576 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                                                    <path
-                                                        d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128H192c-70.7 0-128-57.3-128-128s57.3-128 128-128H384zM576 256c0-106-86-192-192-192H192C86 64 0 150 0 256S86 448 192 448H384c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z" />
-                                                </svg>
-                                            </div>
-                                            <div id='remove{"foodid":"<%=categorys.foods[i].id%>","categoryid":"<%=categorys.id%>"}'
-                                                class="cursor-pointer p-3 bg-red-200 hover:bg-red-400 w-1/3 items-center justify-center">
-                                                <svg class="mx-auto" id="remove56442dfsd13"
-                                                    xmlns="http://www.w3.org/2000/svg" height="1em"
-                                                    viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                                                    <path
-                                                        d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </a>
-                                    <%}}else{%>
-                                        <a>لا يوجد اطعمة مضافة</a>
-                                        <%}%>
-                                            <a id="showaddfoodform<%=categorys.id%>"
-                                                class="group text-center cursor-pointer ">
-                                                <div
-                                                    class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg xl:aspect-h-9 xl:aspect-w-9 hover:opacity-60 mt-10">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="#a0ff9d"
-                                                        height="1.5em"
-                                                        viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                                                        <path
-                                                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
-                                                    </svg>
-                                                </div>
-                                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <%})}else{%>
-                    <div class="w-full  p-5">
-                        <div
-                            class="w-full h-12  rounded-xl flex justify-around items-center cursor-pointer hover:bg-zinc-200">
-                            <a class="text-xl font-bold">لا يوجد اقسام مضافة</a>
-                        </div>
-                    </div>
-                    <%}%>
-                        <div class="w-full  p-5">
-                            <div id="viewcategoryform"
-                                class="w-full h-12 bg-green-300 rounded-xl flex justify-around items-center cursor-pointer hover:bg-zinc-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="1em"
-                                    viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                                    <path
-                                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z" />
-                                </svg>
-                            </div>
-                        </div>
+<div class="h-5/6 overflow-y-scroll">
+  <div class="p-3 px-5">
+    <div class="w-full h-16 bg-white rounded-xl text-center text-lg font-bold">
+      <div>مجموع رأس المالي الحالي</div>
+      <div id="fullCurrencyInStorage"><%=totalCost%></div>
     </div>
+  </div>
+  <%if(category[0]){%> <%category.forEach(function(categorys,index) { %>
+  <div id="<%=categorys.id%>" class="w-full px-5 py-2">
+    <div>
+      <div
+        id="category<%=categorys.id%>"
+        class="w-full h-12 bg-white rounded-xl flex justify-center items-center cursor-pointer hover:bg-zinc-200"
+      >
+        <div class="flex gap-3 w-2/6 place-content-center">
+          <div
+            id="deletcatacury<%=categorys.id%>"
+            class="w-8 h-8 rounded-lg flex justify-center items-center hover:bg-red-200"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="fill-red-500"
+              height="1em"
+              viewBox="0 0 448 512"
+            >
+              <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+              <path
+                d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+              />
+            </svg>
+          </div>
 
-    <div id="shadedbackground" class="hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"></div>
-    <form action="/food/addcategory" method="POST" id="addcatcoryform"
-        class="hidden fixed flex flex-col justify-center items-center  w-1/2 h-1/3 bg-white p-5 rounded-xl z-50"
-        style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
-        <div class="mb-6 w-full">
-            <label for="default-input"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الاسم</label>
-            <input type="text" placeholder="قم بادخال اسم الصنف" name="category" id="default-input"
-                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required>
-        </div>
-        <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
-            value="اضافة">
-    </form>
+          <div
+            id="edit<%=categorys.id%>"
+            class="w-8 h-8 flex justify-center items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="1em"
+              viewBox="0 0 512 512"
+            >
+              <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+              <path
+                d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"
+              />
+            </svg>
+          </div>
 
-    <form action="/food/addfood" method="POST" enctype="multipart/form-data" id="addfoodform"
-        class="hidden fixed flex flex-col justify-center gap-5 items-center  w-1/2  bg-white p-5 rounded-xl z-50"
-        style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%);">
-        <div class="mb-2 w-full">
-            <label for="default-input"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الاسم</label>
-            <input type="text" placeholder="قم بادخال اسم الصنف" name="name" id="default-input"
-                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required>
+          <div class="w-8 h-8 flex justify-center items-center">
+            <svg
+              id="openarrow<%=categorys.id%>"
+              xmlns="http://www.w3.org/2000/svg"
+              height="1em"
+              viewBox="0 0 384 512"
+            >
+              <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+              <path
+                d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
+              />
+            </svg>
+          </div>
         </div>
-        <div class="mb-2 w-full">
-            <label for="default-input"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الباركود</label>
-            <input type="text" placeholder="قم بادخال الباركود" name="barcode"
-                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                >
+
+        <div class="w-2/6 place-content-center text-center">
+          <%=categorys.foods.length%>
         </div>
-<div class="flex w-full gap-4">
-    <div class="w-full">
-        <label for="price" class="block text-right text-sm font-medium leading-6 text-gray-900">سعر البيع</label>
-        <div class="relative mt-2 rounded-md shadow-sm ">
-            <div class="absolute inset-y-0 right-0 flex items-center">
-                <label for="currency" class="sr-only"></label>
-                <select id="currency" name="currency"
-                    class="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
-                    <option>IQD</option>
-                    <option>USD</option>
-                </select>
+        <div class="text-xl font-bold w-2/6 place-content-center text-center">
+          <a> <%=categorys.name%> </a>
+        </div>
+      </div>
+      <div
+        id="contents<%=categorys.id%>"
+        class="hidden transition-all py-2 px-2 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-x-8 overflow-y-scroll"
+        style="height: 76vh"
+      >
+        <%if(categorys.foods){%> <%for (let i=0; i < categorys.foods.length;
+        i++) { %>
+        <a
+          class="group <%if(!(categorys.foods[i].active)){%> opacity-50 <%}%> text-center bg-white"
+        >
+          <div
+            class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7"
+          >
+            <img
+              src="<%=categorys.foods[i].image.url%>"
+              alt="Tall slender porcelain bottle with natural clay textured body and cork stopper."
+              class="h-full w-full object-cover object-center group-hover:opacity-75"
+            />
+          </div>
+          <h3 class="mt-4 text-sm text-gray-700">
+            <%=categorys.foods[i].name%>
+          </h3>
+          <p class="mt-1 text-lg font-medium text-gray-900">
+            <%=categorys.foods[i].price%> IQD
+          </p>
+          <div class="flex items-center justify-between">
+            <div
+              id="editonefood<%=categorys.foods[i].id%>"
+              class="cursor-pointer p-3 bg-green-200 hover:bg-green-400 w-1/3 flex items-center justify-center"
+            >
+              <svg
+                class="mx-auto"
+                xmlns="http://www.w3.org/2000/svg"
+                height="1em"
+                viewBox="0 0 512 512"
+              >
+                <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                <path
+                  d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152V424c0 48.6 39.4 88 88 88H360c48.6 0 88-39.4 88-88V312c0-13.3-10.7-24-24-24s-24 10.7-24 24V424c0 22.1-17.9 40-40 40H88c-22.1 0-40-17.9-40-40V152c0-22.1 17.9-40 40-40H200c13.3 0 24-10.7 24-24s-10.7-24-24-24H88z"
+                />
+              </svg>
             </div>
-
-            <input type="text" name="price" id="price" required
-                class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                placeholder="0.00">
-
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <span class="text-gray-500 sm:text-sm">D</span>
+            <div
+              id="unactive<%=categorys.foods[i].id%>"
+              class="cursor-pointer p-3 bg-blue-200 hover:bg-blue-400 w-1/3 items-center justify-center"
+            >
+              <svg
+                class="mx-auto"
+                xmlns="http://www.w3.org/2000/svg"
+                height="1em"
+                viewBox="0 0 576 512"
+              >
+                <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                <path
+                  d="M384 128c70.7 0 128 57.3 128 128s-57.3 128-128 128H192c-70.7 0-128-57.3-128-128s57.3-128 128-128H384zM576 256c0-106-86-192-192-192H192C86 64 0 150 0 256S86 448 192 448H384c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"
+                />
+              </svg>
             </div>
-
-        </div>
+            <div
+              id='remove{"foodid":"<%=categorys.foods[i].id%>","categoryid":"<%=categorys.id%>"}'
+              class="cursor-pointer p-3 bg-red-200 hover:bg-red-400 w-1/3 items-center justify-center"
+            >
+              <svg
+                class="mx-auto"
+                id="remove56442dfsd13"
+                xmlns="http://www.w3.org/2000/svg"
+                height="1em"
+                viewBox="0 0 448 512"
+              >
+                <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                <path
+                  d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
+                />
+              </svg>
+            </div>
+          </div>
+        </a>
+        <%}}else{%>
+        <a>لا يوجد اطعمة مضافة</a>
+        <%}%>
+        <a
+          id="showaddfoodform<%=categorys.id%>"
+          class="group text-center cursor-pointer"
+        >
+          <div
+            class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg xl:aspect-h-9 xl:aspect-w-9 hover:opacity-60 mt-10"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="#a0ff9d"
+              height="1.5em"
+              viewBox="0 0 448 512"
+            >
+              <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+              <path
+                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+              />
+            </svg>
+          </div>
+        </a>
+      </div>
     </div>
+  </div>
 
-    <div class="w-full">
-        <label for="price" class="block text-right text-sm font-medium leading-6 text-gray-900">سعر الشراء</label>
-        <div class="relative mt-2 rounded-md shadow-sm ">
-            <div class="absolute inset-y-0 right-0 flex items-center">
-                <label for="currency" class="sr-only"></label>
-                <select id="currency" name="currency"
-                    class="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
-                    <option>IQD</option>
-                    <option>USD</option>
-                </select>
-            </div>
-
-            <input type="text" name="cost" id="cost"
-                class="block w-full rounded-md border-0  py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-400 sm:text-sm sm:leading-6"
-                placeholder="0.00">
-
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <span class="text-gray-500 sm:text-sm">D</span>
-            </div>
-
-        </div>
+  <%})}else{%>
+  <div class="w-full p-5">
+    <div
+      class="w-full h-12 rounded-xl flex justify-around items-center cursor-pointer hover:bg-zinc-200"
+    >
+      <a class="text-xl font-bold">لا يوجد اقسام مضافة</a>
     </div>
-
+  </div>
+  <%}%>
+  <div class="w-full p-5">
+    <div
+      id="viewcategoryform"
+      class="w-full h-12 bg-green-300 rounded-xl flex justify-around items-center cursor-pointer hover:bg-zinc-200"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        height="1em"
+        viewBox="0 0 448 512"
+      >
+        <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+        <path
+          d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+        />
+      </svg>
+    </div>
+  </div>
 </div>
 
+<div
+  id="shadedbackground"
+  class="hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"
+></div>
+<form
+  action="/food/addcategory"
+  method="POST"
+  id="addcatcoryform"
+  class="hidden fixed flex flex-col justify-center items-center w-1/2 h-1/3 bg-white p-5 rounded-xl z-50"
+  style="left: 50%; top: 50%; transform: translate(-50%, -50%)"
+>
+  <div class="mb-6 w-full">
+    <label
+      for="default-input"
+      class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >الاسم</label
+    >
+    <input
+      type="text"
+      placeholder="قم بادخال اسم الصنف"
+      name="category"
+      id="default-input"
+      class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      required
+    />
+  </div>
+  <input
+    type="submit"
+    class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
+    value="اضافة"
+  />
+</form>
 
-        <label class="block mb-2 text-sm font-medium text-gray-900 ml-auto dark:text-white" for="file_input">اضافة صورة
-            المنتج</label>
-        <input name="image"
-            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-            aria-describedby="file_input_help" id="file_input" type="file">
-        <div class="flex items-center pr-4 w-full border border-gray-200 rounded dark:border-gray-700">
-            <label for="bordered-checkbox-1"
-                class="w-full text-right py-4 mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الكمية
-                محدودة</label>
-            <input name="unlimitecheck" type="checkbox" id="unlimite" value="true" onchange="handleCheckboxChange()">
-        </div>
-
-        <div class="mb-6 w-full  hidden" id="quantetyform">
-            <label for="default-input"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الكمية</label>
-            <input type="number" placeholder="قم بادخال الكمية المتوفرة" name="quantety" value="" id="default-input"
-                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-        </div>
-
-
-
-        <input type="text" id="foodcategoryid" name="foodcategoryid" class="hidden">
-
-        <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
-            value="اضافة">
-    </form>
-
-    <form action="/food/editfood" method="POST" enctype="multipart/form-data" id="editfoodform"
-        class="hidden fixed flex flex-col justify-center gap-5 items-center  w-1/2 bg-white p-5 rounded-xl z-50"
-        style="left: 50%;height: 88%; top: 50%; transform: translate(-50%, -50%);">
-
-        <div class="mb-2 w-full">
-            <label for="default-input"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الاسم</label>
-            <input type="text" placeholder="قم بادخال اسم الصنف" name="name" id="editname" value=""
-                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required>
-        </div>
-        <div class="mb-2 w-full">
-            <label for="default-input"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الباركود</label>
-            <input type="text" placeholder="قم بادخال الباركود" name="barcode" id="editbarcode" value=""
-                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                >
-        </div>
-
-<div class="w-full flex">
+<form
+  action="/food/addfood"
+  method="POST"
+  enctype="multipart/form-data"
+  id="addfoodform"
+  class="hidden fixed flex flex-col justify-center gap-5 items-center w-1/2 bg-white p-5 rounded-xl z-50"
+  style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%)"
+>
+  <div class="mb-2 w-full">
+    <label
+      for="default-input"
+      class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >الاسم</label
+    >
+    <input
+      type="text"
+      placeholder="قم بادخال اسم الصنف"
+      name="name"
+      id="default-input"
+      class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      required
+    />
+  </div>
+  <div class="mb-2 w-full">
+    <label
+      for="default-input"
+      class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >الباركود</label
+    >
+    <input
+      type="text"
+      placeholder="قم بادخال الباركود"
+      name="barcode"
+      class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    />
+  </div>
+  <div class="flex w-full gap-4">
     <div class="w-full">
-        <label for="price" class="block text-right text-sm font-medium leading-6  text-gray-900">سعر البيع</label>
-        <div class="relative mt-2 rounded-md shadow-sm ">
-            <div class="absolute inset-y-0 right-0 flex items-center">
-                <label for="currency" class="sr-only"></label>
-                <select id="currency" name="currency"
-                    class="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
-                    <option>IQD</option>
-                    <option>USD</option>
-                </select>
-            </div>
-            <input type="text" name="price" id="editprice" required
-                class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                placeholder="0.00">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <span class="text-gray-500 sm:text-sm">D</span>
-            </div>
+      <label
+        for="price"
+        class="block text-right text-sm font-medium leading-6 text-gray-900"
+        >سعر البيع</label
+      >
+      <div class="relative mt-2 rounded-md shadow-sm">
+        <div class="absolute inset-y-0 right-0 flex items-center">
+          <label for="currency" class="sr-only"></label>
+          <select
+            id="currency"
+            name="currency"
+            class="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+          >
+            <option>IQD</option>
+            <option>USD</option>
+          </select>
         </div>
+
+        <input
+          type="text"
+          name="price"
+          id="price"
+          required
+          class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          placeholder="0.00"
+        />
+
+        <div
+          class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+        >
+          <span class="text-gray-500 sm:text-sm">D</span>
+        </div>
+      </div>
     </div>
 
     <div class="w-full">
-        <label for="price" class="block text-right text-sm font-medium leading-6 text-gray-900">سعر الشراء</label>
-        <div class="relative mt-2 rounded-md shadow-sm ">
-            <div class="absolute inset-y-0 right-0 flex items-center">
-                <label for="currency" class="sr-only"></label>
-                <select id="currency" name="currency"
-                    class="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
-                    <option>IQD</option>
-                    <option>USD</option>
-                </select>
-            </div>
-
-            <input type="text" name="cost" id="editcost"
-                class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-400 sm:text-sm sm:leading-6"
-                placeholder="0.00">
-
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <span class="text-gray-500 sm:text-sm">D</span>
-            </div>
-
+      <label
+        for="price"
+        class="block text-right text-sm font-medium leading-6 text-gray-900"
+        >سعر الشراء</label
+      >
+      <div class="relative mt-2 rounded-md shadow-sm">
+        <div class="absolute inset-y-0 right-0 flex items-center">
+          <label for="currency" class="sr-only"></label>
+          <select
+            id="currency"
+            name="currency"
+            class="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+          >
+            <option>IQD</option>
+            <option>USD</option>
+          </select>
         </div>
+
+        <input
+          type="text"
+          name="cost"
+          id="cost"
+          class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-400 sm:text-sm sm:leading-6"
+          placeholder="0.00"
+        />
+
+        <div
+          class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+        >
+          <span class="text-gray-500 sm:text-sm">D</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <label
+    class="block mb-2 text-sm font-medium text-gray-900 ml-auto dark:text-white"
+    for="file_input"
+    >اضافة صورة المنتج</label
+  >
+  <input
+    name="image"
+    class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+    aria-describedby="file_input_help"
+    id="file_input"
+    type="file"
+  />
+  <div
+    class="flex items-center pr-4 w-full border border-gray-200 rounded dark:border-gray-700"
+  >
+    <label
+      for="bordered-checkbox-1"
+      class="w-full text-right py-4 mr-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+      >الكمية محدودة</label
+    >
+    <input
+      name="unlimitecheck"
+      type="checkbox"
+      id="unlimite"
+      value="true"
+      onchange="handleCheckboxChange()"
+    />
+  </div>
+
+  <div class="mb-6 w-full hidden" id="quantetyform">
+    <label
+      for="default-input"
+      class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >الكمية</label
+    >
+    <input
+      type="number"
+      placeholder="قم بادخال الكمية المتوفرة"
+      name="quantety"
+      value=""
+      id="default-input"
+      class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    />
+  </div>
+
+  <input type="text" id="foodcategoryid" name="foodcategoryid" class="hidden" />
+
+  <input
+    type="submit"
+    class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
+    value="اضافة"
+  />
+</form>
+
+<form
+  action="/food/editfood"
+  method="POST"
+  enctype="multipart/form-data"
+  id="editfoodform"
+  class="hidden fixed flex flex-col justify-center gap-5 items-center w-1/2 bg-white p-5 rounded-xl z-50"
+  style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%)"
+>
+  <div class="mb-2 w-full">
+    <label
+      for="default-input"
+      class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >الاسم</label
+    >
+    <input
+      type="text"
+      placeholder="قم بادخال اسم الصنف"
+      name="name"
+      id="editname"
+      value=""
+      class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      required
+    />
+  </div>
+  <div class="mb-2 w-full">
+    <label
+      for="default-input"
+      class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >الباركود</label
+    >
+    <input
+      type="text"
+      placeholder="قم بادخال الباركود"
+      name="barcode"
+      id="editbarcode"
+      value=""
+      class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    />
+  </div>
+
+  <div class="w-full flex">
+    <div class="w-full">
+      <label
+        for="price"
+        class="block text-right text-sm font-medium leading-6 text-gray-900"
+        >سعر البيع</label
+      >
+      <div class="relative mt-2 rounded-md shadow-sm">
+        <div class="absolute inset-y-0 right-0 flex items-center">
+          <label for="currency" class="sr-only"></label>
+          <select
+            id="currency"
+            name="currency"
+            class="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+          >
+            <option>IQD</option>
+            <option>USD</option>
+          </select>
+        </div>
+        <input
+          type="text"
+          name="price"
+          id="editprice"
+          required
+          class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          placeholder="0.00"
+        />
+        <div
+          class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+        >
+          <span class="text-gray-500 sm:text-sm">D</span>
+        </div>
+      </div>
     </div>
 
-
-</div>
-
-        <label class="block mb-2 text-sm font-medium text-gray-900 ml-auto dark:text-white" for="file_input">اضافة صورة
-            المنتج</label>
-        <input name="image"
-            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-            aria-describedby="file_input_help" id="file_input" type="file">
-        <div class="flex items-center pr-4 w-full border border-gray-200 rounded dark:border-gray-700">
-            <label for="bordered-checkbox-1"
-                class="w-full text-right py-4 mr-2 text-sm font-medium text-gray-900 dark:text-gray-300">الكمية
-                محدودة</label>
-            <input name="unlimitecheck" type="checkbox" id="editunlimit" value="true"
-                onchange="handleeditCheckboxChange()">
+    <div class="w-full">
+      <label
+        for="price"
+        class="block text-right text-sm font-medium leading-6 text-gray-900"
+        >سعر الشراء</label
+      >
+      <div class="relative mt-2 rounded-md shadow-sm">
+        <div class="absolute inset-y-0 right-0 flex items-center">
+          <label for="currency" class="sr-only"></label>
+          <select
+            id="currency"
+            name="currency"
+            class="h-full rounded-md border-0 bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+          >
+            <option>IQD</option>
+            <option>USD</option>
+          </select>
         </div>
 
-        <div class="mb-6 w-full  hidden" id="editquantetyform">
-            <label for="default-input"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الكمية</label>
-            <input type="number" placeholder="قم بادخال الكمية المتوفرة" name="quantety" value=" " id="editquantety"
-                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        <input
+          type="text"
+          name="cost"
+          id="editcost"
+          class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-400 sm:text-sm sm:leading-6"
+          placeholder="0.00"
+        />
+
+        <div
+          class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"
+        >
+          <span class="text-gray-500 sm:text-sm">D</span>
         </div>
-        <input type="text" id="foodid" name="foodid" class="hidden">
+      </div>
+    </div>
+  </div>
 
-        <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
-            value="تعديل">
+  <label
+    class="block mb-2 text-sm font-medium text-gray-900 ml-auto dark:text-white"
+    for="file_input"
+    >اضافة صورة المنتج</label
+  >
+  <input
+    name="image"
+    class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+    aria-describedby="file_input_help"
+    id="file_input"
+    type="file"
+  />
+  <div
+    class="flex items-center pr-4 w-full border border-gray-200 rounded dark:border-gray-700"
+  >
+    <label
+      for="bordered-checkbox-1"
+      class="w-full text-right py-4 mr-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+      >الكمية محدودة</label
+    >
+    <input
+      name="unlimitecheck"
+      type="checkbox"
+      id="editunlimit"
+      value="true"
+      onchange="handleeditCheckboxChange()"
+    />
+  </div>
 
-    </form>
+  <div class="mb-6 w-full hidden" id="editquantetyform">
+    <label
+      for="default-input"
+      class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >الكمية</label
+    >
+    <input
+      type="number"
+      placeholder="قم بادخال الكمية المتوفرة"
+      name="quantety"
+      value=" "
+      id="editquantety"
+      class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+    />
+  </div>
+  <input type="text" id="foodid" name="foodid" class="hidden" />
 
+  <input
+    type="submit"
+    class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
+    value="تعديل"
+  />
+</form>
 
+<script>
+  $(document).ready(function () {
+    $(window).keydown(function (event) {
+      if (event.keyCode == 13) {
+        event.preventDefault();
+        return false;
+      }
+    });
+  });
 
-    <script>
-
-$(document).ready(function() {
-  $(window).keydown(function(event){
-    if(event.keyCode == 13) {
-      event.preventDefault();
-      return false;
+  $(document).on("click", "[id^=category]", function () {
+    var id = this.id;
+    var categoryid = id.replace("category", "");
+    if ($(`#contents${categoryid}`).css("display") === "none") {
+      $(`#contents${categoryid}`).removeClass("hidden");
+      $(`#openarrow${categoryid}`).css("transform", "rotate(180deg)");
+    } else {
+      $(`#contents${categoryid}`).addClass("hidden");
+      $(`#openarrow${categoryid}`).css("transform", "rotate(0deg)");
     }
   });
+
+  $("#viewcategoryform").on("click", () => {
+    $("#addcatcoryform").css("display", "block");
+    $("#shadedbackground").show();
+  });
+
+  $(document).on("click", "[id^=showaddfoodform]", function () {
+    var id = this.id;
+    var categoryid = id.replace("showaddfoodform", "");
+    $("#foodcategoryid").val(`${categoryid}`);
+    $(`#addfoodform`).removeClass("hidden");
+    $("#shadedbackground").show();
+  });
+
+  $(document).on("click", "[id^=remove]", function () {
+    if (confirm("Are you sure you want to remove this food item?")) {
+      var id = this.id;
+      var foodid = id.replace("remove", "");
+
+      fetch(`/food/${foodid}/foodremove/`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            location.reload();
+            console.log("Food item removed successfully");
+          } else {
+            throw new Error("Failed to remove food item");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  });
+
+  $(document).on("click", "[id^=deletcatacury]", function () {
+  if (confirm("Are you sure you want to remove this category?")) {
+    var id = this.id;
+    const catacotyid = id.replace("deletcatacury", "");
+    console.log(catacotyid);
+    fetch(`/food/${catacotyid}/removecatogary/`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          location.reload();
+          console.log("Category removed successfully");
+        } else {
+          throw new Error("Failed to remove category");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 });
+  $(document).on("click", "[id^=unactive]", function () {
+    var id = this.id;
+    const foodid = id.replace("unactive", "");
+    fetch(`/food/${foodid}/active/`, {
+      method: "PATCH",
+    })
+      .then((response) => {
+        if (response.ok) {
+          location.reload();
 
-
-        $(document).on('click', '[id^=category]', function () {
-            var id = this.id;
-            var categoryid = id.replace('category', '');
-            if ($(`#contents${categoryid}`).css('display') === 'none') {
-                $(`#contents${categoryid}`).removeClass('hidden');
-                $(`#openarrow${categoryid}`).css('transform', 'rotate(180deg)');
-            } else {
-                $(`#contents${categoryid}`).addClass('hidden');
-                $(`#openarrow${categoryid}`).css('transform', 'rotate(0deg)');
-            }
-        });
-
-        $("#viewcategoryform").on('click', () => {
-            $("#addcatcoryform").css('display', 'block');
-            $("#shadedbackground").show();
-        })
-
-        $(document).on('click', '[id^=showaddfoodform]', function () {
-            var id = this.id;
-            var categoryid = id.replace('showaddfoodform', '');
-            $("#foodcategoryid").val(`${categoryid}`);
-            $(`#addfoodform`).removeClass('hidden');
-            $("#shadedbackground").show();
-        });
-
-        $(document).on('click', '[id^=remove]', function () {
-            var id = this.id;
-            var foodid = id.replace('remove', '');
-
-
-            fetch(`/food/${foodid}/foodremove/`, {
-                method: 'DELETE',
-            })
-                .then(response => {
-                    if (response.ok) {
-                        location.reload();
-
-                        console.log('Food item removed successfully');
-                    } else {
-                        throw new Error('Failed to remove food item');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-
-        });
-
-        $(document).on('click', '[id^=deletcatacury]', function () {
-            var id = this.id;
-            const catacotyid = id.replace('deletcatacury', '');
-            console.log(catacotyid)
-            fetch(`/food/${catacotyid}/removecatogary/`, {
-                method: 'DELETE',
-            })
-                .then(response => {
-                    if (response.ok) {
-
-                        location.reload();
-
-
-                        console.log('Food item removed successfully');
-                    } else {
-                        throw new Error('Failed to remove food item');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        });
-
-        $(document).on('click', '[id^=unactive]', function () {
-            var id = this.id;
-            const foodid = id.replace('unactive', '');
-            fetch(`/food/${foodid}/active/`, {
-                method: 'PATCH',
-            })
-                .then(response => {
-                    if (response.ok) {
-
-                        location.reload();
-
-
-                        console.log('Food item removed successfully');
-                    } else {
-                        throw new Error('Failed to remove food item');
-                    }
-                }).catch(error => {
-                    console.error('Error updating user:', error);
-                });
-        });
-
-        $(document).on('click', '[id^=editonefood]', function () {
-            var id = this.id;
-            var foodid = id.replace('editonefood', '');
-            fetch('/food/getfooddata', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id: foodid }),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    $(`#editfoodform`).removeClass('hidden');
-                    $("#shadedbackground").show();
-                    $("#editname").val(`${data.name}`)
-                    $("#editbarcode").val(`${data.barcode}`)
-                    $("#editprice").val(`${data.price}`)
-                    $("#editcost").val(`${data.cost}`)
-                    $("#editquantety").val(`${data.quantety}`)
-                    $("#foodid").val(`${data._id}`)
-                    console.log(data.unlimit)
-                    if (data.unlimit == true) {
-
-                        document.getElementById("editunlimit").checked = false
-                    } else {
-                        $("#editquantetyform").show()
-                        document.getElementById("editunlimit").checked = true
-                    }
-                    // Process the response data
-                    console.log(data);
-                })
-                .catch(error => {
-                    // Handle any errors that occurred during the request
-                    console.error('Error:', error);
-                });
-        });
-
-        $("#shadedbackground").on('click', () => {
-            $(`#addfoodform`).addClass('hidden');
-            $(`#editfoodform`).addClass('hidden');
-            $("#addcatcoryform").hide();
-            $("#shadedbackground").hide();
-        })
-
-        // Get the input element
-        var numberInput = document.getElementById('price');
-        var editpricenumberInput = document.getElementById('editprice');
-        var costnumberInput = document.getElementById('cost');
-        var editcostnumberInput = document.getElementById('editcost');
-        // Attach the input event listener
-        numberInput.addEventListener('input', function () {
-            // Get the current input value
-            editnumberinput(numberInput)
-        });
-
-        editpricenumberInput.addEventListener('input', function () {
-            // Get the current input value
-            editnumberinput(editpricenumberInput)
-        });
-        costnumberInput.addEventListener('input', function () {
-            // Get the current input value
-            editnumberinput(costnumberInput)
-        });
-        editcostnumberInput.addEventListener('input', function () {
-            // Get the current input value
-            editnumberinput(editcostnumberInput)
-        });
-
-
-        function editnumberinput(numberInput) {
-            var value = numberInput.value;
-
-            // Remove existing commas from the value
-            var cleanedValue = value.replace(/,/g, '');
-
-            // Format the value with commas
-            var formattedValue = Number(cleanedValue).toLocaleString();
-
-            // Update the input value with the formatted value
-            numberInput.value = formattedValue;
-
+          console.log("Food item removed successfully");
+        } else {
+          throw new Error("Failed to remove food item");
         }
+      })
+      .catch((error) => {
+        console.error("Error updating user:", error);
+      });
+  });
 
-        function handleCheckboxChange() {
-            var checkbox = document.getElementById("unlimite");
-            if (checkbox.checked) {
-                $("#unlimite").val("false")
-                $("#quantetyform").show()
-            } else {
-                // Checkbox is unchecked, perform your action here
-                $("#unlimite").val("true")
-                $("#quantetyform").hide()
-            }
+  $(document).on("click", "[id^=editonefood]", function () {
+    var id = this.id;
+    var foodid = id.replace("editonefood", "");
+    fetch("/food/getfooddata", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: foodid }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        $(`#editfoodform`).removeClass("hidden");
+        $("#shadedbackground").show();
+        $("#editname").val(`${data.name}`);
+        $("#editbarcode").val(`${data.barcode}`);
+        $("#editprice").val(`${data.price}`);
+        $("#editcost").val(`${data.cost}`);
+        $("#editquantety").val(`${data.quantety}`);
+        $("#foodid").val(`${data._id}`);
+        console.log(data.unlimit);
+        if (data.unlimit == true) {
+          document.getElementById("editunlimit").checked = false;
+        } else {
+          $("#editquantetyform").show();
+          document.getElementById("editunlimit").checked = true;
         }
+        // Process the response data
+        console.log(data);
+      })
+      .catch((error) => {
+        // Handle any errors that occurred during the request
+        console.error("Error:", error);
+      });
+  });
 
-        function handleeditCheckboxChange() {
-            var checkbox = document.getElementById("editunlimit");
-            if (checkbox.checked) {
-                $("#editunlimit").val("false")
-                $("#editquantetyform").show()
-            } else {
-                // Checkbox is unchecked, perform your action here
-                $("#editunlimit").val("true")
-                $("#editquantetyform").hide()
-            }
-        }
+  $("#shadedbackground").on("click", () => {
+    $(`#addfoodform`).addClass("hidden");
+    $(`#editfoodform`).addClass("hidden");
+    $("#addcatcoryform").hide();
+    $("#shadedbackground").hide();
+  });
 
+  // Get the input element
+  var numberInput = document.getElementById("price");
+  var editpricenumberInput = document.getElementById("editprice");
+  var costnumberInput = document.getElementById("cost");
+  var editcostnumberInput = document.getElementById("editcost");
+  // Attach the input event listener
+  numberInput.addEventListener("input", function () {
+    // Get the current input value
+    editnumberinput(numberInput);
+  });
 
-    </script>
+  editpricenumberInput.addEventListener("input", function () {
+    // Get the current input value
+    editnumberinput(editpricenumberInput);
+  });
+  costnumberInput.addEventListener("input", function () {
+    // Get the current input value
+    editnumberinput(costnumberInput);
+  });
+  editcostnumberInput.addEventListener("input", function () {
+    // Get the current input value
+    editnumberinput(editcostnumberInput);
+  });
 
-    <%- include('footer',{currentpage:'addfood'}); %>
+  function editnumberinput(numberInput) {
+    var value = numberInput.value;
+
+    // Remove existing commas from the value
+    var cleanedValue = value.replace(/,/g, "");
+
+    // Format the value with commas
+    var formattedValue = Number(cleanedValue).toLocaleString();
+
+    // Update the input value with the formatted value
+    numberInput.value = formattedValue;
+  }
+
+  function handleCheckboxChange() {
+    var checkbox = document.getElementById("unlimite");
+    if (checkbox.checked) {
+      $("#unlimite").val("false");
+      $("#quantetyform").show();
+    } else {
+      // Checkbox is unchecked, perform your action here
+      $("#unlimite").val("true");
+      $("#quantetyform").hide();
+    }
+  }
+
+  function handleeditCheckboxChange() {
+    var checkbox = document.getElementById("editunlimit");
+    if (checkbox.checked) {
+      $("#editunlimit").val("false");
+      $("#editquantetyform").show();
+    } else {
+      // Checkbox is unchecked, perform your action here
+      $("#editunlimit").val("true");
+      $("#editquantetyform").hide();
+    }
+  }
+</script>
+
+<%- include('footer',{currentpage:'addfood'}); %>

@@ -15,7 +15,7 @@
                     <%table.forEach(function(tables,index) { %>
                         <option value="<%=tables.id%>">
                             <%if(tables.number==1000000){%>
-                                دلفري
+                                التوصيل
                                 <%}else{%>
                                     <%=tables.number%>
                                         <%}%>
@@ -358,7 +358,7 @@
             } else {
               invoiceid = $("#invoiceidelement").text();
               console.log(data.food);
-              newitem(data.food, invoiceid, data.newquantity);
+              newitem(data.food, invoiceid, data.newquantity,data.foodPrice);
               getprices($("#invoiceidelement").text());
             }
           })
@@ -423,7 +423,7 @@
                             const foodTotalPrice = food.id.price * food.quantity;
                             totalPrice += foodTotalPrice;
                             fulldiscount += food.discount;
-                            newitem(food.id, invoiceid, food.quantity)
+                            newitem(food.id, invoiceid, food.quantity,food.foodPrice)
                             getprices($("#invoiceidelement").text())
                         });
                         console.log('Overall total price:', totalPrice);
@@ -472,7 +472,7 @@
                         } else {
                             invoiceid = $("#invoiceidelement").text()
                             console.log(data.food);
-                            newitem(data.food, invoiceid, data.newquantity)
+                            newitem(data.food, invoiceid, data.newquantity,data.foodPrice)
                             getprices($("#invoiceidelement").text())
                         }
                     })
@@ -618,220 +618,7 @@
                 }
             }
 
-            // function printinvoice(invoiceId) {
-            //     fetch(`/invoice/${invoiceId}/checout`)
-            //         .then(response => response.json())
-            //         .then(data => {
-
-            //             const elementsToRemove = document.querySelectorAll(".ticketprinter");
-            //             // Remove each element and its contents
-            //             elementsToRemove.forEach(element => {
-            //                 element.parentNode.removeChild(element);
-            //             });
-
-            //             // Create the outer <div> element with class "ticketprinter"
-            //             const ticketPrinterDiv = document.createElement("div");
-            //             ticketPrinterDiv.className = "ticketprinter";
-
-            //             // Create the inner <div> element with class "ticket"
-            //             const ticketDiv = document.createElement("div");
-            //             ticketDiv.className = "ticket";
-
-            //             // Create the first inner <div> element with class "logoimg"
-            //             const logoimgDiv1 = document.createElement("div");
-            //             logoimgDiv1.className = "logoimg";
-
-            //             // Create the <img> element and set its attributes
-            //             const img1 = document.createElement("img");
-            //             img1.src = `${data.setting.shoplogo}`;
-            //             img1.alt = "Logo";
-
-            //             // Append the <img> element to the first inner <div>
-            //             logoimgDiv1.appendChild(img1);
-
-            //             // Create the first <p> element with class "centered" and its text
-            //             const p1 = document.createElement("p");
-            //             p1.className = "centered";
-            //             p1.textContent = "الفاتورة";
-
-            //             // Append the first inner <div> and <p> element to the outer <div>
-            //             ticketDiv.appendChild(logoimgDiv1);
-            //             ticketDiv.appendChild(p1);
-
-            //             // Create the second inner <div> element with class "logoimg"
-            //             const logoimgDiv2 = document.createElement("div");
-            //             logoimgDiv2.className = "logoimg";
-
-            //             // Create the <a> element and set its text
-            //             const a = document.createElement("a");
-            //             a.textContent = "عنوان التوصيل : حي الزهور";
-
-            //             // Append the <a> element to the second inner <div>
-            //             logoimgDiv2.appendChild(a);
-
-            //             // Append the second inner <div> to the outer <div>
-            //             ticketDiv.appendChild(logoimgDiv2);
-
-            //             // Create the <table> element
-            //             const table = document.createElement("table");
-
-            //             // Create the <thead> and <tbody> elements
-            //             const thead = document.createElement("thead");
-            //             const tbody = document.createElement("tbody");
-
-            //             // Create the header row (<tr>) with its cells (<th>)
-            //             const headerRow = document.createElement("tr");
-
-            //             const descriptionTh = document.createElement("th");
-            //             descriptionTh.className = "description";
-            //             descriptionTh.textContent = "الاسم";
-
-            //             const quantityTh = document.createElement("th");
-            //             quantityTh.className = "quantity";
-            //             quantityTh.textContent = "#";
-
-            //             const priceTh1 = document.createElement("th");
-            //             priceTh1.className = "price";
-            //             priceTh1.textContent = "السعر";
-
-            //             const priceTh2 = document.createElement("th");
-            //             priceTh2.className = "price";
-            //             priceTh2.textContent = "الكلي";
-
-            //             headerRow.appendChild(descriptionTh);
-            //             headerRow.appendChild(quantityTh);
-            //             headerRow.appendChild(priceTh1);
-            //             headerRow.appendChild(priceTh2);
-
-            //             // Append the header row to the <thead> element
-            //             thead.appendChild(headerRow);
-            //             const itemRows = [
-            //             ];
-
-            //             // Create the item rows (<tr>) with their cells (<td>)
-            //             console.log()
-            //             data.food.forEach(food => {
-            //                 itemRows.push([`${food.id.name}`, `${food.quantity}`, `${food.id.price}`, `${Number(food.quantity) * Number(food.id.price)}`]);
-            //             })
-
-            //             for (const item of itemRows) {
-            //                 const itemRow = document.createElement("tr");
-
-            //                 const descriptionTd = document.createElement("td");
-            //                 descriptionTd.className = "الاسم";
-            //                 descriptionTd.textContent = item[0];
-            //                 const quantityTd = document.createElement("td");
-            //                 quantityTd.className = "العدد";
-            //                 quantityTd.textContent = item[1];
-            //                 const priceTd = document.createElement("td");
-            //                 priceTd.className = "السعر";
-            //                 priceTd.textContent = item[2];
-            //                 const fullprice = document.createElement("td");
-            //                 priceTd.className = "السعر الكلي";
-            //                 priceTd.textContent = item[3];
-            //                 itemRow.appendChild(descriptionTd);
-            //                 itemRow.appendChild(quantityTd);
-            //                 itemRow.appendChild(priceTd);
-
-            //                 // Append the item row to the <tbody> element
-            //                 tbody.appendChild(itemRow);
-            //             }
-
-            //             // Create the discount row (<tr>) with its cells (<td>)
-            //             const discountRow = document.createElement("tr");
-
-            //             const emptyTd1 = document.createElement("td");
-            //             emptyTd1.className = "quantity";
-
-            //             const descriptionTd = document.createElement("td");
-            //             descriptionTd.className = "description";
-            //             descriptionTd.textContent = "الخصومات";
-
-            //             const finalPriceTd = document.createElement("td");
-            //             finalPriceTd.className = "finalprice";
-            //             finalPriceTd.textContent = `${data.fulldiscont}`;
-
-            //             discountRow.appendChild(emptyTd1);
-            //             discountRow.appendChild(descriptionTd);
-            //             discountRow.appendChild(finalPriceTd);
-
-            //             // Append the discount row to the <tbody> element
-            //             tbody.appendChild(discountRow);
-
-            //             // Create the total row (<tr>) with its cells (<td>)
-            //             const totalRow = document.createElement("tr");
-
-            //             const emptyTd2 = document.createElement("td");
-            //             emptyTd2.className = "quantity";
-
-            //             const descriptionTd2 = document.createElement("td");
-            //             descriptionTd2.className = "description";
-            //             descriptionTd2.textContent = `TOTAL`;
-
-            //             const finalPriceTd2 = document.createElement("td");
-            //             finalPriceTd2.className = "finalprice";
-            //             finalPriceTd2.textContent = `${data.finalcost}`;
-
-            //             totalRow.appendChild(emptyTd2);
-            //             totalRow.appendChild(descriptionTd2);
-            //             totalRow.appendChild(finalPriceTd2);
-
-            //             // Append the total row to the <tbody> element
-            //             tbody.appendChild(totalRow);
-
-            //             // Append the <thead> and <tbody> elements to the <table> element
-            //             table.appendChild(thead);
-            //             table.appendChild(tbody);
-
-            //             // Create the second <p> element with class "centered" and its text
-            //             const p2 = document.createElement("p");
-            //             p2.className = "centered";
-            //             p2.textContent = "شكرا لتعاملكم معنا";
-
-            //             // Create the third inner <div> element with class "footerpos"
-            //             const footerposDiv1 = document.createElement("div");
-            //             footerposDiv1.className = "footerpos";
-
-            //             // Create the <a> element and set its text
-            //             const a1 = document.createElement("a");
-            //             a1.textContent = `العنوان : ${data.setting.adress}`;
-
-            //             // Append the <a> element to the third inner <div>
-            //             footerposDiv1.appendChild(a1);
-
-            //             // Create the fourth inner <div> element with class "footerpos"
-            //             const footerposDiv2 = document.createElement("div");
-            //             footerposDiv2.className = "footerpos";
-
-            //             // Create the <a> element and set its text
-            //             const a2 = document.createElement("a");
-            //             a2.textContent = `رقم الهاتف : ${data.setting.phonnumber}`;
-
-            //             // Append the <a> element to the fourth inner <div>
-            //             footerposDiv2.appendChild(a2);
-
-            //             // Append all the elements to the inner <div>
-            //             ticketDiv.appendChild(table);
-            //             ticketDiv.appendChild(footerposDiv1);
-            //             ticketDiv.appendChild(footerposDiv2);
-            //             ticketDiv.appendChild(p2);
-
-            //             // Append the inner <div> to the outer <div>
-            //             ticketPrinterDiv.appendChild(ticketDiv);
-            //             // Append the outer <div> to the body of the HTML document
-            //             document.body.appendChild(ticketPrinterDiv);
-
-
-            //             setTimeout(function () {
-            //                 window.print();
-            //             }, 500); // 500 milliseconds = 0.5 seconds
-            //         })
-            //         .catch(error => {
-            //             console.error(error);
-            //         });
-
-            // }
-
+      
         </script>
   <script>
     // Initialize variables to store barcode data
@@ -872,7 +659,7 @@
               } else {
                 invoiceid = $("#invoiceidelement").text();
                 console.log(data.food);
-                newitem(data.food, invoiceid, data.newquantity);
+                newitem(data.food, invoiceid, data.newquantity,data.foodPrice);
                 getprices($("#invoiceidelement").text());
               }
             })
@@ -1192,6 +979,50 @@
                     $('#insidelevery').addClass('bg-green-100');
                 }
             })
+
+
+
+
+
+            function onPriceChange(event) {
+      const inputElement = event.target;
+
+      // Retrieve the ID of the input element
+      const inputId = inputElement.id;
+      var foodId = inputId.replace("price", "");
+
+      // Use the inputId as needed
+
+      const currentUrl = window.location.href;
+      console.log("Current URL:", currentUrl);
+      const url = new URL(currentUrl);
+      const searchParams = new URLSearchParams(url.search);
+      const tableId = searchParams.get("tableid");
+      const newPrice = $(`#${inputId}`).val();
+      const invoiceId = $("#invoiceidelement").text();
+      fetch("/invoice/changeprice/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tableId,
+          invoiceId,
+          foodId,
+          newPrice: newPrice,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          getprices(invoiceId);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          // Handle errors
+        });
+    }
+
+
         </script>
 
         <script src="/js/casher.js"></script>

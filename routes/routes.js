@@ -4,6 +4,7 @@ const Invoice = require("../models/invoice");
 const Food = require("../models/food");
 const Category = require("../models/category");
 const User = require("../models/user");
+const SystemSetting = require("../models/systemSetting");
 const isfulladmin = require("../config/auth").isfulladmin;
 const isCashire = require("../config/auth").isCashire;
 const ensureAuthenticated = require("../config/auth").userlogin;
@@ -15,9 +16,10 @@ router.get("/", ensureAuthenticated, async (req, res) => {
     unlimit: false,
   });
   const user = await User.findById(req.user);
+  const systemSetting = await SystemSetting.findOne();
 
   console.log(category);
-  res.render("dashboard", { category, food, role: user.role });
+  res.render("dashboard", { category, food, role: user.role,systemSetting });
 });
 
 router.get("/updateinvoicecost", async (req, res) => {

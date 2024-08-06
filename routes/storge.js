@@ -5,8 +5,8 @@ const foodcontroll = require("../controllers/food.controll");
 const multer = require("multer");
 const fs = require("fs");
 const User = require("../models/user");
+const SystemSetting = require("../models/systemSetting");
 const isfulladmin = require("../config/auth").isfulladmin;
-const isCashire = require("../config/auth").isCashire;
 const ensureAuthenticated = require("../config/auth").userlogin;
 
 // Set up multer storage engine for image upload
@@ -24,17 +24,21 @@ const storage = multer.diskStorage({
 // Create multer instance for uploading image
 const upload = multer({ storage: storage });
 router.get("/", ensureAuthenticated, isfulladmin, async (req, res) => {
+  const systemSetting = await SystemSetting.findOne();
+
   const storge = await Storge.find();
   const user = await User.findById(req.user);
-
-  res.render("storge", { storge, role: user.role });
+  res.render("storge", { storge, role: user.role,systemSetting });
 });
 
 router.get("/item", ensureAuthenticated, isfulladmin, async (req, res) => {
-  const product = await Food.find();
+  const systemSetting = await SystemSetting.findOne();
+
+  const product = await Food.find({ deleted: false }).sort({ name: 1 });
+
   const user = await User.findById(req.user);
 
-  res.render("itemStorge", { product, role: user.role });
+  res.render("itemStorge", { product, role: user.role ,systemSetting});
 });
 
 module.exports = router;

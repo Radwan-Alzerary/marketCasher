@@ -5,6 +5,7 @@ const PaymentType = require("../models/paymentType");
 const purchasesInvoice = require("../models/purchasesInvoice");
 const PurchasesInvoice = require("../models/purchasesInvoice");
 const Storge = require("../models/storge");
+const SystemSetting = require("../models/systemSetting");
 const User = require("../models/user");
 
 const router = require("express").Router();
@@ -17,6 +18,7 @@ router.get("/", async (req, res) => {
   const defaultStorge = await Storge.findOne({ name: "منتجات" });
   const defaultPayment = await PaymentType.findOne({ name: "نقدي" });
   const user = await User.findById(req.user);
+  const systemSetting = await SystemSetting.findOne();
 
   try {
     const state = "قيد المعالجة"; // Set the desired state
@@ -30,8 +32,8 @@ router.get("/", async (req, res) => {
         paymentType,
         categorys,
         invoice: existingInvoice,
-        role: user.role
-
+        role: user.role,
+        systemSetting,
       });
     } else {
       const newInvoice = new PurchasesInvoice({
@@ -41,6 +43,7 @@ router.get("/", async (req, res) => {
         invoiceDate: new Date(),
       });
       await newInvoice.save();
+      const systemSetting = await SystemSetting.findOne();
 
       res.render("purchases", {
         supplier,
@@ -48,8 +51,8 @@ router.get("/", async (req, res) => {
         paymentType,
         categorys,
         invoice: newInvoice,
-        role: user.role
-
+        role: user.role,
+        systemSetting,
       });
     }
   } catch (error) {
@@ -74,12 +77,11 @@ router.post("/finish", async (req, res) => {
     for (const item of updatedInvoice.items) {
       const foodInside = await Food.findById(item.id.id);
       foodInside.quantety += item.quantity;
-      costCount += (item.cost * item.quantity)-item.discount;
+      costCount += item.cost * item.quantity - item.discount;
       quantityCount += item.quantity;
       discountCount += item.discount;
       giftCount += item.gift;
       returnCount += item.return;
-      // Save the changes to the foodInside document
       await foodInside.save();
     }
     const newupdatedInvoice = await purchasesInvoice
@@ -136,7 +138,7 @@ router.post("/add-item", async (req, res) => {
   try {
     const itemData = req.body; // Assuming you are sending the item data in the request body
     const item = await Food.findById(req.body.id);
-     itemData.cost = item.cost
+    itemData.cost = item.cost;
     const state = "قيد المعالجة"; // Set the desired state
 
     // Check if there is an existing purchase invoice with the specified state

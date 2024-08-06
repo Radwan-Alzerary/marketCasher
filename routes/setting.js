@@ -13,6 +13,7 @@ const ensureAuthenticated = require("../config/auth").userlogin;
 const multer = require("multer");
 const fs = require("fs");
 const User = require("../models/user");
+const SystemSetting = require("../models/systemSetting");
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "./public/img/websiteimg");
@@ -51,19 +52,27 @@ router.get("/", async (req, res) => {
   const table = await Table.find();
   const setting = await Setting.find();
   const user = await User.findById(req.user);
-console.log(user)
+  const systemSetting = await SystemSetting.findOne();
+
+  console.log(user);
   const delevery = await Delevery.find();
   if (setting.length < 1) {
     const newSetting = new Setting({});
     try {
       const setting = await newSetting.save();
       console.log(setting);
-      res.render("setting", { table, setting, role: user.role });
+      res.render("setting", { table, setting, role: user.role, systemSetting });
     } catch (err) {
       res.status(400).json({ message: err.message });
     }
   }
-  res.render("setting", { table, setting, delevery,role: user.role });
+  res.render("setting", {
+    table,
+    setting,
+    delevery,
+    role: user.role,
+    systemSetting,
+  });
 });
 
 module.exports = router;

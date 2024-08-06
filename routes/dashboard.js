@@ -5,6 +5,7 @@ const foodcontroll = require("../controllers/food.controll");
 const multer = require("multer");
 const fs = require("fs");
 const User = require("../models/user");
+const SystemSetting = require("../models/systemSetting");
 
 const isfulladmin = require("../config/auth").isfulladmin;
 const isCashire = require("../config/auth").isCashire;
@@ -27,13 +28,15 @@ const upload = multer({ storage: storage });
 router.get("/", ensureAuthenticated, isfulladmin, async (req, res) => {
   console.log(req.user);
   const user = await User.findById(req.user);
+  const systemSetting = await SystemSetting.findOne();
   const category = await Category.find().populate("foods");
   const food = await Food.find({
     quantety: { $gte: 0, $lte: 5 },
     unlimit: false,
+    deleted:false
   });
   console.log(category);
-  res.render("dashboard", { category, food, role: user.role });
+  res.render("dashboard", { category, food, role: user.role,systemSetting });
 });
 
 module.exports = router;

@@ -18,6 +18,7 @@ const InvoiceSchema = new mongoose.Schema({
         id: { type: mongoose.Schema.Types.ObjectId, ref: 'Food' },
         quantity: { type: Number },
         foodCost:{type:Number},
+        foodPrice:{type:Number},
         discount: { type: Number },
         discountType: { type: String }
     }],

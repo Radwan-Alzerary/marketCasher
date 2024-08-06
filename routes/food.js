@@ -5,10 +5,10 @@ const foodcontroll = require("../controllers/food.controll");
 const multer = require("multer");
 const fs = require("fs");
 const User = require("../models/user");
+const SystemSetting = require("../models/systemSetting");
 const isfulladmin = require("../config/auth").isfulladmin;
 const isCashire = require("../config/auth").isCashire;
 const ensureAuthenticated = require("../config/auth").userlogin;
-
 
 // Set up multer storage engine for image upload
 const storage = multer.diskStorage({
@@ -24,13 +24,22 @@ const storage = multer.diskStorage({
 
 // Create multer instance for uploading image
 const upload = multer({ storage: storage });
+
 router.get("/", async (req, res) => {
+  const systemSetting = await SystemSetting.findOne();
+
   const category = await Category.find().populate("foods");
   console.log(category);
   const user = await User.findById(req.user);
-
-  res.render("food", { category,role: user.role
+  const food = await Food.find({ deleted: false, unlimit: false });
+  let totalCost = 0;
+  food.forEach((item) => {
+    console.log("item cost", item.name);
+    console.log("item cost", item.cost);
+    console.log("item quantity", item.quantety);
+    totalCost += Number(item.cost) * Number(item.quantety);
   });
+  res.render("food", { category, role: user.role, systemSetting, totalCost });
 });
 
 router.patch("/:foodId/active/", async (req, res) => {
@@ -47,12 +56,11 @@ router.patch("/:foodId/active/", async (req, res) => {
 
 router.get("/getall", async (req, res) => {
   try {
-    const foods = await Food.find()
+    const foods = await Food.find({ deleted: false }).sort({ name: 1 }).populate("category");
     res.json(foods);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-
 });
 
 router.post("/addcategory", async (req, res) => {
@@ -140,11 +148,17 @@ router.delete("/:foodId/foodremove", async (req, res) => {
 
 router.delete("/:catacotyid/removecatogary", async (req, res) => {
   try {
-    const category = await Category.findByIdAndRemove(req.params.catacotyid);
+    const deletedCategory = await Category.findById(req.params.catacotyid);
 
-    if (!category) {
+    deletedCategory.foods.forEach(async (item) => {
+      const deletedFood = await Food.findById(item);
+      deletedFood.deleted = true;
+      await deletedFood.save();
+    });
+    if (!deletedCategory) {
       return res.status(404).send("Category not found");
     }
+    const category = await Category.findByIdAndRemove(req.params.catacotyid);
 
     res.sendStatus(200);
   } catch (err) {
@@ -223,5 +237,41 @@ router.post("/addpurchasesfood", upload.single("image"), async (req, res) => {
   }
 });
 
+async function getSumOfQuantetyCost() {
+  try {
+    const result = await Food.aggregate([
+      {
+        $match: {
+          deleted: false,
+          unlimit: false,
+        },
+      },
+      {
+        $project: {
+          quantety: { $toDouble: "$quantety" },
+          cost: { $toDouble: "$cost" },
+          totalCost: {
+            $multiply: [{ $toDouble: "$quantety" }, { $toDouble: "$cost" }],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          sumTotalCost: {
+            $sum: "$totalCost",
+          },
+        },
+      },
+    ]);
+
+    const sumTotalCost = result.length > 0 ? result[0].sumTotalCost : 0;
+    console.log("Sum of quantety * cost:", sumTotalCost);
+    return sumTotalCost;
+  } catch (error) {
+    console.error("Error calculating sum:", error);
+    throw error;
+  }
+}
 
 module.exports = router;

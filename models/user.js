@@ -17,6 +17,9 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  internetId: {
+    type: String,
+  },
 });
 const User = mongoose.model("User", UserSchema);
 

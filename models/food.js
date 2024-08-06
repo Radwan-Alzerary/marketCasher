@@ -29,6 +29,10 @@ const FoodSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
     deleted: {
       type: Boolean,
       default: false,
@@ -44,6 +48,9 @@ const FoodSchema = new mongoose.Schema(
     storge: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "storge",
+    },
+    expireDate: {
+      type: Date,
     },
   },
   {

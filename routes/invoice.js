@@ -12,13 +12,14 @@ const {
   CharacterSet,
   BreakLine,
 } = require("node-thermal-printer");
-const isfulladmin = require("../config/auth").isfulladmin
-const isCashire = require("../config/auth").isCashire
-const ensureAuthenticated = require("../config/auth").userlogin
+const isfulladmin = require("../config/auth").isfulladmin;
+const isCashire = require("../config/auth").isCashire;
+const ensureAuthenticated = require("../config/auth").userlogin;
 
 const puppeteer = require("puppeteer");
 const purchasesInvoice = require("../models/purchasesInvoice");
 const User = require("../models/user");
+const SystemSetting = require("../models/systemSetting");
 const browserPromise = puppeteer.launch(); // Launch the browser once
 async function printImageAsync(imagePath, printincount) {
   const setting = await Setting.findOne();
@@ -49,8 +50,7 @@ async function printImageAsync(imagePath, printincount) {
   }
 }
 
-
-router.get("/list",ensureAuthenticated, async (req, res) => {
+router.get("/list", ensureAuthenticated, async (req, res) => {
   try {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -122,17 +122,22 @@ router.get("/list",ensureAuthenticated, async (req, res) => {
         .skip((pagenum - 1) * 10)
         .limit(10);
     }
-    console.log(invoice);
 
     const purchases = await purchasesInvoice
       .find()
       .populate("storge")
       .populate("PaymentType")
-      .sort({ createdAt: -1 })
-      const user = await User.findById(req.user);
+      .sort({ createdAt: -1 });
+    const user = await User.findById(req.user);
+    const systemSetting = await SystemSetting.findOne();
 
     const invoiceCount = await Invoice.countDocuments();
-    res.render("invoice-list", { invoice, invoiceCount, purchases,role: user.role
+    res.render("invoice-list", {
+      invoice,
+      invoiceCount,
+      purchases,
+      role: user.role,
+      systemSetting,
     });
   } catch (err) {
     console.error(err);
@@ -212,7 +217,6 @@ router.get("/list/data", async (req, res) => {
         .skip((pagenum - 1) * 10)
         .limit(10);
     }
-    console.log(invoice);
 
     const invoiceCount = await Invoice.countDocuments();
     res.json({ invoice, invoiceCount });
@@ -235,7 +239,9 @@ router.get("/findlist/:searchtext", async (req, res) => {
     });
 
     const invoiceCount = await Invoice.countDocuments();
-    res.render("invoice-list", { invoice, invoiceCount });
+    const systemSetting = await SystemSetting.findOne();
+
+    res.render("invoice-list", { invoice, invoiceCount, systemSetting });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
@@ -309,6 +315,7 @@ router.post("/food", async (req, res) => {
         quantity: 1,
         discount: 0,
         foodCost: food.cost,
+        foodPrice: food.price,
         discountType: discountType || "cash",
       };
       food.quantety = food.quantety - 1;
@@ -331,6 +338,7 @@ router.post("/food", async (req, res) => {
         editOneFood: editOneFood,
         newquantity: existingFood.quantity,
         invoiceId: invoice.id,
+        foodPrice: existingFood.foodPrice,
         updatedfoodid: updatedfoodid,
       });
     } else {
@@ -342,6 +350,7 @@ router.post("/food", async (req, res) => {
         food: populatedFood,
         invoiceId: invoice.id,
         newquantity: 1,
+        foodPrice: populatedFood.price,
       });
     }
   } catch (err) {
@@ -433,6 +442,7 @@ router.post("/barcodefood", async (req, res) => {
         message: "alredyadd",
         food: populatedFood,
         newquantity: existingFood.quantity,
+        foodPrice: existingFood.foodPrice,
         invoiceId: invoice.id,
         updatedfoodid: updatedfoodid,
       });
@@ -442,6 +452,7 @@ router.post("/barcodefood", async (req, res) => {
         food: populatedFood,
         invoiceId: invoice.id,
         newquantity: 1,
+        foodPrice: populatedFood.price,
       });
     }
   } catch (err) {
@@ -471,13 +482,11 @@ router.post("/changequantity", async (req, res) => {
     // console.log(foodItem)
     foodItem.quantity = quantity;
     deferentValue = quantity - oldQuantity;
-    console.log(deferentValue);
     const food = await Food.findById(foodId);
     if (deferentValue < 0) {
       await Food.findByIdAndUpdate(foodId, {
         quantety: food.quantety + deferentValue * -1,
       });
-      console.log(food.quantety + deferentValue * -1);
     } else if (deferentValue > 0) {
       await Food.findByIdAndUpdate(foodId, {
         quantety: food.quantety - deferentValue,
@@ -496,6 +505,39 @@ router.post("/changequantity", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+router.post("/changeprice", async (req, res) => {
+  try {
+    const tableId = req.body.tableId;
+    const foodId = req.body.foodId;
+    const newPrice = req.body.newPrice;
+    const table = await Table.findById(tableId);
+    if (!table) {
+      return res.status(404).json({ error: "Table not found" });
+    }
+    let invoice = await Invoice.findById(table.invoice[0]);
+
+    const foodItem = invoice.food.find((item) => item.id.toString() === foodId);
+    if (!foodItem) {
+      return res
+        .status(404)
+        .json({ error: "Food item not found in the invoice." });
+    }
+    // console.log(foodItem)
+    foodItem.foodPrice = newPrice;
+    await invoice.save();
+    const editOneFood = await Food.findById(foodId);
+    res.json({
+      message: "quantity changed",
+      editOneFood,
+      foodItem,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 
 router.post("/changedescount", async (req, res) => {
   try {
@@ -548,10 +590,9 @@ router.post("/price", async (req, res) => {
     let totalcost = 0;
     let totaldiscount = 0;
     for (const food of invoice.food) {
-      // console.log(food)
       const quantity = food.quantity;
       const discount = food.discount;
-      const price = food.id.price;
+      const price = food.foodPrice ? food.foodPrice : food.id.price;
       const cost = food.id.cost;
       total += price * quantity;
       totalcost += cost * quantity;
@@ -581,7 +622,6 @@ router.post("/price", async (req, res) => {
 router.post("/previesinvoice", async (req, res) => {
   try {
     const table = await Table.findById(req.body.tableId);
-    console.log(table);
     if (table.invoice.length > 0) {
       return res.json({ Massage: "table have invoice", reloded: false });
     } else {
@@ -740,6 +780,7 @@ router.get("/:tableId/foodmenu", async (req, res) => {
     res.json({
       message: "Food items retrieved successfully",
       newquantity: invoice.food.quantity,
+      foodPrice : invoice.food.foodPrice,
       food: invoice.food,
       invoiceid: invoice.id,
       setting,
@@ -760,8 +801,7 @@ router.get("/:invoiceId/checout", async (req, res) => {
         model: "Food",
       })
       .populate({ path: "tableid", model: "Table" });
-    console.log(invoice);
-    const tableid = invoice.tableid ? invoice.tableid.number : 0
+    const tableid = invoice.tableid ? invoice.tableid.number : 0;
     res.json({
       message: "Food items retrieved successfully",
       tablenumber: tableid,
@@ -786,7 +826,6 @@ router.delete("/:tableId/:invoiceId/food/:foodId", async (req, res) => {
     let invoice = await Invoice.findById(invoiceId);
     const foodItem = invoice.food.find((item) => item.id.toString() === foodId);
     const foodDetails = await Food.findById(foodId);
-    console.log(foodDetails);
     await Food.findByIdAndUpdate(foodId, {
       quantety: foodDetails.quantety + foodItem.quantity,
     });

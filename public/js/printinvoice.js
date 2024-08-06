@@ -47,8 +47,8 @@ function printinvoice(
         itemRows.push([
           `${food.id.name}`,
           `${food.quantity}`,
-          `${food.id.price}`,
-          `${Number(food.quantity) * Number(food.id.price)}`,
+          `${food.foodPrice?food.foodPrice:food.id.price}`,
+          `${Number(food.quantity) * Number(food.foodPrice?food.foodPrice:food.id.price)}`,
         ]);
       });
       var items = "";
@@ -142,7 +142,7 @@ console.log(dateyear,dateclock);
       } else {
         tablenum = `
     <div style="margin-left: 27px;">
-    دلفري
+    التوصيل
     </div>
     `;
       }
