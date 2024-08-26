@@ -13,7 +13,7 @@ router.use("/delevery",ensureAuthenticated, require("./delevery"));
 router.use("/purchases",isfulladmin, ensureAuthenticated, require("./purchases"));
 router.use("/invoice",ensureAuthenticated, require("./invoice"));
 router.use("/dashboard",isfulladmin, ensureAuthenticated, require("./dashboard"));
-router.use("/setting",isfulladmin, ensureAuthenticated, require("./setting"));
+router.use("/custemer", ensureAuthenticated, require("./custemer"));
 router.use("/setting",isfulladmin, ensureAuthenticated, require("./setting"));
 
 module.exports = router;

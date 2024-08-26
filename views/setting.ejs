@@ -224,7 +224,30 @@
                 <input name="image"
                     class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                     aria-describedby="file_input_help" id="file_input" type="file">
+                
                 <input type="text" id="foodcategoryid" name="foodcategoryid" class="hidden">
+                <div class="mb-6 w-full">
+                    <label for="default-input"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"> 
+                        ارتفاع باركود الطباعة</label>
+                    <input value="<%=setting[0].barcodeYsize%>" type="number" placeholder="قم بادخال ارتفاع باركود الطباعة" name="barcodeYsize"
+                        id="default-input"
+                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required>
+                </div>
+                <div class="mb-6 w-full">
+                    <label for="default-input"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        عرض باركود الطباعة</label>
+                    <input value="<%=setting[0].barcodeXsize%>" type="number" placeholder="قم بادخال عرض باركود الطباعة" name="barcodeXsize"
+                    
+                        id="default-input"
+                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required>
+                </div>
+
+
+
                 <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
                     value="تعديل">
             </form>

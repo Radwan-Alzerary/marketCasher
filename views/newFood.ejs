@@ -1,0 +1,88 @@
+<%- include('header'); %>
+
+<div class="container mx-auto p-4">
+    <div id="categoryContainer" ></div>
+
+    <!-- Add Category Form Modal -->
+    <div id="addCategoryModal"  class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <form id="addCategoryForm" class="bg-white p-6 rounded-lg space-y-4 w-1/2">
+            <label for="categoryName" class="block text-right text-sm font-medium text-gray-700">اسم الصنف</label>
+            <input type="text" id="categoryName" name="category" placeholder="قم بادخال اسم الصنف" class="w-full border rounded-lg p-2 text-right" required>
+            <input type="submit" value="اضافة" class="w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 cursor-pointer">
+        </form>
+    </div>
+
+    <!-- Add/Edit Food Form Modal -->
+    <div id="foodFormModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <form id="foodForm" class="bg-white p-6 rounded-lg space-y-4 w-1/2">
+            <input type="hidden" id="foodId">
+            <label for="foodName" class="block text-right text-sm font-medium text-gray-700">اسم الصنف</label>
+            <input type="text" id="foodName" name="name" placeholder="قم بادخال اسم الصنف" class="w-full border rounded-lg p-2 text-right" required>
+            <label for="barcode" class="block text-right text-sm font-medium text-gray-700">الباركود</label>
+            <input type="text" id="barcode" name="barcode" placeholder="قم بادخال الباركود" class="w-full border rounded-lg p-2 text-right">
+            <label for="price" class="block text-right text-sm font-medium text-gray-700">سعر البيع</label>
+            <input type="text" id="price" name="price" placeholder="0.00" class="w-full border rounded-lg p-2 text-right" required>
+            <label for="cost" class="block text-right text-sm font-medium text-gray-700">سعر الشراء</label>
+            <input type="text" id="cost" name="cost" placeholder="0.00" class="w-full border rounded-lg p-2 text-right">
+            <label for="image" class="block text-right text-sm font-medium text-gray-700">اضافة صورة المنتج</label>
+            <input type="file" id="image" name="image" class="w-full border rounded-lg p-2 text-right">
+            <div class="flex items-center justify-between">
+                <label for="unlimitedQuantity" class="text-right text-sm font-medium text-gray-700">الكمية محدودة</label>
+                <input type="checkbox" id="unlimitedQuantity" name="unlimitcheck" class="form-checkbox h-5 w-5 text-indigo-600">
+            </div>
+            <div id="quantityDiv" class="hidden">
+                <label for="quantity" class="block text-right text-sm font-medium text-gray-700">الكمية</label>
+                <input type="number" id="quantity" name="quantety" placeholder="قم بادخال الكمية المتوفرة" class="w-full border rounded-lg p-2 text-right">
+            </div>
+            <input type="submit" value="اضافة" class="w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 cursor-pointer">
+        </form>
+    </div>
+</div>
+
+<script src="scripts.js"></script>
+
+<%- include('footer',{currentpage:'addfood'}); %>
+<%- include('header'); %>
+
+<div class="container mx-auto p-4">
+    <div id="categoryContainer" class="space-y-4"></div>
+
+    <!-- Add Category Form Modal -->
+    <div id="addCategoryModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <form id="addCategoryForm" class="bg-white p-6 rounded-lg space-y-4 w-1/2">
+            <label for="categoryName" class="block text-right text-sm font-medium text-gray-700">اسم الصنف</label>
+            <input type="text" id="categoryName" name="category" placeholder="قم بادخال اسم الصنف" class="w-full border rounded-lg p-2 text-right" required>
+            <input type="submit" value="اضافة" class="w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 cursor-pointer">
+        </form>
+    </div>
+
+    <!-- Add/Edit Food Form Modal -->
+    <div id="foodFormModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <form id="foodForm" class="bg-white p-6 rounded-lg space-y-4 w-1/2">
+            <input type="hidden" id="foodId">
+            <label for="foodName" class="block text-right text-sm font-medium text-gray-700">اسم الصنف</label>
+            <input type="text" id="foodName" name="name" placeholder="قم بادخال اسم الصنف" class="w-full border rounded-lg p-2 text-right" required>
+            <label for="barcode" class="block text-right text-sm font-medium text-gray-700">الباركود</label>
+            <input type="text" id="barcode" name="barcode" placeholder="قم بادخال الباركود" class="w-full border rounded-lg p-2 text-right">
+            <label for="price" class="block text-right text-sm font-medium text-gray-700">سعر البيع</label>
+            <input type="text" id="price" name="price" placeholder="0.00" class="w-full border rounded-lg p-2 text-right" required>
+            <label for="cost" class="block text-right text-sm font-medium text-gray-700">سعر الشراء</label>
+            <input type="text" id="cost" name="cost" placeholder="0.00" class="w-full border rounded-lg p-2 text-right">
+            <label for="image" class="block text-right text-sm font-medium text-gray-700">اضافة صورة المنتج</label>
+            <input type="file" id="image" name="image" class="w-full border rounded-lg p-2 text-right">
+            <div class="flex items-center justify-between">
+                <label for="unlimitedQuantity" class="text-right text-sm font-medium text-gray-700">الكمية محدودة</label>
+                <input type="checkbox" id="unlimitedQuantity" name="unlimitcheck" class="form-checkbox h-5 w-5 text-indigo-600">
+            </div>
+            <div id="quantityDiv" class="hidden">
+                <label for="quantity" class="block text-right text-sm font-medium text-gray-700">الكمية</label>
+                <input type="number" id="quantity" name="quantety" placeholder="قم بادخال الكمية المتوفرة" class="w-full border rounded-lg p-2 text-right">
+            </div>
+            <input type="submit" value="اضافة" class="w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 cursor-pointer">
+        </form>
+    </div>
+</div>
+
+<script src="/js/foodContainor.js"></script>
+
+<%- include('footer',{currentpage:'addfood'}); %>

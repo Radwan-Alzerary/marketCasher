@@ -76,7 +76,7 @@ router.post('/register', async (req, res) => {
         name,
         email,
         password,
-        role
+        role:"full"
       });
 
       const salt = await bcrypt.genSalt(10);

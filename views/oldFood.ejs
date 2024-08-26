@@ -128,7 +128,7 @@
               </svg>
             </div>
             <div
-              id="remove<%=categorys.foods[i].id%>"
+              id='remove{"foodid":"<%=categorys.foods[i].id%>","categoryid":"<%=categorys.id%>"}'
               class="cursor-pointer p-3 bg-red-200 hover:bg-red-400 w-1/3 items-center justify-center"
             >
               <svg
@@ -141,21 +141,6 @@
                 <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                 <path
                   d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
-                />
-              </svg>
-            </div>
-            <div
-              id="barcodePrint<%=categorys.foods[i].manualBarcode%>"
-              class="cursor-pointer p-3 bg-purple-200 hover:bg-purple-400 w-1/3 items-center justify-center"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="1em"
-                viewBox="0 0 512 512"
-              >
-                <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                <path
-                  d="M24 32C10.7 32 0 42.7 0 56L0 456c0 13.3 10.7 24 24 24l16 0c13.3 0 24-10.7 24-24L64 56c0-13.3-10.7-24-24-24L24 32zm88 0c-8.8 0-16 7.2-16 16l0 416c0 8.8 7.2 16 16 16s16-7.2 16-16l0-416c0-8.8-7.2-16-16-16zm72 0c-13.3 0-24 10.7-24 24l0 400c0 13.3 10.7 24 24 24l16 0c13.3 0 24-10.7 24-24l0-400c0-13.3-10.7-24-24-24l-16 0zm96 0c-13.3 0-24 10.7-24 24l0 400c0 13.3 10.7 24 24 24l16 0c13.3 0 24-10.7 24-24l0-400c0-13.3-10.7-24-24-24l-16 0zM448 56l0 400c0 13.3 10.7 24 24 24l16 0c13.3 0 24-10.7 24-24l0-400c0-13.3-10.7-24-24-24l-16 0c-13.3 0-24 10.7-24 24zm-64-8l0 416c0 8.8 7.2 16 16 16s16-7.2 16-16l0-416c0-8.8-7.2-16-16-16s-16 7.2-16 16z"
                 />
               </svg>
             </div>
@@ -575,7 +560,6 @@
     value="تعديل"
   />
 </form>
-<canvas id="barcodeCanvas" class="hidden"></canvas>
 
 <script>
   $(document).ready(function () {
@@ -634,68 +618,27 @@
     }
   });
 
-  $(document).on("click", "[id^=barcodePrint]", function () {
-    var id = this.id;
-    let barcode = id.replace("barcodePrint", "");
-    console.log(barcode);
-    fetch("/setting/getsetting", {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json"
-  }
-})
-  .then(response => response.json())
-  .then(data => {
-    console.log(data);
-    JsBarcode("#barcodeCanvas", barcode, {
-      format: "CODE128",
-      displayValue: false, // Hide the text below the barcode
-      height: data.barcodeYsize,
-      width: data.barcodeXsize,
-    });
-
-    // Print the barcode
-    printBarcode();
-
-    // Handle the received data here
-  })
-  .catch(error => {
-    console.error("Error fetching the setting:", error);
-  });
-
-    // Generate the barcode
-  });
-
-  function printBarcode() {
-    var canvas = document.getElementById("barcodeCanvas");
-    var win = window.open();
-    win.document.write('<img src="' + canvas.toDataURL() + '"/>');
-    win.document.close();
-    win.focus();
-    win.print();
-  }
-
   $(document).on("click", "[id^=deletcatacury]", function () {
-    if (confirm("Are you sure you want to remove this category?")) {
-      var id = this.id;
-      const catacotyid = id.replace("deletcatacury", "");
-      console.log(catacotyid);
-      fetch(`/food/${catacotyid}/removecatogary/`, {
-        method: "DELETE",
+  if (confirm("Are you sure you want to remove this category?")) {
+    var id = this.id;
+    const catacotyid = id.replace("deletcatacury", "");
+    console.log(catacotyid);
+    fetch(`/food/${catacotyid}/removecatogary/`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          location.reload();
+          console.log("Category removed successfully");
+        } else {
+          throw new Error("Failed to remove category");
+        }
       })
-        .then((response) => {
-          if (response.ok) {
-            location.reload();
-            console.log("Category removed successfully");
-          } else {
-            throw new Error("Failed to remove category");
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
-  });
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+});
   $(document).on("click", "[id^=unactive]", function () {
     var id = this.id;
     const foodid = id.replace("unactive", "");
@@ -735,7 +678,7 @@
         $("#editprice").val(`${data.price}`);
         $("#editcost").val(`${data.cost}`);
         $("#editquantety").val(`${data.quantety}`);
-        $("#editunlimit").val(`${data.unlimit}`);
+        $("#editunlimit").val(`${data.unlimit}`)
         $("#foodid").val(`${data._id}`);
         console.log(data.unlimit);
         if (data.unlimit == true) {

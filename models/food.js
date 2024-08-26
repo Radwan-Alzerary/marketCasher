@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const FoodSchema = new mongoose.Schema(
   {
     name: {
@@ -16,6 +17,7 @@ const FoodSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    manualBarcode: { type: String },
     unlimit: {
       type: Boolean,
       default: true,
@@ -57,6 +59,44 @@ const FoodSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Utility function to generate a random string
+function generateRandomBarcode(length = 8) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
+
+// Pre-save middleware to generate the manualBarcode if it doesn't exist
+FoodSchema.pre("save", async function (next) {
+  const food = this;
+
+  if (!food.manualBarcode) {
+    let newBarcode = food.barcode || generateRandomBarcode();
+
+    // Check if the generated or barcode already exists
+    let existingProduct = await mongoose.model("Food").findOne({
+      manualBarcode: newBarcode,
+    });
+
+    // Generate a random barcode if it already exists
+    while (existingProduct) {
+      newBarcode = generateRandomBarcode();
+      existingProduct = await mongoose.model("Food").findOne({
+        manualBarcode: newBarcode,
+      });
+    }
+
+    food.manualBarcode = newBarcode;
+  }
+
+  next();
+});
+
 const Food = mongoose.model("Food", FoodSchema);
 
 module.exports = Food;

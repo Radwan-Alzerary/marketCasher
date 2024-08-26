@@ -20,6 +20,8 @@ const puppeteer = require("puppeteer");
 const purchasesInvoice = require("../models/purchasesInvoice");
 const User = require("../models/user");
 const SystemSetting = require("../models/systemSetting");
+const Customer = require("../models/costemer");
+const paymentType = require("../models/paymentType");
 const browserPromise = puppeteer.launch(); // Launch the browser once
 async function printImageAsync(imagePath, printincount) {
   const setting = await Setting.findOne();
@@ -365,7 +367,10 @@ router.post("/barcodefood", async (req, res) => {
     const tableId = req.body.tableId;
     const barcodeId = req.body.barcode;
     const { quantity, discount, discountType } = req.body;
-    const foodIdFromBarcode = await Food.findOne({ barcode: barcodeId });
+    let foodIdFromBarcode = await Food.findOne({ barcode: barcodeId });
+    if (!foodIdFromBarcode) {
+      foodIdFromBarcode = await Food.findOne({ manualBarcode: barcodeId });
+    }
     const foodId = foodIdFromBarcode.id;
     const table = await Table.findById(tableId);
     if (!table) {
@@ -538,7 +543,6 @@ router.post("/changeprice", async (req, res) => {
   }
 });
 
-
 router.post("/changedescount", async (req, res) => {
   try {
     const discount = req.body.discount;
@@ -552,6 +556,65 @@ router.post("/changedescount", async (req, res) => {
     await invoice.save();
     res.json({
       message: "discount changed",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.post("/changepaymentMethod", async (req, res) => {
+  try {
+    const invoiceid = req.body.invoiceId;
+
+    // Find the invoice by its ID and populate the paymentType field
+    let invoice = await Invoice.findById(invoiceid).populate("paymentType");
+
+    if (!invoice) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+
+    // If the invoice has no paymentType set, default it to "اجل"
+    if (!invoice.paymentType) {
+      const deferredPaymentType = await paymentType.findOne({ name: "اجل" });
+      invoice.paymentType = deferredPaymentType._id;
+    } else {
+      // Check the current payment type and switch it
+      if (invoice.paymentType.name === "اجل") {
+        const cashPaymentType = await paymentType.findOne({ name: "نقدي" });
+        invoice.paymentType = cashPaymentType._id;
+      } else if (invoice.paymentType.name === "نقدي") {
+        const deferredPaymentType = await paymentType.findOne({ name: "اجل" });
+        invoice.paymentType = deferredPaymentType._id;
+      } else {
+        return res.status(400).json({ error: "Invalid payment type" });
+      }
+    }
+
+    // Save the updated invoice
+    await invoice.save();
+
+    res.json({
+      message: "Payment method changed",
+      newPaymentType: invoice.paymentType.name,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+router.get("/getPaymentType", async (req, res) => {
+  try {
+    const invoiceId = req.query.invoiceId;
+
+    let invoice = await Invoice.findById(invoiceId).populate("paymentType");
+
+    if (!invoice) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+
+    res.json({
+      paymentTypeName: invoice.paymentType.name,
     });
   } catch (err) {
     console.error(err);
@@ -685,7 +748,6 @@ router.post("/cancele", async (req, res) => {
 router.post("/finish", async (req, res) => {
   try {
     let invoice = await Invoice.findById(req.body.invoiceId);
-    // console.log(req.body);
 
     invoice.active = false;
     invoice.type = "مكتمل";
@@ -697,12 +759,32 @@ router.post("/finish", async (req, res) => {
     invoice.foodcost = req.body.foodcost;
     invoice.tableid = req.body.tableId;
 
-    const currentable = await Table.findById(invoice.tableid);
+if(!invoice.resivename){
+  invoice.resivename = "زبون عام"
+}
 
+    let custemer = await Customer.findOne({ name: invoice.resivename });
+    if (!custemer) {
+      custemer = new Customer({ name: invoice.resivename });
+    }
+
+    // Check if the invoiceId already exists in the customer's invoice array
+    const invoiceExists = custemer.invoice.some(
+      (inv) => inv.invoiceId.toString() === invoice._id.toString()
+    );
+
+    // If not, push the invoiceId to the customer's invoice array
+    if (!invoiceExists) {
+      custemer.invoice.push({ invoiceId: invoice._id });
+      await custemer.save();
+    }
+
+    const currentable = await Table.findById(invoice.tableid);
     currentable.lastinvoice = req.body.invoiceId;
 
     await invoice.save();
     await currentable.save();
+
     const updatedInvoice = await Table.findByIdAndUpdate(
       req.body.tableId,
       { $pull: { invoice: req.body.invoiceId } },
@@ -716,7 +798,7 @@ router.post("/finish", async (req, res) => {
     }
 
     res.json({
-      message: "finished to the invoice successfully",
+      message: "Finished the invoice successfully",
     });
   } catch (err) {
     console.error(err);
@@ -780,7 +862,7 @@ router.get("/:tableId/foodmenu", async (req, res) => {
     res.json({
       message: "Food items retrieved successfully",
       newquantity: invoice.food.quantity,
-      foodPrice : invoice.food.foodPrice,
+      foodPrice: invoice.food.foodPrice,
       food: invoice.food,
       invoiceid: invoice.id,
       setting,

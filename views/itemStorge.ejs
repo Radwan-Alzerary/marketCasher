@@ -1,5 +1,14 @@
 <%- include('header'); %>
-<div class="flex justify-center items-center gap-4 h-[80%]">
+
+<div class="flex flex-col justify-center items-center gap-4 h-[80%]">
+  <!-- Search Input -->
+  <input
+    type="text"
+    id="searchInput"
+    placeholder="ابحث عن منتج..."
+    class="mb-4 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 rtl:text-right"
+  />
+
   <div class="relative overflow-x-auto w-full h-full overflow-scroll">
     <table
       class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
@@ -10,25 +19,116 @@
         <tr>
           <th scope="col" class="px-6 py-3">اسم المنتج</th>
           <th scope="col" class="px-6 py-3">الكمية</th>
+          <th scope="col" class="px-6 py-3">الإجراءات</th>
         </tr>
       </thead>
-      <tbody>
-        <%product.forEach((product)=>{%>
-
-        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-          <th
-            scope="row"
-            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-          >
-            <%=product.name%>
-          </th>
-          <td class="px-6 py-4"><%=product.quantety%></td>
-        </tr>
-
-        <%})%>
+      <tbody id="productTableBody">
+        <!-- Products will be dynamically injected here -->
       </tbody>
     </table>
   </div>
 </div>
 
-<%- include('footer',{currentpage:'storge'}); %>
+<%- include('footer', { currentpage: 'storge' }); %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchInput');
+    const productTableBody = document.getElementById('productTableBody');
+
+    // Fetch products from API
+    fetch('/food/getall')
+      .then(response => response.json())
+      .then(products => {
+        // Render all products initially
+        renderProducts(products);
+
+        // Listen for input on the search field
+        searchInput.addEventListener('input', function () {
+          const searchTerm = searchInput.value.toLowerCase();
+          const filteredProducts = products.filter(product =>
+            product.name.toLowerCase().includes(searchTerm)
+          );
+          renderProducts(filteredProducts);
+        });
+      })
+      .catch(error => console.error('Error fetching products:', error));
+
+    function renderProducts(products) {
+      // Clear the table body
+      productTableBody.innerHTML = '';
+
+      // Populate the table with filtered products
+      products.forEach(product => {
+        const row = document.createElement('tr');
+        row.className =
+          'bg-white border-b dark:bg-gray-800 dark:border-gray-700';
+
+        row.innerHTML = `
+          <th
+            scope="row"
+            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+          >
+            ${product.name}
+          </th>
+          <td class="px-6 py-4">${product.quantety}</td>
+          <td class="px-6 py-4 flex gap-2">
+            <button
+              class="text-blue-500 hover:text-blue-700"
+              onclick="editProduct('${product._id}')"
+            >
+              تعديل
+            </button>
+            <button
+              class="text-red-500 hover:text-red-700"
+              onclick="deleteProduct('${product._id}')"
+            >
+              حذف
+            </button>
+            <button
+              class="text-green-500 hover:text-green-700"
+              onclick="printBarcode('${product._id}')"
+            >
+              طباعة الباركود
+            </button>
+          </td>
+        `;
+
+        productTableBody.appendChild(row);
+      });
+    }
+  });
+
+  function editProduct(productId) {
+    // Logic for editing a product
+    console.log('Edit product with ID:', productId);
+    // You can implement the logic to open a modal or redirect to an edit page
+  }
+
+  function deleteProduct(productId) {
+    // Logic for deleting a product
+    console.log('Delete product with ID:', productId);
+    if (confirm('هل أنت متأكد من أنك تريد حذف هذا المنتج؟')) {
+      // Send a delete request to the server
+      fetch(`/food/${productId}/foodremove`, {
+        method: 'DELETE',
+      })
+        .then(response => {
+          if (response.ok) {
+            alert('تم حذف المنتج بنجاح');
+            // Reload the products after deletion
+            location.reload();
+          } else {
+            alert('حدث خطأ أثناء محاولة حذف المنتج');
+          }
+        })
+        .catch(error => console.error('Error deleting product:', error));
+    }
+  }
+
+  function printBarcode(productId) {
+    // Logic for printing barcode
+    console.log('Print barcode for product with ID:', productId);
+    // You can implement the logic to generate and print the barcode
+  }
+</script>

@@ -26,6 +26,10 @@ const SettingSchema = new mongoose.Schema({
         type: Number,
         default: "1"
     },
+    
+    barcodeXsize:{type:Number,default:0},
+    barcodeYsize:{type:Number,default:0},
+
     systemdiscount: {
         active : {type:Boolean,default:true},
         discountype: { type: String },

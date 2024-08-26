@@ -232,6 +232,30 @@
             />
           </svg>
         </div>
+
+        <div
+          id="paymentTypeChange"
+          onclick="paymentTypeChange()"
+          class="w-10 h-10 flex justify-center items-center rounded-lg bg-gray-100 hover:bg-gray-200 cursor-pointer"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            id="paymentTypeChange"
+            height="1em"
+            viewBox="0 0 640 512"
+          >
+            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+            <style>
+              #paymentTypeChange {
+                fill: #d7468c;
+              }
+            </style>
+
+            <path
+              d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7l-135-105.8c-1.1-11.4-6.3-22.3-15.3-30.7l-134.2-123-23.4 18.2-26-20.3 77.2-60.1c7-5.4 17-4.2 22.5 2.8s4.2 17-2.8 22.5l-20.9 16.2L512 316.8 512 128l-.7 0-3.9-2.5L434.8 79c-15.3-9.8-33.2-15-51.4-15c-21.8 0-43 7.5-60 21.2l-89.7 72.6-25.8-20.3 81.8-66.2c-11.6-4.9-24.1-7.4-36.8-7.4C234 64 215.7 69.6 200 80l-35.5 23.7L38.8 5.1zM96 171.6L40.6 128 0 128 0 352c0 17.7 14.3 32 32 32l32 0c17.7 0 32-14.3 32-32l0-180.4zM413.6 421.9L128 196.9 128 352l28.2 0 91.4 83.4c19.6 17.9 49.9 16.5 67.8-3.1c5.5-6.1 9.2-13.2 11.1-20.6l17 15.6c19.5 17.9 49.9 16.6 67.8-2.9c.8-.8 1.5-1.7 2.2-2.6zM48 320a16 16 0 1 1 0 32 16 16 0 1 1 0-32zM544 128l0 224c0 17.7 14.3 32 32 32l32 0c17.7 0 32-14.3 32-32l0-224-96 0zm32 208a16 16 0 1 1 32 0 16 16 0 1 1 -32 0z"
+            />
+          </svg>
+        </div>
       </div>
       <div
         class="w-24 h-10 rounded-lg flex justify-center items-center cursor-pointer bg-gray-100"
@@ -252,7 +276,7 @@
     <div id="invoicefood" class="bg-white relative overflow-auto h-56"></div>
 
     <div class="mt-5 w-full flex items-center justify-center h-36 z-20">
-      <div class="mb-6 w-full">
+      <div class="mb-6 w-full relative">
         <div class="flex justify-center items-center w-full">
           <input id="autoComplete" class="rounded-full" />
         </div>
@@ -264,6 +288,10 @@
           id="resivename"
           class="bg-gray-50 mb-2 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
+        <div
+          id="autocomplete-container"
+          class="absolute text-right flex flex-col gap-4 w-full bg-white"
+        ></div>
 
         <div class="flex">
           <input
@@ -399,11 +427,21 @@
             <div
               class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lgbg-gray-200 xl:aspect-h-6 xl:aspect-w-6"
             >
+              <% if (categorys.foods[i].image && categorys.foods[i].image.url) {
+              %>
               <img
                 src="<%=categorys.foods[i].image.url%>"
                 alt="Tall slender porcelain bottle with natural clay textured body and cork stopper."
                 class="h-full w-full object-cover object-center cursor-pointer group-hover:opacity-75"
               />
+              <% }else{ %>
+              <img
+                src="/img/money/noimg.png"
+                alt="Tall slender porcelain bottle with natural clay textured body and cork stopper."
+                class="h-full w-full object-cover object-center cursor-pointer group-hover:opacity-75"
+              />
+
+              <% } %>
             </div>
             <h3 class="mt-4 text-sm text-gray-700">
               <%=categorys.foods[i].name%>
@@ -434,6 +472,104 @@
   <a id="totalcost" class="hidden"></a>
 
   <script>
+    $("#paymentTypeChange").on("click", function () {
+      $(this).toggleClass("bg-gray-100 bg-red-200");
+      $(this).toggleClass("hover:bg-gray-200 hover:bg-red-200");
+      // Function to change the payment method
+      async function changePaymentMethod(invoiceId) {
+        try {
+          // Define the API endpoint
+          const endpoint = "/invoice/changepaymentMethod";
+
+          // Make the POST request
+          const response = await fetch(endpoint, {
+            method: "POST", // Specify the method as POST
+            headers: {
+              "Content-Type": "application/json", // Set the content type to JSON
+            },
+            body: JSON.stringify({
+              invoiceId: invoiceId, // Pass the invoice ID in the body
+            }),
+          });
+
+          // Parse the JSON response
+          const result = await response.json();
+
+          // Check if the request was successful
+          if (response.ok) {
+            console.log("Payment method changed successfully:", result);
+          } else {
+            console.error("Error changing payment method:", result.error);
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+        }
+      }
+
+      // Example usage
+      const invoiceId = $("#invoiceidelement").text(); // Replace with the actual invoice ID
+      changePaymentMethod(invoiceId);
+    });
+  </script>
+
+  <script>
+    $(document).ready(function () {
+      $("#resivename").on("input", function () {
+        let searchName = $(this).val();
+
+        if (searchName.length > 2) {
+          $.ajax({
+            url: `/custemer/getbyname/${encodeURIComponent(searchName)}`,
+            type: "GET",
+            success: function (response) {
+              console.log(response);
+
+              // Assuming the response is an array of customer names
+              let customerNames = response.map((customer) => customer.name);
+
+              // Clear any previous suggestions
+              $("#autocomplete-list").remove();
+
+              // Create a new suggestions list
+              let suggestionList = $(
+                '<ul id="autocomplete-list" class="autocomplete-list" style="cursor: pointer;"></ul>'
+              );
+              customerNames.forEach(function (name) {
+                suggestionList.append(
+                  `<li class="autocomplete-item hover:bg-green-200 p-3" style="display: flex;height: 40px;flex-direction: row-reverse;justify-content: flex-start;align-items: center; " >${name}</li>`
+                );
+              });
+
+              // Attach the list to the container
+              $("#autocomplete-container").append(suggestionList);
+
+              // Handle click on suggestion
+              $(".autocomplete-item").on("click", function () {
+                $("#resivename").val($(this).text());
+                $("#autocomplete-list").remove(); // Remove suggestions after selection
+              });
+            },
+            error: function (xhr, status, error) {
+              console.error("Error fetching customer names:", error);
+            },
+          });
+        } else {
+          $("#autocomplete-list").remove(); // Clear the list if input is too short
+        }
+      });
+
+      // Remove the suggestions list if the user clicks outside of it
+      $(document).on("click", function (e) {
+        if (
+          !$(e.target).closest("#resivename, #autocomplete-container").length
+        ) {
+          $("#autocomplete-list").remove();
+        }
+      });
+    });
+  </script>
+
+  <script>
     document
       .querySelector("#autoComplete")
       .addEventListener("selection", function (event) {
@@ -459,7 +595,6 @@
               totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
             }
 
-            $("#invoiceidelement").text(`${data.invoiceId}`);
             if (data.message == "alredyadd") {
               console.log(data);
               $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
@@ -594,12 +729,12 @@
 
       fetch(`/invoice/${table}/foodmenu`)
         .then((response) => response.json())
-        .then((data) => {
+        .then(async (data) => {
           let totalPrice = 0; // Initialize the total price variable
           let fulldiscount = 0;
           let invoiceid = data.invoiceid;
           $("#invoiceidelement").text(`${invoiceid}`);
-          console.log(data);
+
           // Iterate over each food item and create the corresponding HTML
           data.food.forEach((food) => {
             console.log(food.foodPrice ? food.foodPrice : food.id.price);
@@ -612,12 +747,52 @@
             newitem(food.id, invoiceid, food.quantity, food.foodPrice);
             getprices($("#invoiceidelement").text());
           });
+
           console.log("Overall total price:", totalPrice);
           console.log("Overall total price:", fulldiscount);
+
+          // Fetch the payment type based on the invoice ID
+          const paymentType = await getPaymentType(invoiceid);
+          console.log(paymentType);
+          // Toggle the background color based on the payment type
+          if (paymentType === "اجل") {
+            $("#paymentTypeChange").removeClass(
+              "bg-gray-100 hover:bg-gray-200"
+            );
+            $("#paymentTypeChange").addClass("bg-red-200 hover:bg-red-200");
+          } else if (paymentType === "نقدي") {
+            $("#paymentTypeChange").removeClass("bg-red-200 hover:bg-red-200");
+            $("#paymentTypeChange").addClass("bg-gray-100 hover:bg-gray-200");
+          }
         })
         .catch((error) => {
           console.error(error);
         });
+
+      // Function to get the payment type
+      async function getPaymentType(invoiceId) {
+        try {
+          // Define the API endpoint
+          const endpoint = `/invoice/getPaymentType`; // Adjust the endpoint as needed
+
+          // Make the GET request
+          const response = await fetch(`${endpoint}?invoiceId=${invoiceId}`);
+
+          // Parse the JSON response
+          const result = await response.json();
+
+          // Check if the request was successful
+          if (response.ok) {
+            return result.paymentTypeName; // Assuming the API returns paymentTypeName
+          } else {
+            console.error("Error fetching payment type:", result.error);
+            return null;
+          }
+        } catch (error) {
+          console.error("Network error:", error);
+          return null;
+        }
+      }
     }
 
     $(document).on("click", "[id^=selectfood]", function () {
@@ -715,6 +890,20 @@
           console.error(error);
         });
     });
+
+    $(document).on("click", "[id^=sentencElement]", function () {
+      var id = this.id;
+      var foodid = id.replace("sentencElement", "");
+      var foodjson = JSON.parse(foodid);
+      console.log(foodjson);
+
+      const currentUrl = window.location.href;
+      console.log("Current URL:", currentUrl);
+      const url = new URL(currentUrl);
+      const searchParams = new URLSearchParams(url.search);
+      const tableId = searchParams.get("tableid");
+    });
+
     function cancele() {
       const currentUrl = window.location.href;
       console.log("Current URL:", currentUrl);

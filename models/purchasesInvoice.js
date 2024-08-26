@@ -3,9 +3,11 @@ const purchasesInvoiceSchema = new mongoose.Schema(
   {
     serialNumber: { type: String },
     Supplier: { type: String },
+    Supplier: { type: String },
     invoiceDate: { type: Date },
     PaymentType: { type: mongoose.Schema.Types.ObjectId, ref: "paymentType" },
     storge: { type: mongoose.Schema.Types.ObjectId, ref: "storge" },
+    image:{type:String},
     fullCost:{type:Number,default:0},
     fullquantity:{type:Number,default:0},
     fulldiscount:{type:Number,default:0},
@@ -21,6 +23,7 @@ const purchasesInvoiceSchema = new mongoose.Schema(
         return: { type: Number, default: 0 },
       },
     ],
+    
     active: { type: Boolean, default: true },
     state: { type: String },
   },

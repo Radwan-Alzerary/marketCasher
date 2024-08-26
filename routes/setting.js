@@ -33,6 +33,8 @@ router.post("/update", upload.single("image"), async (req, res) => {
     setting.adress = req.body.adress;
     setting.phonnumber = req.body.phonnumber;
     setting.invoicefooter = req.body.invoicefooter;
+    setting.barcodeXsize = req.body.barcodeXsize;
+    setting.barcodeYsize = req.body.barcodeYsize;
     if (req.file) {
       // Delete the previous image if it exists
       console.log(req.file);
@@ -73,6 +75,11 @@ router.get("/", async (req, res) => {
     role: user.role,
     systemSetting,
   });
+});
+
+router.get("/getsetting", async (req, res) => {
+  const setting = await Setting.findOne();
+  res.json(setting);
 });
 
 module.exports = router;

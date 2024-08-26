@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Printer</title>
+    <!-- Load JsBarcode library -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <!-- Load jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
+</head>
+<body>
+    <button id="barcodePrint12345">Print Barcode 12345</button>
+    <canvas id="barcodeCanvas" style="display:none;"></canvas>
+    <script>
+        $(document).on("click", "#barcodePrint12345", function () {
+            try {
+                var barcodeValue = "12345"; // Hardcoded for simplicity
+
+                // Generate the barcode
+                JsBarcode("#barcodeCanvas", barcodeValue, {
+                    format: "CODE128",
+                    displayValue: false, // Hide the text below the barcode
+                    height: 100,
+                    width: 2,
+                });
+
+                // Print the barcode
+                printBarcode();
+            } catch (error) {
+                console.error("Error generating or printing the barcode:", error);
+            }
+        });
+
+        function printBarcode() {
+            try {
+                var canvas = document.getElementById("barcodeCanvas");
+                var win = window.open();
+                win.document.write('<img src="' + canvas.toDataURL() + '"/>');
+                win.document.close();
+                win.focus();
+                win.print();
+                win.close();
+            } catch (error) {
+                console.error("Error during the print process:", error);
+            }
+        }
+    </script>
+</body>
+</html>

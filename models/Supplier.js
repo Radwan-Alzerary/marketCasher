@@ -6,10 +6,7 @@ const SupplierSchema = new mongoose.Schema(
     },
     purchasesInvoice: [
       {
-        id: { type: mongoose.Schema.Types.ObjectId, ref: "Food" },
-        quantity: { type: Number },
-        discount: { type: Number },
-        discountType: { type: String },
+        invoiceId: { type: mongoose.Schema.Types.ObjectId, ref: "Food" },
       },
     ],
   },

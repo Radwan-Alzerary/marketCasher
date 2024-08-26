@@ -34,12 +34,30 @@ router.get("/", async (req, res) => {
   const food = await Food.find({ deleted: false, unlimit: false });
   let totalCost = 0;
   food.forEach((item) => {
-    console.log("item cost", item.name);
+    console.log("item name", item.name);
     console.log("item cost", item.cost);
     console.log("item quantity", item.quantety);
     totalCost += Number(item.cost) * Number(item.quantety);
   });
   res.render("food", { category, role: user.role, systemSetting, totalCost });
+});
+router.get("/categories", async (req, res) => {
+  try {
+      const systemSetting = await SystemSetting.findOne();
+      const category = await Category.find().populate("foods");
+      const user = await User.findById(req.user);
+      const food = await Food.find({ deleted: false, unlimit: false });
+
+      let totalCost = 0;
+      food.forEach((item) => {
+          totalCost += Number(item.cost) * Number(item.quantety);
+      });
+
+      res.json({ category, role: user.role, systemSetting, totalCost });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+  }
 });
 
 router.patch("/:foodId/active/", async (req, res) => {
@@ -56,15 +74,13 @@ router.patch("/:foodId/active/", async (req, res) => {
 
 router.get("/getall", async (req, res) => {
   try {
-    const foods = await Food.find({ deleted: false }).sort({ name: 1 }).populate("category");
+    const foods = await Food.find({ deleted: false })
+      .sort({ name: 1 })
+      .populate("category");
     res.json(foods);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-});
-router.get("/unlimiteDelete", ensureAuthenticated, async (req, res) => {
-  const result = await Food.updateMany({}, { $set: { unlimit: true } });
-  res.json("hi")
 });
 
 router.post("/addcategory", async (req, res) => {
@@ -125,12 +141,13 @@ router.post("/editfood", upload.single("image"), async (req, res) => {
 router.delete("/:foodId/foodremove", async (req, res) => {
   // console.log(req.params.foodId)
   try {
-    ids = JSON.parse(req.params.foodId);
-    console.log(ids);
-    const food = await Food.findById(ids.foodid);
+    console.log(req.params.foodId);
+    const foodId = req.params.foodId;
+    const food = await Food.findById(foodId);
+    console.log(food)
     const updatedCatacory = await Category.findByIdAndUpdate(
-      ids.categoryid,
-      { $pull: { foods: ids.foodid } },
+      food.category,
+      { $pull: { foods: foodId } },
       { new: true }
     );
     if (!updatedCatacory) {
