@@ -639,29 +639,29 @@
     let barcode = id.replace("barcodePrint", "");
     console.log(barcode);
     fetch("/setting/getsetting", {
-  method: "GET",
-  headers: {
-    "Content-Type": "application/json"
-  }
-})
-  .then(response => response.json())
-  .then(data => {
-    console.log(data);
-    JsBarcode("#barcodeCanvas", barcode, {
-      format: "CODE128",
-      displayValue: false, // Hide the text below the barcode
-      height: data.barcodeYsize,
-      width: data.barcodeXsize,
-    });
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        JsBarcode("#barcodeCanvas", barcode, {
+          format: "CODE128",
+          displayValue: false, // Hide the text below the barcode
+          height: data.barcodeYsize,
+          width: data.barcodeXsize,
+        });
 
-    // Print the barcode
-    printBarcode();
+        // Print the barcode
+        printBarcode();
 
-    // Handle the received data here
-  })
-  .catch(error => {
-    console.error("Error fetching the setting:", error);
-  });
+        // Handle the received data here
+      })
+      .catch((error) => {
+        console.error("Error fetching the setting:", error);
+      });
 
     // Generate the barcode
   });
@@ -672,7 +672,12 @@
     win.document.write('<img src="' + canvas.toDataURL() + '"/>');
     win.document.close();
     win.focus();
-    win.print();
+    win.onload = function () {
+      win.print();
+      setTimeout(function () {
+        win.close();
+      }, 2000); // Delay of 1 second before closing
+    };
   }
 
   $(document).on("click", "[id^=deletcatacury]", function () {
