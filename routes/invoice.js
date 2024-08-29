@@ -590,12 +590,11 @@ router.post("/changepaymentMethod", async (req, res) => {
       if (oldPaymentMethod.name === "اجل") {
         const cashPaymentType = await paymentType.findOne({ name: "نقدي" });
         invoice.paymentType = cashPaymentType._id;
-        newState = "نقدي"
+        newState = "نقدي";
       } else if (oldPaymentMethod.name === "نقدي") {
         const deferredPaymentType = await paymentType.findOne({ name: "اجل" });
         invoice.paymentType = deferredPaymentType._id;
-        newState = "اجل"
-
+        newState = "اجل";
       } else {
         return res.status(400).json({ error: "Invalid payment type" });
       }
@@ -615,16 +614,19 @@ router.post("/changepaymentMethod", async (req, res) => {
 router.get("/getPaymentType", async (req, res) => {
   try {
     const invoiceId = req.query.invoiceId;
+    if(req.query.invoiceId != "undefined"){
+      let invoice = await Invoice.findById(invoiceId).populate("paymentType");
 
-    let invoice = await Invoice.findById(invoiceId).populate("paymentType");
-
-    if (!invoice) {
-      return res.status(404).json({ error: "Invoice not found" });
+      if (!invoice) {
+        return res.status(404).json({ error: "Invoice not found" });
+      }
+  
+      res.json({
+        paymentTypeName: invoice.paymentType.name,
+      });
+    }else{
+      res.status(403).json({ error: "no invoice" })
     }
-
-    res.json({
-      paymentTypeName: invoice.paymentType.name,
-    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
