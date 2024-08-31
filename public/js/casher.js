@@ -220,8 +220,41 @@ function ReceivedAmountInput() {
     }else{
         $("#Remaining-amount").text(0)
     }
+    const inputElement = event.target;
+
+    // Retrieve the ID of the input element
+    const inputId = inputElement.id;
+
+    // Use the inputId as needed
+    const amountReceived = $("#ReceivedAmountInput").val();
+    const currentUrl = window.location.href;
+    console.log("Current URL:", currentUrl);
+    const url = new URL(currentUrl);
+    const searchParams = new URLSearchParams(url.search);
+    const tableId = searchParams.get("tableid");
+    const invoiceId = $("#invoiceidelement").text();
+    fetch("/invoice/changeReceivedAmount/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ invoiceId, amountReceived }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        getprices(invoiceId);
+        // $("#finalcost").text();
+        // $("#totalprice").text();
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        // Handle errors
+      });
+
+
 
 }
+
 
 
 function getprices(invoiceId) {

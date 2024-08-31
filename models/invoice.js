@@ -12,6 +12,7 @@ const InvoiceSchema = new mongoose.Schema(
     fullcost: { type: Number },
     fulldiscont: { type: Number },
     finalcost: { type: Number },
+    amountReceived: { type: Number ,default:0},
     deleveryadress: { type: String },
     resivename: { type: String },
     tableid: { type: mongoose.Schema.Types.ObjectId, ref: "Table" },
@@ -48,8 +49,6 @@ InvoiceSchema.pre("save", function (next) {
 
   next();
 });
-
-
 
 const invoice = mongoose.model("Invoice", InvoiceSchema);
 

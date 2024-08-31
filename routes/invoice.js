@@ -569,6 +569,28 @@ router.post("/changedescount", async (req, res) => {
   }
 });
 
+
+router.post("/changeReceivedAmount", async (req, res) => {
+  try {
+    const amountReceived = req.body.amountReceived;
+    const invoiceid = req.body.invoiceId;
+
+    let invoice = await Invoice.findById(invoiceid);
+
+    invoice.amountReceived = amountReceived;
+
+    // Save the updated invoice
+    await invoice.save();
+    res.json({
+      message: "amountReceived changed",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
 router.post("/changepaymentMethod", async (req, res) => {
   try {
     const invoiceid = req.body.invoiceId;
