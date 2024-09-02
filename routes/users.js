@@ -11,7 +11,6 @@ const mongoose = require('mongoose');
 
 uploadDir = 'public/img/webimage'
 const bcrypt = require('bcrypt');
-const sharp = require('sharp');
 
 const MAX_SIZE = 500 * 1024; // 500 kilobytes
 

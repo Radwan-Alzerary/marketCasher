@@ -9,7 +9,10 @@ const systemSettingSchema = new mongoose.Schema(
     license: {
       type: String,
     },
-    
+    telegramBotId: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

@@ -23,6 +23,12 @@ const SystemSetting = require("../models/systemSetting");
 const Customer = require("../models/costemer");
 const paymentType = require("../models/paymentType");
 const browserPromise = puppeteer.launch(); // Launch the browser once
+const TelegramBot = require("node-telegram-bot-api");
+
+const token = "7011940534:AAHjtNHpdR5yzgkSX6CruBaog_blb1TjsOo";
+
+const bot = new TelegramBot(token, { polling: true });
+
 async function printImageAsync(imagePath, printincount) {
   const setting = await Setting.findOne();
 
@@ -43,9 +49,15 @@ async function printImageAsync(imagePath, printincount) {
     await printer.printImage(`./public${setting.shoplogo}`); // Print PNG image
     await printer.printImage(imagePath); // Print PNG image
     await printer.cut();
+    const systemSetting = await SystemSetting.findOne();
+    if (systemSetting.telegramBotId) {
+      const imageUrl = imagePath; // Replace with your image URL or local path
+      bot.sendPhoto(systemSetting.telegramBotId, imageUrl, { caption: "فاتورة جديدة" });
+    }
     for (i = 0; i < printincount; i++) {
       await printer.execute();
     }
+
     console.log("Image printed successfully.");
   } catch (error) {
     console.error("Error printing image:", error);
@@ -569,7 +581,6 @@ router.post("/changedescount", async (req, res) => {
   }
 });
 
-
 router.post("/changeReceivedAmount", async (req, res) => {
   try {
     const amountReceived = req.body.amountReceived;
@@ -589,7 +600,6 @@ router.post("/changeReceivedAmount", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-
 
 router.post("/changepaymentMethod", async (req, res) => {
   try {
@@ -636,18 +646,18 @@ router.post("/changepaymentMethod", async (req, res) => {
 router.get("/getPaymentType", async (req, res) => {
   try {
     const invoiceId = req.query.invoiceId;
-    if(req.query.invoiceId != "undefined"){
+    if (req.query.invoiceId != "undefined") {
       let invoice = await Invoice.findById(invoiceId).populate("paymentType");
 
       if (!invoice) {
         return res.status(404).json({ error: "Invoice not found" });
       }
-  
+
       res.json({
         paymentTypeName: invoice.paymentType.name,
       });
-    }else{
-      res.status(403).json({ error: "no invoice" })
+    } else {
+      res.status(403).json({ error: "no invoice" });
     }
   } catch (err) {
     console.error(err);

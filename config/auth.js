@@ -40,5 +40,22 @@ exports.isCashire = async(req,res,next) => {
         res.render('login')
     }
 }
+exports.isBuyer = async(req,res,next) => {
+    try{
+        user=await User.findById(req.user.id)
+        console.log(user.id)
+        if(user.role == "isBuyer"){
+        return next();    
+        }
+        else{
+        res.redirect('/');
+        }
+    }catch(err){
+        console.error(err);
+        res.render('login')
+    }
+}
     
+
+
 
