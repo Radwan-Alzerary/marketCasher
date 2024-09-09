@@ -388,11 +388,15 @@
         style="direction: rtl"
       >
         <%if(category[0]){%> <%category.forEach(function(categorys,index) { %>
-        <div
-          id="categorydoor<%=categorys.id%>"
-          class="h-8 cursor-pointer flex items-center p-3 hover:bg-orange-300 bg-orange-100 rounded-xl"
+          <div
+          id="categorydoor<%= categorys.id %>"
+          class="h-8 flex  whitespace-nowrap cursor-pointer items-center p-3 hover:bg-orange-300 bg-orange-100 rounded-xl "
+
         >
+        <p>
           <%=categorys.name%>
+
+        </p>
         </div>
 
         <%})}else{%>
