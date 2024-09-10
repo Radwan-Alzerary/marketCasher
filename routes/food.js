@@ -117,6 +117,7 @@ router.post("/editfood", upload.single("image"), async (req, res) => {
     food.cost = parseInt(req.body.cost.replace(/[^0-9]/g, ""));
     food.quantety = req.body.quantety;
     food.unlimit = req.body.unlimitecheck;
+    food.unit = req.body.unit;
     if (req.file) {
       // Delete the previous image if it exists
       if (food.image && food.image.length > 0) {
@@ -192,6 +193,7 @@ router.post("/addfood", upload.single("image"), async (req, res) => {
   try {
     const Categoryid = req.body.foodcategoryid;
     const barcode = req.body.barcode;
+    const unit = req.body.unit;
     const pricenum = parseInt(req.body.price.replace(/[^0-9]/g, ""));
     const costnum = parseInt(req.body.cost.replace(/[^0-9]/g, ""));
     const { name, unlimitecheck, quantety } = req.body;
@@ -206,6 +208,7 @@ router.post("/addfood", upload.single("image"), async (req, res) => {
       unlimit: unlimitecheck,
       image: { url: imagePath },
       quantety,
+      unit:unit,
     });
 
     const newfood = await food.save();

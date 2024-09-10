@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Invoice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .invoice-container {
+            width: 100%;
+            max-width: 210mm;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            border: 1px solid #ddd;
+            margin: 0 auto;
+        }
+
+        @media print {
+            .invoice-container {
+                width: 100%;
+                height: auto;
+                box-shadow: none;
+                border: none;
+                page-break-inside: avoid;
+            }
+
+            button {
+                display: none;
+                /* Hide the button during print */
+            }
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #00a9b0;
+        }
+
+        .header img {
+            width: 70px;
+        }
+
+        .header .invoice-title {
+            color: #00a9b0;
+            font-size: 30px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .header .invoice-info p {
+            margin-bottom: 3px;
+        }
+
+        /* Invoice Details */
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .bill-to h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .bill-to p {
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+
+        table th,
+        table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        table th {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        table td.description {
+            text-align: right;
+        }
+
+        /* Summary */
+        .summary {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .summary table td {
+            border: none;
+            padding: 5px 0;
+        }
+
+        .grand-total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00a9b0;
+        }
+
+        /* Footer */
+        .footer-text {
+            color: #00a9b0;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+            position: absolute;
+            bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Print Button -->
+    <button onclick="printInvoice()">طباعة الفاتورة</button>
+
+    <script>
+   
+   </script>
+</body>
+
+</html>

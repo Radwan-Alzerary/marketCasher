@@ -20,6 +20,9 @@ router.get("/", ensureAuthenticated, async (req, res) => {
   console.log(category);
   res.render("dashboard", { category, food, role: user.role,systemSetting });
 });
+router.get("/a4print", async (req, res) => {
+  res.render("A4Invoice");
+});
 
 
 

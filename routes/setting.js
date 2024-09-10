@@ -36,6 +36,8 @@ router.post("/update", upload.single("image"), async (req, res) => {
     setting.invoicefooter = req.body.invoicefooter;
     setting.barcodeXsize = req.body.barcodeXsize;
     setting.barcodeYsize = req.body.barcodeYsize;
+    setting.printerType = req.body.printerType;
+    setting.amountUnit = req.body.amountUnit;
     if (req.file) {
       // Delete the previous image if it exists
       console.log(req.file);

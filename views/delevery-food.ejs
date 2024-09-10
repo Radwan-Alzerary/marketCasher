@@ -28,7 +28,8 @@
         <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
             value="تحويل">
     </form>
-    <div id="moneybackform" class=" fixed hidden flex flex-col justify-center gap-5 items-center  w-1/2 h-1/2  bg-white p-5 rounded-xl z-50"
+    <div id="moneybackform"
+        class=" fixed hidden flex flex-col justify-center gap-5 items-center  w-1/2 h-1/2  bg-white p-5 rounded-xl z-50"
         style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
         <div>
             <div class="items-center text-center">
@@ -77,30 +78,31 @@
 
             </div>
             <div class="w-[33%]">
-                <input type="text" placeholder="المبلغ المستلم" id="amontget" oninput="amontgetchange()" name="name" id="resivename"
+                <input type="text" placeholder="المبلغ المستلم" id="amontget" oninput="amontgetchange()" name="name"
+                    id="resivename"
                     class="bg-gray-50 mb-2 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
             </div>
+            
         </div>
 
     </div>
-    
+
     <div id="printingsettingform"
-    class=" fixed hidden flex flex-col justify-center gap-5 items-center  w-3/12 h-3/12  bg-white p-5 rounded-xl z-50"
-    style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
-    <div class="text-center flex justify-center items-center">
-        <a>
-            عدد الطبعات
-        </a>
+        class=" fixed hidden flex flex-col justify-center gap-5 items-center  w-3/12 h-3/12  bg-white p-5 rounded-xl z-50"
+        style="left: 50%; top: 50%; transform: translate(-50%, -50%);">
+        <div class="text-center flex justify-center items-center">
+            <a>
+                عدد الطبعات
+            </a>
+        </div>
+        <div>
+            <input type="text" value="2" name="name" id="printingcount"
+                class="bg-gray-50 text-center mb-2  border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        </div>
+
+
     </div>
-    <div >
-        <input type="text"  value="2"  name="name"    id="printingcount"
-
-            class="bg-gray-50 text-center mb-2  border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-    </div>
-
-
-</div>
 
     <div class="flex">
         <div class="w-1/4" style="width: 30%;">
@@ -139,26 +141,27 @@
                         </svg>
                     </div>
 
-                    <div class="w-10 h-10 rounded-lg flex justify-center  items-center  cursor-pointer bg-gray-100" onclick="showmoneyback()">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="fill-green-500" height="1.5em" 
+                    <div class="w-10 h-10 rounded-lg flex justify-center  items-center  cursor-pointer bg-gray-100"
+                        onclick="showmoneyback()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="fill-green-500" height="1.5em"
                             viewBox="0 0 640 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                             <path
                                 d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64H337.9c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5V384c0 35.3-28.7 64-64 64H302.1c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5V128c0-35.3 28.7-64 64-64zm64 64H96v64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64h64V320zM320 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z" />
                         </svg>
                     </div>
                     <div id="printersetting" onclick="showprinterform()"
-                    class="w-10 h-10 flex justify-center  items-center rounded-lg bg-gray-100 hover:bg-gray-200 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" id="printericon" height="1em"
-                        viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                        <style>
-                            #printericon {
-                                fill: #826fe2
-                            }
-                        </style>
-                        <path
-                            d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />
-                    </svg>
-                </div>
+                        class="w-10 h-10 flex justify-center  items-center rounded-lg bg-gray-100 hover:bg-gray-200 cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" id="printericon" height="1em"
+                            viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                            <style>
+                                #printericon {
+                                    fill: #826fe2
+                                }
+                            </style>
+                            <path
+                                d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />
+                        </svg>
+                    </div>
 
                 </div>
                 <div id="insidelevery" class="w-24 h-10 rounded-lg bg-white">
@@ -171,24 +174,20 @@
                 <div class=" w-full">
                     <div class="flex justify-center items-center w-full">
                         <input id="autoComplete" class="rounded-full" />
-                      </div>
-                      <div class="w-full flex">
-                        <input type="number" placeholder="سعر التوصيل" name="name" oninput="deleveryCostChange(event)" id="deleveryCost"
-                            class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <input type="text" placeholder="اسم المستلم" name="name" id="resivename"
-                            class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-        
                     </div>
-        
-                    <input
-                    type="text"
-                    placeholder="الملاحضات"
-                    name="name"
-                    id="comments"
-                    class="bg-gray-50  text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  />
+                    <div class="w-full flex">
+                        <input type="number" placeholder="سعر التوصيل" name="name" oninput="deleveryCostChange(event)"
+                            id="deleveryCost"
+                            class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <input type="text" placeholder="اسم المستلم" name="name" id="resivename"
+                            class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
                     </div>
-    
+
+                    <input type="text" placeholder="الملاحضات" name="name" id="comments"
+                        class="bg-gray-50  text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                </div>
+
             </div>
             <div class="mt-5 w-full flex items-center justify-center h-12">
                 <div class="mb-6 w-3/4">
@@ -204,7 +203,7 @@
                         class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 </div>
 
-        
+
             </div>
             <div>
                 <select id="countries" name="tablenum"
@@ -257,9 +256,8 @@
 
         <div class="bg-gray-100 w-3/4">
             <div class="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:py-1.5 lg:max-w-7xl lg:px-8">
-                <div         class="flex items-center overflow-x-scroll gap-2 h-16 bg-white rounded-lg mb-6 p-3"
-                style="direction: rtl"
-        >
+                <div class="flex items-center overflow-x-scroll gap-2 h-16 bg-white rounded-lg mb-6 p-3"
+                    style="direction: rtl">
                     <%if(category[0]){%>
                         <%category.forEach(function(categorys,index) { %>
                             <div id="categorydoor<%=categorys.id%>"
@@ -302,15 +300,13 @@
                                                             <p class="mt-1 text-lg font-medium text-gray-900">
                                                                 <%=categorys.foods[i].price%> IQD
                                                             </p>
-                                                            
+
                                                             <% if (!categorys.foods[i].unlimit){%>
-                                                                <p
-                                                                id="quntityleft-<%=categorys.foods[i].id%>"
-                                                                class="text-sm opacity-60 font-medium text-gray-900"
-                                                              >
-                                                                <%=categorys.foods[i].quantety%> المتبقي
-                                                              </p>
-                                                                                                            <%}%>
+                                                                <p id="quntityleft-<%=categorys.foods[i].id%>"
+                                                                    class="text-sm opacity-60 font-medium text-gray-900">
+                                                                    <%=categorys.foods[i].quantety%> المتبقي
+                                                                </p>
+                                                                <%}%>
                                                         </div>
                                                     </div>
                                                     <%}}else{%>
@@ -324,49 +320,49 @@
         </div>
         <a id="invoiceidelement" class="hidden"></a>
         <script>
-                document
-      .querySelector("#autoComplete")
-      .addEventListener("selection", function (event) {
-        const currentUrl = window.location.href;
-        console.log("Current URL:", currentUrl);
-        const url = new URL(currentUrl);
-        const searchParams = new URLSearchParams(url.search);
-        const table = searchParams.get("tableid");
-        const foodId = event.detail.selection.value._id
-        console.log("ID:", table);
-        const tableId = table; // Replace with the actual table ID
-        fetch("/invoice/food/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tableId, foodId }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.editOneFood && !data.editOneFood.unlimit) {
-              const totalTd = document.getElementById(`quntityleft-${foodId}`);
-              totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
-            }
+            document
+                .querySelector("#autoComplete")
+                .addEventListener("selection", function (event) {
+                    const currentUrl = window.location.href;
+                    console.log("Current URL:", currentUrl);
+                    const url = new URL(currentUrl);
+                    const searchParams = new URLSearchParams(url.search);
+                    const table = searchParams.get("tableid");
+                    const foodId = event.detail.selection.value._id
+                    console.log("ID:", table);
+                    const tableId = table; // Replace with the actual table ID
+                    fetch("/invoice/food/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ tableId, foodId }),
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.editOneFood && !data.editOneFood.unlimit) {
+                                const totalTd = document.getElementById(`quntityleft-${foodId}`);
+                                totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                            }
 
-            $("#invoiceidelement").text(`${data.invoiceId}`);
-            if (data.message == "alredyadd") {
-              console.log(data);
-              $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
-              console.log($(`#quantity${data.food._id}`).text());
-              getprices($("#invoiceidelement").text());
-            } else {
-              invoiceid = $("#invoiceidelement").text();
-              console.log(data.food);
-              newitem(data.food, invoiceid, data.newquantity,data.foodPrice);
-              getprices($("#invoiceidelement").text());
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            // Handle errors
-          });
-      });
+                            $("#invoiceidelement").text(`${data.invoiceId}`);
+                            if (data.message == "alredyadd") {
+                                console.log(data);
+                                $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
+                                console.log($(`#quantity${data.food._id}`).text());
+                                getprices($("#invoiceidelement").text());
+                            } else {
+                                invoiceid = $("#invoiceidelement").text();
+                                console.log(data.food);
+                                newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
+                                getprices($("#invoiceidelement").text());
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error:", error);
+                            // Handle errors
+                        });
+                });
 
         </script>
         <script>
@@ -423,7 +419,7 @@
                             const foodTotalPrice = food.id.price * food.quantity;
                             totalPrice += foodTotalPrice;
                             fulldiscount += food.discount;
-                            newitem(food.id, invoiceid, food.quantity,food.foodPrice)
+                            newitem(food.id, invoiceid, food.quantity, food.foodPrice)
                             getprices($("#invoiceidelement").text())
                         });
                         console.log('Overall total price:', totalPrice);
@@ -460,9 +456,9 @@
                     .then(data => {
                         $("#invoiceidelement").text(`${data.invoiceId}`)
                         if (data.editOneFood && !data.editOneFood.unlimit) {
-            const totalTd = document.getElementById(`quntityleft-${foodId}`);
-            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
-          }
+                            const totalTd = document.getElementById(`quntityleft-${foodId}`);
+                            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                        }
 
                         if (data.message == "alredyadd") {
                             console.log(data)
@@ -472,7 +468,7 @@
                         } else {
                             invoiceid = $("#invoiceidelement").text()
                             console.log(data.food);
-                            newitem(data.food, invoiceid, data.newquantity,data.foodPrice)
+                            newitem(data.food, invoiceid, data.newquantity, data.foodPrice)
                             getprices($("#invoiceidelement").text())
                         }
                     })
@@ -500,36 +496,36 @@
                     method: 'DELETE',
                 })
                     .then(res => res.json()) // or res.json()
-.then(res =>{
-                            deletedfoodprice = Number($(`#price${foodjson.foodid}`).text());
-                            deletedfoodquantity = Number($(`#quantity${foodjson.foodid}`).val());
-                            deletedfoodfinalprice = deletedfoodquantity * deletedfoodprice
-                            corentfinalprice = Number($("#totalprice").text()) - deletedfoodfinalprice
-                            console.log(deletedfoodfinalprice)
-                            console.log(corentfinalprice)
-                            // $("#totaldiscount").text(`${fulldiscount}`);
-                            getprices($("#invoiceidelement").text())
-                            console.log('Food item removed successfully');
-                            const divToRemove = document.getElementById(`${foodjson.foodid}`);
-                            // Check if the div element exists
-                            if (res.editOneFood && !res.editOneFood.unlimit) {
-            const totalTd = document.getElementById(`quntityleft-${foodjson.foodid}`);
-            totalTd.innerHTML = res.editOneFood.quantety + " المتبقي";
-          }
+                    .then(res => {
+                        deletedfoodprice = Number($(`#price${foodjson.foodid}`).text());
+                        deletedfoodquantity = Number($(`#quantity${foodjson.foodid}`).val());
+                        deletedfoodfinalprice = deletedfoodquantity * deletedfoodprice
+                        corentfinalprice = Number($("#totalprice").text()) - deletedfoodfinalprice
+                        console.log(deletedfoodfinalprice)
+                        console.log(corentfinalprice)
+                        // $("#totaldiscount").text(`${fulldiscount}`);
+                        getprices($("#invoiceidelement").text())
+                        console.log('Food item removed successfully');
+                        const divToRemove = document.getElementById(`${foodjson.foodid}`);
+                        // Check if the div element exists
+                        if (res.editOneFood && !res.editOneFood.unlimit) {
+                            const totalTd = document.getElementById(`quntityleft-${foodjson.foodid}`);
+                            totalTd.innerHTML = res.editOneFood.quantety + " المتبقي";
+                        }
 
-                            if (divToRemove) {
-                                // Remove the div element
-                                divToRemove.remove();
+                        if (divToRemove) {
+                            // Remove the div element
+                            divToRemove.remove();
 
 
 
-                            } else {
-                                console.log("Div element not found.");
-                            }
+                        } else {
+                            console.log("Div element not found.");
+                        }
 
 
                         console.log(res)
-} )
+                    })
 
 
                     .catch(error => {
@@ -591,7 +587,7 @@
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ tableId,resivename, invoiceId, finalcost, totalcost, totaldicont, deloveryname, deloveryphone, deleveryid })
+                        body: JSON.stringify({ tableId, resivename, invoiceId, finalcost, totalcost, totaldicont, deloveryname, deloveryphone, deleveryid })
                     })
                         .then(response => response.json())
                         .then(data => {
@@ -606,7 +602,7 @@
                             refrash()
                             const printingcountvalue = $('#printingcount').val()
 
-                            printinvoice(invoiceId,resivename, deloveryname, deloveryphone,"","",printingcountvalue,Comments,deleveryCost,"delevery")
+                            printinvoice(invoiceId, resivename, deloveryname, deloveryphone, "", "", printingcountvalue, Comments, deleveryCost, "delevery")
 
                         })
                         .catch(error => {
@@ -618,81 +614,81 @@
                 }
             }
 
-      
+
         </script>
-  <script>
-    // Initialize variables to store barcode data
-    let barcode = "";
-    let originBarcode = "";
+        <script>
+            // Initialize variables to store barcode data
+            let barcode = "";
+            let originBarcode = "";
 
-    // Function to handle key press events
-    const handleKeyPress = (event) => {
-      // Check for a special character (e.g., Enter) to determine the end of the barcode
-      if (event.key === "Enter") {
-        // Do something with the barcode data (e.g., send it to a server)
-        if (barcode !== "") {
-          console.log("Barcode Scanned:", barcode);
+            // Function to handle key press events
+            const handleKeyPress = (event) => {
+                // Check for a special character (e.g., Enter) to determine the end of the barcode
+                if (event.key === "Enter") {
+                    // Do something with the barcode data (e.g., send it to a server)
+                    if (barcode !== "") {
+                        console.log("Barcode Scanned:", barcode);
 
-          const currentUrl = window.location.href;
-          console.log("Current URL:", currentUrl);
-          const url = new URL(currentUrl);
-          const searchParams = new URLSearchParams(url.search);
-          const table = searchParams.get("tableid");
-          console.log("ID:", table);
-          const tableId = table; // Replace with the actual table ID
-          fetch("/invoice/barcodefood/", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ tableId, barcode }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              $("#invoiceidelement").text(`${data.invoiceId}`);
+                        const currentUrl = window.location.href;
+                        console.log("Current URL:", currentUrl);
+                        const url = new URL(currentUrl);
+                        const searchParams = new URLSearchParams(url.search);
+                        const table = searchParams.get("tableid");
+                        console.log("ID:", table);
+                        const tableId = table; // Replace with the actual table ID
+                        fetch("/invoice/barcodefood/", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ tableId, barcode }),
+                        })
+                            .then((response) => response.json())
+                            .then((data) => {
+                                $("#invoiceidelement").text(`${data.invoiceId}`);
 
-              if (data.message == "alredyadd") {
-                console.log(data);
-                $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
-                console.log($(`#quantity${data.food._id}`).text());
-                getprices($("#invoiceidelement").text());
-              } else {
-                invoiceid = $("#invoiceidelement").text();
-                console.log(data.food);
-                newitem(data.food, invoiceid, data.newquantity,data.foodPrice);
-                getprices($("#invoiceidelement").text());
-              }
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              // Handle errors
-            });
+                                if (data.message == "alredyadd") {
+                                    console.log(data);
+                                    $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
+                                    console.log($(`#quantity${data.food._id}`).text());
+                                    getprices($("#invoiceidelement").text());
+                                } else {
+                                    invoiceid = $("#invoiceidelement").text();
+                                    console.log(data.food);
+                                    newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
+                                    getprices($("#invoiceidelement").text());
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                // Handle errors
+                            });
 
-          originBarcode = barcode;
-          barcode = "";
-        }
-      } else {
-        // Append the scanned character to the barcode string
-        barcode += event.key;
-      }
-    };
+                        originBarcode = barcode;
+                        barcode = "";
+                    }
+                } else {
+                    // Append the scanned character to the barcode string
+                    barcode += event.key;
+                }
+            };
 
-    // Function to reset the barcode after a timeout
-    const resetBarcode = () => {
-      barcode = "";
-    };
+            // Function to reset the barcode after a timeout
+            const resetBarcode = () => {
+                barcode = "";
+            };
 
-    // Set a timeout to reset the barcode after 20 milliseconds
-    setTimeout(resetBarcode, 20);
+            // Set a timeout to reset the barcode after 20 milliseconds
+            setTimeout(resetBarcode, 20);
 
-    // Add an event listener to capture keyboard input
-    window.addEventListener("keypress", handleKeyPress);
+            // Add an event listener to capture keyboard input
+            window.addEventListener("keypress", handleKeyPress);
 
-    // Function to clean up the event listener when needed
-    const removeKeyListener = () => {
-      window.removeEventListener("keypress", handleKeyPress);
-    };
-  </script>
+            // Function to clean up the event listener when needed
+            const removeKeyListener = () => {
+                window.removeEventListener("keypress", handleKeyPress);
+            };
+        </script>
 
 
         <script>
@@ -722,9 +718,9 @@
                         console.log(data.foodItem.quantity)
                         getprices(invoiceId)
                         if (!data.editOneFood.unlimit) {
-            const totalTd = document.getElementById(`quntityleft-${foodId}`);
-            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
-          }
+                            const totalTd = document.getElementById(`quntityleft-${foodId}`);
+                            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                        }
 
                         // $("#finalcost").text();
                         // $("#totalprice").text();
@@ -760,13 +756,13 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        
+
                         console.log(data.foodItem.quantity)
                         getprices(invoiceId)
                         if (!data.editOneFood.unlimit) {
-            const totalTd = document.getElementById(`quntityleft-${foodId}`);
-            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
-          }
+                            const totalTd = document.getElementById(`quntityleft-${foodId}`);
+                            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                        }
 
                         // $("#finalcost").text();
                         // $("#totalprice").text();
@@ -809,9 +805,9 @@
                         console.log(data.foodItem.quantity)
                         getprices(invoiceId)
                         if (!data.editOneFood.unlimit) {
-            const totalTd = document.getElementById(`quntityleft-${foodId}`);
-            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
-          }
+                            const totalTd = document.getElementById(`quntityleft-${foodId}`);
+                            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                        }
 
                         // $("#finalcost").text();
                         // $("#totalprice").text();
@@ -962,7 +958,7 @@
 
             $("#insidelevery").on('click', (event) => {
                 if ($('#insidelevery').hasClass('bg-green-100')) {
-                    indordelevery=true;
+                    indordelevery = true;
                     $("#deloveryphone").attr("readonly", "readonly");
                     $("#deloveryname").attr("readonly", "readonly");
                     // $("#resivename").attr("readonly", "readonly");
@@ -971,7 +967,7 @@
                     $(`#insidelevery`).removeClass('bg-green-100');
                     $('#insidelevery').addClass('bg-green-400');
                 } else {
-                    indordelevery=false;
+                    indordelevery = false;
                     $("#deloveryphone").removeAttr("readonly");
                     $("#deloveryname").removeAttr("readonly");
                     // $("#resivename").removeAttr("readonly");
@@ -985,42 +981,42 @@
 
 
             function onPriceChange(event) {
-      const inputElement = event.target;
+                const inputElement = event.target;
 
-      // Retrieve the ID of the input element
-      const inputId = inputElement.id;
-      var foodId = inputId.replace("price", "");
+                // Retrieve the ID of the input element
+                const inputId = inputElement.id;
+                var foodId = inputId.replace("price", "");
 
-      // Use the inputId as needed
+                // Use the inputId as needed
 
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-      const newPrice = $(`#${inputId}`).val();
-      const invoiceId = $("#invoiceidelement").text();
-      fetch("/invoice/changeprice/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          tableId,
-          invoiceId,
-          foodId,
-          newPrice: newPrice,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          getprices(invoiceId);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
-    }
+                const currentUrl = window.location.href;
+                console.log("Current URL:", currentUrl);
+                const url = new URL(currentUrl);
+                const searchParams = new URLSearchParams(url.search);
+                const tableId = searchParams.get("tableid");
+                const newPrice = $(`#${inputId}`).val();
+                const invoiceId = $("#invoiceidelement").text();
+                fetch("/invoice/changeprice/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        tableId,
+                        invoiceId,
+                        foodId,
+                        newPrice: newPrice,
+                    }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        getprices(invoiceId);
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                        // Handle errors
+                    });
+            }
 
 
         </script>

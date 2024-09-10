@@ -279,14 +279,24 @@
         <div class="flex justify-center items-center w-full">
           <input id="autoComplete" class="rounded-full" />
         </div>
-
-        <input
+        <div class="flex">
+          <input
           type="text"
           placeholder="اسم المستلم"
           name="name"
           id="resivename"
           class="bg-gray-50 mb-2 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
+        <input
+        type="text"
+        placeholder="رقم الهاتف"
+        name="name"
+        id="deloveryphone"
+        class="bg-gray-50 mb-2 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      />
+
+        </div>
+
         <div
           id="autocomplete-container"
           class="absolute text-right flex flex-col gap-4 w-full bg-white"
@@ -310,13 +320,18 @@
             class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
         </div>
-        <input
+        <div class="flex">
+          <input
           type="text"
           placeholder="الملاحضات"
           name="name"
           id="comments"
           class="bg-gray-50 my-2 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
+        <input type="text" placeholder="العنوان" name="name" id="deloveryname"
+        class="bg-gray-50 my-2 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+        </div>
       </div>
     </div>
 
@@ -953,7 +968,18 @@
           // Handle errors
         });
     }
-    function finish() {
+    async function getSetting() {
+        try {
+            const response = await fetch(`/setting/getsetting`);
+            const setting = await response.json();
+            return setting;  // Return the setting data from the function
+        } catch (error) {
+            console.error(error);
+            return null; // Return a default value in case of an error
+        }
+    }
+
+    async function finish() {
       const currentUrl = window.location.href;
       console.log("Current URL:", currentUrl);
       const url = new URL(currentUrl);
@@ -984,6 +1010,8 @@
         .then((data) => {
           const ReceivedAmount = $("#Received-amount").text();
           const RemainingAmount = $("#Remaining-amount").text();
+          const deloveryphone = $('#deloveryphone').val();
+          const deloveryname = $('#deloveryname').val();
 
           console.log(data);
           $("#finalcost").text(0);
@@ -1006,6 +1034,24 @@
           const printingcountvalue = $("#printingcount").val();
           const Comments = $("#comments").val();
 
+const settingOption = getSetting()
+fetch(`/setting/getsetting`)
+      .then((response) => response.json())
+      .then((settingOption) => {
+        if (settingOption.printerType == "A4") {
+          printA4invoice(
+            invoiceId,
+            resivename,
+            deloveryname,
+            deloveryphone,
+            ReceivedAmount,
+            RemainingAmount,
+            printingcountvalue,
+            Comments,
+            "",
+            "cashire"
+          );
+        } else {
           printinvoice(
             invoiceId,
             resivename,
@@ -1018,6 +1064,14 @@
             "",
             "cashire"
           );
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching settings:", error);
+      });
+
+
+    
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -1257,6 +1311,7 @@
 
   <script src="/js/casher.js"></script>
   <script src="/js/printinvoice.js"></script>
+  <script src="/js/printA4.js"></script>
 
   <%- include('footer',{currentpage:'cashier'}); %>
 </div>

@@ -26,12 +26,20 @@ const SettingSchema = new mongoose.Schema({
         type: Number,
         default: "1"
     },
-    
-    barcodeXsize:{type:Number,default:0},
-    barcodeYsize:{type:Number,default:0},
+    printerType: {
+        type: String,
+        default: "Thermal"
+    },
+    amountUnit: {
+        type: String,
+        default: ""
+    },
+
+    barcodeXsize: { type: Number, default: 0 },
+    barcodeYsize: { type: Number, default: 0 },
 
     systemdiscount: {
-        active : {type:Boolean,default:true},
+        active: { type: Boolean, default: true },
         discountype: { type: String },
         amount: { type: Number, default: 0 }
     },

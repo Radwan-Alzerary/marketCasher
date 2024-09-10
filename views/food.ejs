@@ -74,6 +74,27 @@
         class="hidden transition-all py-2 px-2 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-x-8 overflow-y-scroll"
         style="height: 76vh"
       >
+      <a
+      id="showaddfoodform<%=categorys.id%>"
+      class="group text-center cursor-pointer"
+    >
+      <div
+        class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg xl:aspect-h-9 xl:aspect-w-9 hover:opacity-60 mt-10"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="#a0ff9d"
+          height="1.5em"
+          viewBox="0 0 448 512"
+        >
+          <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+          <path
+            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+          />
+        </svg>
+      </div>
+    </a>
+
         <%if(categorys.foods){%> <%for (let i=0; i < categorys.foods.length;
         i++) { %>
         <a
@@ -164,26 +185,6 @@
         <%}}else{%>
         <a>لا يوجد اطعمة مضافة</a>
         <%}%>
-        <a
-          id="showaddfoodform<%=categorys.id%>"
-          class="group text-center cursor-pointer"
-        >
-          <div
-            class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg xl:aspect-h-9 xl:aspect-w-9 hover:opacity-60 mt-10"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#a0ff9d"
-              height="1.5em"
-              viewBox="0 0 448 512"
-            >
-              <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-              <path
-                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-              />
-            </svg>
-          </div>
-        </a>
       </div>
     </div>
   </div>
@@ -258,19 +259,44 @@
   style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%)"
 >
   <div class="mb-2 w-full">
-    <label
-      for="default-input"
-      class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
-      >الاسم</label
-    >
-    <input
-      type="text"
-      placeholder="قم بادخال اسم الصنف"
-      name="name"
-      id="default-input"
-      class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-      required
-    />
+    <div class="flex w-full">
+      <div style="width: 25%;">
+        <label
+        for="default-input"
+        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >الوحدة</label
+      >
+      <input
+        type="text"
+        placeholder="قم بادخال اسم الصنف"
+        name="unit"
+        id=""
+        value=""
+        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        required
+      />
+  
+      </div>
+
+      <div style="width: 75%;">
+        <label
+        for="default-input"
+        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >الاسم</label
+      >
+      <input
+        type="text"
+        placeholder="قم بادخال اسم الصنف"
+        name="name"
+        id=""
+        value=""
+        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        required
+      />
+  
+      </div>
+    
+    </div>
   </div>
   <div class="mb-2 w-full">
     <label
@@ -421,20 +447,45 @@
   style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%)"
 >
   <div class="mb-2 w-full">
-    <label
-      for="default-input"
-      class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
-      >الاسم</label
-    >
-    <input
-      type="text"
-      placeholder="قم بادخال اسم الصنف"
-      name="name"
-      id="editname"
-      value=""
-      class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-      required
-    />
+    <div class="flex w-full">
+      <div style="width: 25%;">
+        <label
+        for="default-input"
+        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >الوحدة</label
+      >
+      <input
+        type="text"
+        placeholder="الوحدة"
+        name="unit"
+        id="editunit"
+        value=""
+        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        required
+      />
+  
+      </div>
+
+      <div style="width: 75%;">
+        <label
+        for="default-input"
+        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+        >الاسم</label
+      >
+      <input
+        type="text"
+        placeholder="قم بادخال اسم المنتج"
+        name="name"
+        id="editname"
+        value=""
+        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        required
+      />
+  
+      </div>
+    
+    </div>
+    
   </div>
   <div class="mb-2 w-full">
     <label
@@ -736,6 +787,7 @@
         $(`#editfoodform`).removeClass("hidden");
         $("#shadedbackground").show();
         $("#editname").val(`${data.name}`);
+        $("#editunit").val(`${data.unit}`);
         $("#editbarcode").val(`${data.barcode}`);
         $("#editprice").val(`${data.price}`);
         $("#editcost").val(`${data.cost}`);

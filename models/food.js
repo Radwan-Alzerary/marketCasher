@@ -18,6 +18,7 @@ const FoodSchema = new mongoose.Schema(
       default: true,
     },
     manualBarcode: { type: String },
+    unit: { type: String, default: "" },
     unlimit: {
       type: Boolean,
       default: true,
