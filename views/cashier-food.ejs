@@ -282,19 +282,20 @@
         <div class="flex">
           <input
           type="text"
+          placeholder="رقم الهاتف"
+          name="name"
+          id="deloveryphone"
+          class="bg-gray-50 mb-2 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        />
+  
+  
+          <input
+          type="text"
           placeholder="اسم المستلم"
           name="name"
           id="resivename"
           class="bg-gray-50 mb-2 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         />
-        <input
-        type="text"
-        placeholder="رقم الهاتف"
-        name="name"
-        id="deloveryphone"
-        class="bg-gray-50 mb-2 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-      />
-
         </div>
 
         <div
@@ -542,7 +543,7 @@
       $("#resivename").on("input", function () {
         let searchName = $(this).val();
 
-        if (searchName.length > 2) {
+        if (searchName.length > 1) {
           $.ajax({
             url: `/custemer/getbyname/${encodeURIComponent(searchName)}`,
             type: "GET",
@@ -570,7 +571,24 @@
 
               // Handle click on suggestion
               $(".autocomplete-item").on("click", function () {
+                console.log($(this))
+
                 $("#resivename").val($(this).text());
+                fetch(`/custemer/getbyname/${$(this).text()}`)
+                    .then((response) => response.json())
+                    .then((costemerInfo) => {
+                      console.log(costemerInfo)
+                      $("#deloveryname").val(costemerInfo[0].addresses);
+                      $("#deloveryphone").val(costemerInfo[0].phoneNumber);
+
+                      
+
+                    })
+                    .catch((error) => {
+                      console.error("Error fetching settings:", error);
+                    });
+
+
                 $("#autocomplete-list").remove(); // Remove suggestions after selection
               });
             },
@@ -988,6 +1006,8 @@
       const finalcost = $("#finalcost").text();
       const totalcost = $("#totalprice").text();
       const resivename = $("#resivename").val();
+      const deloveryname = $("#deloveryname").val();
+      const deloveryphone = $("#deloveryphone").val();
       const totaldicont = $("#totaldiscount").text();
       const foodcost = $("#totalcost").text();
       const invoiceId = $("#invoiceidelement").text();
@@ -1000,6 +1020,8 @@
           tableId,
           foodcost,
           resivename,
+          deloveryname,
+          deloveryphone,
           invoiceId,
           finalcost,
           totalcost,

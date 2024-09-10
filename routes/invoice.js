@@ -801,14 +801,21 @@ router.post("/finish", async (req, res) => {
     invoice.finalcost = req.body.finalcost;
     invoice.foodcost = req.body.foodcost;
     invoice.tableid = req.body.tableId;
-
+    invoice.deloveryname = req.body.deloveryname;
+    invoice.deloveryphone = req.body.deloveryphone;
     if (!invoice.resivename) {
       invoice.resivename = "زبون عام";
     }
 
     let custemer = await Customer.findOne({ name: invoice.resivename });
     if (!custemer) {
-      custemer = new Customer({ name: invoice.resivename });
+
+
+      custemer = new Customer({ name: invoice.resivename, phoneNumber: invoice.deloveryphone, addresses: invoice.deloveryname });
+    }else{
+      custemer.phoneNumber = invoice.deloveryphone
+      custemer.addresses = invoice.deloveryname
+      await custemer.save()
     }
 
     // Check if the invoiceId already exists in the customer's invoice array
@@ -1212,7 +1219,7 @@ router.post("/invoiceaovetall", async (req, res) => {
   }
 });
 
-router.post("/invoiceanalysis", async (req, res) => {});
+router.post("/invoiceanalysis", async (req, res) => { });
 
 router.post("/topfoodsell", async (req, res) => {
   const today = new Date();
