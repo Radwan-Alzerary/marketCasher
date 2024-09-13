@@ -3,10 +3,20 @@
 <div class="flex h-[92vh] overflow-hidden">
   <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
     <main>
+
       <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+        <div style="width: 100%; display: flex;" class="justify-center items-center">
+          <input style="    border: none;
+          border-radius: 20px;
+          display: flex;
+          justify-content: center;" type="text" name="daterange"  />
+  
+        </div>
+
         <div
           class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-6"
         >
+        
           <div
             class="rounded-sm border border-stroke bg-white1 py-6 px-6 shadow-default dark:border-strokedark dark:bg-boxdark"
           >
@@ -346,8 +356,8 @@
                   <p
                     class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
                   >
-                    <span id="firsttopfoodname"> Desktop </span>
-                    <span id="firsttopfoodpersantage"> 65% </span>
+                    <span id="firsttopfoodname">  </span>
+                    <span id="firsttopfoodpersantage"> </span>
                   </p>
                 </div>
               </div>
@@ -359,8 +369,8 @@
                   <p
                     class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
                   >
-                    <span id="secondtopfoodname"> Tablet </span>
-                    <span id="secondtopfoodpersantage"> 34% </span>
+                    <span id="secondtopfoodname">  </span>
+                    <span id="secondtopfoodpersantage">  </span>
                   </p>
                 </div>
               </div>
@@ -372,8 +382,8 @@
                   <p
                     class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
                   >
-                    <span id="thirdtopfoodname"> Mobile </span>
-                    <span id="thirdtopfoodpersantage"> 45% </span>
+                    <span id="thirdtopfoodname">  </span>
+                    <span id="thirdtopfoodpersantage"></span>
                   </p>
                 </div>
               </div>
@@ -385,8 +395,8 @@
                   <p
                     class="flex w-full justify-between text-sm font-medium text-black dark:text-white"
                   >
-                    <span id="fourthtopfoodname"> Unknown </span>
-                    <span id="fourthtopfoodpersantage"> 12% </span>
+                    <span id="fourthtopfoodname">  </span>
+                    <span id="fourthtopfoodpersantage">  </span>
                   </p>
                 </div>
               </div>
@@ -446,7 +456,16 @@
 </div>
 <!-- ===== Page Wrapper End ===== -->
 <script src="/js/dashborad.js"></script>
-
+<script>
+  $(function() {
+    $('input[name="daterange"]').daterangepicker({
+      opens: 'left'
+    }, function(start, end, label) {
+      console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+    });
+  });
+  </script>
+  
 <script>
   // Define the date range (start date is August 10, 2023, and end date is today's date)
   const startDate = new Date(Date.parse("2023-07-26")); // August 10, 2023
@@ -663,6 +682,7 @@
         {
           name: "الربح",
           data: profit,
+          
         },
 
         {

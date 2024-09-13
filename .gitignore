@@ -1,4 +1,5 @@
 node_modules/
 locales/
 public/img/foodimg/
-image.png
+image.png/
+build/
