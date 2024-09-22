@@ -8,6 +8,7 @@ const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 const mongoose = require('mongoose');
+const axios = require('axios');
 
 uploadDir = 'public/img/webimage'
 const bcrypt = require('bcrypt');
@@ -45,10 +46,10 @@ router.post('/login', passport.authenticate('local', {
 
 
 router.post('/register', async (req, res) => {
-  const { name, email, password, password2, role } = req.body;
+  const { name, email, password, password2, role, serialNumber } = req.body;
   let errors = [];
 
-  if (!name || !email || !password || !password2) {
+  if (!name || !email || !password || !password2 || !serialNumber) {
     errors.push({ msg: "Please fill in all fields" });
   }
 
@@ -64,6 +65,15 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({ errors });
   } else {
     try {
+      // Token validation check
+      const tokenResponse = await axios.post(`http://95.179.178.183:4000/checkToken`, {
+        token: serialNumber,
+      });
+
+      if (!tokenResponse.data.result) {
+        return res.status(400).json({ msg: "التوكين غير صالح او منتهي الصلاحية" });
+      }
+
       const user = await User.findOne({ email: email });
 
       if (user) {
@@ -71,11 +81,18 @@ router.post('/register', async (req, res) => {
         return res.status(409).json({ errors });
       }
 
+      // Calculate future expiration date based on token validity
+      const today = new Date();
+      const futureDate = new Date(today);
+      futureDate.setDate(today.getDate() + tokenResponse.data.dayNum);
+
+      // Creating new user object with hashed password
       const newUser = new User({
         name,
         email,
         password,
-        role:"full"
+        role: "full",
+        expireDate: futureDate, // Added expireDate from the token response
       });
 
       const salt = await bcrypt.genSalt(10);
@@ -87,11 +104,12 @@ router.post('/register', async (req, res) => {
       req.flash('success_msg', 'You have now registered!');
       return res.redirect('/admin/login');
     } catch (err) {
-      console.error(err);
+      console.error("Error making POST request:", err);
       return res.status(500).json({ msg: 'Internal Server Error' });
     }
   }
 });
+
 
 
 //logout

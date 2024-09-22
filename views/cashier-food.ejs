@@ -438,12 +438,13 @@
         >
           <%}%> <%if(categorys.foods){%> <%for (let i=0; i <
           categorys.foods.length; i++) { %> <%if(categorys.foods[i].active){%>
-          <div
-            class="group text-center h-64 rounded-lg bg-white"
-            id="selectfood<%=categorys.foods[i].id%>"
-          >
             <div
-              class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-t-lgbg-gray-200 xl:aspect-h-6 xl:aspect-w-6"
+            class="group text-center h-64 rounded-lg <%= categorys.foods[i].quantety < 1 && !categorys.foods[i].unlimit ? 'bg-red-50' : 'bg-white' %>"
+            id="selectfood<%= categorys.foods[i].id %>"
+          >
+                      <div
+              
+              class="aspect-h-1  aspect-w-1 w-full overflow-hidden rounded-t-lgbg-gray-200 xl:aspect-h-6 xl:aspect-w-6"
             >
               <% if (categorys.foods[i].image && categorys.foods[i].image.url) {
               %>

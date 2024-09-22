@@ -12,6 +12,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  expireDate: {
+    type: Date,
+  },
   role: { type: String, defult: "user" },
   date: {
     type: Date,

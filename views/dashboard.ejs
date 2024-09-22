@@ -457,13 +457,18 @@
 <!-- ===== Page Wrapper End ===== -->
 <script src="/js/dashborad.js"></script>
 <script>
-  $(function() {
-    $('input[name="daterange"]').daterangepicker({
-      opens: 'left'
-    }, function(start, end, label) {
-      console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
-    });
+$(function() {
+  $('input[name="daterange"]').daterangepicker({
+    opens: 'left'
+  }, function(start, end, label) {
+    console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+    // Call the function to fetch data and render charts
+    fetchDataAndRenderCharts(start, end);
   });
+});
+
+
+
   </script>
   
 <script>
@@ -495,8 +500,19 @@
   })
     .then((response) => response.json())
     .then((data) => {
-      // console.log(data)
-      yearlydata = data;
+      processDataAndRenderCharts(data)
+
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      // Handle errors
+    });
+
+// Function to process data and render charts
+function processDataAndRenderCharts(data, startDate, endDate) {
+
+   // console.log(data)
+   yearlydata = data;
       $("#overalltotalcost").text(data.overallResult[0].sellprice);
       $("#overallsellcount").text(data.overallResult[0].foodCount);
       $("#overallproductnum").text(data.productnum[0].foodCount);
@@ -554,11 +570,12 @@
 
       console.log("First 7 foodCost values:", dailyCostData);
       console.log("First 7 sellprice values:", DailySellData);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      // Handle errors
-    });
+}
+
+
+
+
+
 
   fetch("/invoice/topfoodsell/", {
     method: "POST",
@@ -619,6 +636,44 @@
 </script>
 
 <script>
+function fetchDataAndRenderCharts(startDate, endDate) {
+  // Fetch data from the backend
+  fetch("/invoice/invoiceaovetall/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      fromDate: startDate.format('YYYY-MM-DD'),
+      toDate: endDate.format('YYYY-MM-DD'),
+    }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data.overallResult[0])
+    if(!data.overallResult[0]){
+      $("#overalltotalprofit").text(0);
+      $("#overalltotalcost").text(0);
+      $("#overallsellcount").text(0);
+
+    }else{
+      processDataAndRenderCharts(data)
+    }
+    if(!data.productnum[0]){
+      $("#overallproductnum").text(0);
+
+    }  
+
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      // Handle errors
+    });
+}
+
+
+
+
   function chartOneSelectDay() {
     const dailyData = dateRange.map((date) => ({
       date: date.toISOString().slice(0, 10), // Format date as "YYYY-MM-DD"
@@ -627,11 +682,11 @@
     const dailyCostData = [];
     const DailySellData = [];
 
-    for (let i = dailyData.length - 1; i > 0 && i < dailyData.length; i--) {
-      const item = dailyData[i];
-      dailyCostData.push(item.foodCost);
-      DailySellData.push(item.sellprice);
-    }
+    for (let i = dailyData.length - 1; i >= 0 && i >= dailyData.length - 30; i--) {
+  const item = dailyData[i];
+  dailyCostData.push(item.foodCost);
+  DailySellData.push(item.sellprice);
+}
     const todayString = new Date().toISOString();
     const divToRemove = document.getElementById("chartOne");
     $("#chartOne").text("");

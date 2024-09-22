@@ -1058,17 +1058,34 @@ router.post("/deleteinvoice", async (req, res) => {
 });
 
 router.post("/invoiceaovetall", async (req, res) => {
-  const fromDate = new Date("2021-08-04"); // Replace with your desired from date
-  const toDate = new Date("2027-08-09"); // Replace with your desired to date
-
   try {
+    // Retrieve fromDate and toDate from request body
+    const { fromDate: fromDateParam, toDate: toDateParam } = req.body;
+
+    // Parse dates if provided
+    const fromDate = fromDateParam ? new Date(fromDateParam) : null;
+    const toDate = toDateParam ? new Date(toDateParam) : null;
+
+    // Build date range filter
+    const dateFilter = {};
+    if (fromDate) dateFilter.$gte = fromDate;
+    if (toDate) dateFilter.$lte = toDate;
+    console.log(fromDate)
+    console.log(toDate)
+    // Construct match filters for Invoice and Food collections
+    const invoiceMatchFilter = { type: "مكتمل" };
+    if (fromDate || toDate) {
+      invoiceMatchFilter.progressdata = dateFilter;
+    }
+
+    const foodMatchFilter = { deleted: false, active: true };
+    if (fromDate || toDate) {
+      foodMatchFilter.progressdata = dateFilter;
+    }
+
+    // Invoice Aggregation Pipeline
     const yearlyResult = await Invoice.aggregate([
-      {
-        $match: {
-          type: "مكتمل",
-          progressdata: { $gte: fromDate, $lte: toDate },
-        },
-      },
+      { $match: invoiceMatchFilter },
       {
         $group: {
           _id: {
@@ -1090,13 +1107,12 @@ router.post("/invoiceaovetall", async (req, res) => {
           day: {
             $push: {
               daynum: "$_id.day",
-              totalCost: "$totalCost",
               foodCount: "$foodCount",
-              foodcost: { $sum: "$foodcost" },
-              sellprice: { $sum: "$sellprice" },
+              foodcost: "$foodcost",
+              sellprice: "$sellprice",
               invoices: "$invoices",
-              profit: { $subtract: ["$sellprice", "$foodCost"] }, // Calculate profit
-              invoiceCount: { $sum: { $size: "$invoices" } },
+              profit: { $subtract: ["$sellprice", "$foodcost"] },
+              invoiceCount: { $size: "$invoices" },
             },
           },
           invoiceCount: { $sum: { $size: "$invoices" } },
@@ -1116,9 +1132,9 @@ router.post("/invoiceaovetall", async (req, res) => {
               profit: {
                 $subtract: [
                   { $sum: "$day.sellprice" },
-                  { $sum: "$day.foodCost" },
+                  { $sum: "$day.foodcost" },
                 ],
-              }, // Calculate profit
+              },
               day: "$day",
             },
           },
@@ -1138,31 +1154,20 @@ router.post("/invoiceaovetall", async (req, res) => {
               profit: {
                 $subtract: [
                   { $sum: "$month.sellprice" },
-                  { $sum: "$month.foodCost" },
+                  { $sum: "$month.foodcost" },
                 ],
-              }, // Calculate profit
+              },
               month: "$month",
             },
           },
         },
       },
-      {
-        $project: {
-          _id: 0,
-          year: 1,
-        },
-      },
+      { $project: { _id: 0, year: 1 } },
     ]);
 
+    // Food Aggregation Pipeline
     const productnum = await Food.aggregate([
-      {
-        $match: {
-          deleted: false,
-          active: true,
-          // progressdata: { $gte: fromDate, $lte: toDate }
-        },
-      },
-
+      { $match: foodMatchFilter },
       {
         $group: {
           _id: null,
@@ -1171,13 +1176,9 @@ router.post("/invoiceaovetall", async (req, res) => {
       },
     ]);
 
+    // Overall Invoice Aggregation
     const overallResult = await Invoice.aggregate([
-      {
-        $match: {
-          type: "مكتمل",
-          // progressdata: { $gte: fromDate, $lte: toDate }
-        },
-      },
+      { $match: invoiceMatchFilter },
       {
         $addFields: {
           foodCount: {
@@ -1187,13 +1188,12 @@ router.post("/invoiceaovetall", async (req, res) => {
           },
         },
       },
-
       {
         $lookup: {
-          from: "foods", // The name of the 'Food' collection (lowercase plural)
-          localField: "food.id", // The field in the 'Invoice' collection to match
-          foreignField: "_id", // The field in the 'Food' collection to match
-          as: "foodDetails", // The alias for the joined documents
+          from: "foods",
+          localField: "food.id",
+          foreignField: "_id",
+          as: "foodDetails",
         },
       },
       {
@@ -1206,9 +1206,10 @@ router.post("/invoiceaovetall", async (req, res) => {
       },
     ]);
 
+    // Construct the final result
     const result = {
       yearlyResult,
-      overallResult: overallResult,
+      overallResult,
       productnum,
     };
 
@@ -1218,7 +1219,6 @@ router.post("/invoiceaovetall", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 router.post("/invoiceanalysis", async (req, res) => { });
 
 router.post("/topfoodsell", async (req, res) => {

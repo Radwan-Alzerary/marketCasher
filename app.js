@@ -23,6 +23,7 @@ const storge = require("./models/storge");
 const systemSetting = require("./models/systemSetting");
 const Food = require("./models/food");
 const Category = require("./models/category");
+const User = require("./models/user");
 
 // const Visitor = require('./models/visitor');
 app.use(express.static(path.join(__dirname, "public")));
@@ -43,6 +44,31 @@ app.use(
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+// Middleware to check user's token expiry
+const checkTokenExpiry = async (req, res, next) => {
+  try {
+    // Assuming req.user contains the user information from the session
+    if (req.isAuthenticated() && req.user) {
+      console.log("Checking token expiry...");
+
+      const user = await User.findById(req.user._id); // Fetch user from DB
+      console.log(user);
+      console.log(req.user);
+      console.log(user.expireDate);
+
+      if (user && user.expireDate && user.expireDate < Date.now()) {
+        return res.status(403).send("Your token has expired. Please request a new token to continue.");
+      }
+    }
+    next(); // Proceed if user is authenticated and token is valid
+  } catch (err) {
+    console.error("Error checking token expiry:", err);
+    res.status(500).send("An error occurred while checking token expiry.");
+  }
+};
+
+// Apply the middleware globally, so all routes are protected
+app.use(checkTokenExpiry);
 
 app.use(cors());
 

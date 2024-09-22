@@ -16,8 +16,8 @@ require('dotenv').config();
 mongoose.set("strictQuery", false);
 
 
-const devConnection = process.env.DB_STRING;
-const prodConnection = process.env.DB_STRING_PROD;
+const devConnection = "mongodb://127.0.0.1:27017/pos";
+const prodConnection = "production";
 
 // Connect to the correct environment database
 if (process.env.NODE_ENV === 'production') {

@@ -14,7 +14,7 @@ exports.isfulladmin = async(req,res,next) => {
     try{
         user=await User.findById(req.user.id)
         console.log(user.id)
-        if(user.role == "full"){
+        if(user.role == "full" || user.role == "onlyPOS" ){
         return next();    
         }
         else{
@@ -25,6 +25,7 @@ exports.isfulladmin = async(req,res,next) => {
         res.render('login')
     }
 }
+
 exports.isCashire = async(req,res,next) => {
     try{
         user=await User.findById(req.user.id)
