@@ -812,7 +812,7 @@ router.post("/finish", async (req, res) => {
 
 
       custemer = new Customer({ name: invoice.resivename, phoneNumber: invoice.deloveryphone, addresses: invoice.deloveryname });
-    }else{
+    } else {
       custemer.phoneNumber = invoice.deloveryphone
       custemer.addresses = invoice.deloveryname
       await custemer.save()
@@ -1073,7 +1073,9 @@ router.post("/invoiceaovetall", async (req, res) => {
     console.log(fromDate)
     console.log(toDate)
     // Construct match filters for Invoice and Food collections
-    const invoiceMatchFilter = { type: "مكتمل" };
+    const invoiceMatchFilter = {
+      type: { $in: ["مكتمل", "توصيل"] }
+    };
     if (fromDate || toDate) {
       invoiceMatchFilter.progressdata = dateFilter;
     }
