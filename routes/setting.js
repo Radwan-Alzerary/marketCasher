@@ -9,6 +9,7 @@ const isfulladmin = require("../config/auth").isfulladmin;
 const isCashire = require("../config/auth").isCashire;
 const ensureAuthenticated = require("../config/auth").userlogin;
 const mongoose = require("mongoose");
+const Device = require("../models/devices");
 
 // const Sitting = require("../models/pagesitting");
 const multer = require("multer");
@@ -58,6 +59,7 @@ router.get("/", async (req, res) => {
   const setting = await Setting.find();
   const user = await User.findById(req.user);
   const systemSetting = await SystemSetting.findOne();
+  const devices = await Device.find({});
 
   console.log(user);
   const delevery = await Delevery.find();
@@ -66,7 +68,7 @@ router.get("/", async (req, res) => {
     try {
       const setting = await newSetting.save();
       console.log(setting);
-      res.render("setting", { table, setting, role: user.role, systemSetting });
+      res.render("setting", { table, setting, role: user.role, systemSetting, devices: devices });
     } catch (err) {
       res.status(400).json({ message: err.message });
     }
@@ -77,6 +79,7 @@ router.get("/", async (req, res) => {
     delevery,
     role: user.role,
     systemSetting,
+    devices
   });
 });
 

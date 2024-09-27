@@ -24,6 +24,7 @@ const Customer = require("../models/costemer");
 const paymentType = require("../models/paymentType");
 const browserPromise = puppeteer.launch(); // Launch the browser once
 const TelegramBot = require("node-telegram-bot-api");
+const { printForRole } = require("../service/thermalPrintService");
 
 const token = "7011940534:AAHjtNHpdR5yzgkSX6CruBaog_blb1TjsOo";
 
@@ -375,6 +376,314 @@ router.post("/food", async (req, res) => {
   }
 });
 
+router.post("/dummyfood", async (req, res) => {
+  try {
+    let existingFoodcheck = 0;
+    const tableId = req.body.tableId;
+    const { foodId, quantity, discount, discountType } = req.body;
+
+    const table = await Table.findById(tableId);
+    if (!table) {
+      return res.status(404).json({ error: "Table not found" });
+    }
+    const lastInvoice = await Invoice.findOne().sort({ number: -1 });
+
+    let invoiceNumber;
+    if (lastInvoice) {
+      // If a previous invoice exists, increment the last invoice number by 1
+      invoiceNumber = lastInvoice.number + 1;
+    } else {
+      // If no previous invoice exists, start with a default value of 1
+      invoiceNumber = 1;
+    }
+
+    let invoice = null;
+    if (table.invoice.length === 0) {
+      const newPaymentType = await paymentType.findOne({ name: "نقدي" });
+      // If the table does not have an invoice, create a new one
+      invoice = new Invoice({
+        number: invoiceNumber,
+        paymentType: newPaymentType.id,
+        type: "قيد المعالجة", // Replace with the appropriate type
+        active: true,
+      });
+      await invoice.save();
+      table.invoice.push(invoice._id);
+      await table.save();
+    } else {
+      // If the table already has an invoice, use the existing one
+      invoice = await Invoice.findById(table.invoice[0]);
+      if (!invoice) {
+        return res.status(404).json({ error: "Invoice not found" });
+      }
+    }
+    let updatedfoodid = "";
+
+    // Check if the food item already exists in the invoice
+    const existingFood = invoice.dummyFood.find(
+      (item) => item.id.toString() === foodId
+    );
+    if (existingFood) {
+      const foodData = await Food.findById(existingFood.id);
+      updatedfoodid = foodData.id;
+      existingFoodcheck = 1;
+      // If the food item already exists, increment the quantity by 1
+      existingFood.quantity += 1;
+      await Food.findByIdAndUpdate(existingFood.id, {
+        quantety: foodData.quantety - 1,
+      });
+    } else {
+      // If the food item doesn't exist, add it to the invoice
+      const food = await Food.findById(foodId);
+      await Food.findByIdAndUpdate(foodId, { quantety: food.quantety - 1 });
+
+      if (!food) {
+        return res.status(404).json({ error: "Food not found" });
+      }
+      const newFood = {
+        id: food._id,
+        quantity: 1,
+        discount: 0,
+        foodCost: food.cost,
+        foodPrice: food.price,
+        discountType: discountType || "cash",
+      };
+      food.quantety = food.quantety - 1;
+      await food.save();
+
+      invoice.dummyFood.push(newFood);
+    }
+
+    await invoice.save();
+    // Get the last added food from the invoice
+    const lastAddedFood = invoice.dummyFood[invoice.food.length - 1].id;
+    const editOneFood = await Food.findById(foodId);
+
+    // Populate the last added food
+    const populatedFood = await Food.findById(lastAddedFood);
+    if (existingFoodcheck) {
+      res.json({
+        message: "alredyadd",
+        food: populatedFood,
+        editOneFood: editOneFood,
+        newquantity: existingFood.quantity,
+        invoiceId: invoice.id,
+        foodPrice: existingFood.foodPrice,
+        updatedfoodid: updatedfoodid,
+      });
+    } else {
+      const editOneFood = await Food.findById(foodId);
+
+      res.json({
+        message: "Food added to the invoice successfully",
+        editOneFood: editOneFood,
+        food: populatedFood,
+        invoiceId: invoice.id,
+        newquantity: 1,
+        foodPrice: populatedFood.price,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+router.post("/changeDummyFoodQuantity", async (req, res) => {
+  try {
+    const tableId = req.body.tableId;
+    const foodId = req.body.foodId;
+    const quantity = req.body.quantity;
+    const table = await Table.findById(tableId);
+    if (!table) {
+      return res.status(404).json({ error: "Table not found" });
+    }
+    let invoice = await Invoice.findById(table.invoice[0]);
+
+    const foodItem = invoice.dummyFood.find((item) => item.id.toString() === foodId);
+    const oldQuantity = foodItem.quantity;
+    if (!foodItem) {
+      return res
+        .status(404)
+        .json({ error: "Food item not found in the invoice." });
+    }
+    // console.log(foodItem)
+    foodItem.quantity = quantity;
+    deferentValue = quantity - oldQuantity;
+    const food = await Food.findById(foodId);
+    if (deferentValue < 0) {
+      await Food.findByIdAndUpdate(foodId, {
+        quantety: food.quantety + deferentValue * -1,
+      });
+    } else if (deferentValue > 0) {
+      await Food.findByIdAndUpdate(foodId, {
+        quantety: food.quantety - deferentValue,
+      });
+    }
+    // Save the updated invoice
+    await invoice.save();
+    const editOneFood = await Food.findById(foodId);
+    res.json({
+      message: "quantity changed",
+      editOneFood,
+      foodItem,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.post("/dummyfoodPrice", async (req, res) => {
+  try {
+    const invoiceId = req.body.invoiceId;
+    const invoice = await Invoice.findById(invoiceId).populate({
+      path: "dummyFood.id",
+      model: "Food",
+    });
+    let total = 0;
+    let totalcost = 0;
+    let totaldiscount = 0;
+    for (const food of invoice.dummyFood) {
+      const quantity = food.quantity;
+      const discount = food.discount;
+      const price = food.foodPrice ? food.foodPrice : food.id.price;
+      const cost = food.id.cost;
+      total += price * quantity;
+      totalcost += cost * quantity;
+      totaldiscount += discount * quantity;
+    }
+    if (invoice.discount >= 0) {
+      totaldiscount += invoice.discount;
+    }
+    finalprice = total - totaldiscount + invoice.deleveryCost;
+    if (finalprice < 0) {
+      finalprice = 0;
+    }
+
+    res.json({
+      total,
+      totalcost,
+      totaldiscount,
+      finalprice,
+      deleveryCost: invoice.deleveryCost,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.delete("/:tableId/:invoiceId/dummyFood/:foodId", async (req, res) => {
+  try {
+    const { invoiceId, foodId, tableId } = req.params;
+    let invoice = await Invoice.findById(invoiceId);
+    const foodItem = invoice.dummyFood.find((item) => item.id.toString() === foodId);
+    const foodDetails = await Food.findById(foodId);
+    await Food.findByIdAndUpdate(foodId, {
+      quantety: foodDetails.quantety + foodItem.quantity,
+    });
+    const updatedInvoice = await Invoice.findByIdAndUpdate(
+      invoiceId,
+      { $pull: { food: { id: foodId } } },
+      { new: true }
+    );
+
+    if (!updatedInvoice) {
+      return res
+        .status(404)
+        .json({ message: "Invoice or food item not found" });
+    }
+    const checkempty = await Invoice.findById(invoiceId);
+    if (checkempty.dummyFood.length < 1) {
+      await Table.findByIdAndUpdate(
+        tableId,
+        { $pull: { invoice: invoiceId } },
+        { new: true }
+      );
+    }
+    const editOneFood = await Food.findById(foodId);
+
+    return res.json({ updatedInvoice, editOneFood });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.post("/finishDummyFood", async (req, res) => {
+  try {
+    // Step 1: Find all invoices with non-empty dummyFood arrays
+    const invoices = await Invoice.find({ dummyFood: { $exists: true, $ne: [] } });
+
+    if (invoices.length === 0) {
+      return res.status(200).json({ message: 'No dummyFood items to move.' });
+    }
+
+    // Counter for tracking total moved items
+    let totalMovedInvoices = 0;
+    let totalMovedItems = 0;
+
+    // Step 2: Iterate over each invoice and move dummyFood to food
+    for (const invoice of invoices) {
+      // Create a Map for existing food items for quick lookup by 'id'
+      const foodMap = new Map();
+      invoice.food.forEach(item => {
+        foodMap.set(item.id.toString(), item);
+      });
+
+      // Iterate over each dummyFood item
+      invoice.dummyFood.forEach(dummyItem => {
+        const foodIdStr = dummyItem.id.toString();
+        if (foodMap.has(foodIdStr)) {
+          // If the food item exists, sum the quantities
+          const existingFood = foodMap.get(foodIdStr);
+          existingFood.quantity += dummyItem.quantity;
+
+          // Optionally, update other fields if necessary
+          // For example:
+          // existingFood.foodCost += dummyItem.foodCost;
+          // existingFood.foodPrice += dummyItem.foodPrice;
+          // existingFood.discount += dummyItem.discount;
+          // existingFood.discountType = dummyItem.discountType; // or handle accordingly
+        } else {
+          // If the food item does not exist, add it to the food array
+          invoice.food.push(dummyItem);
+        }
+
+        // Increment total moved items
+        totalMovedItems += 1;
+      });
+
+      // Clear the dummyFood array
+      invoice.dummyFood = [];
+
+      // Save the updated invoice
+      await invoice.save();
+
+      // Increment moved invoices counter
+      totalMovedInvoices += 1;
+    }
+
+    // Step 3: Send success response
+    res.status(200).json({
+      message: `Successfully moved dummyFood items to food for ${totalMovedInvoices} invoices, totaling ${totalMovedItems} items.`,
+    });
+  } catch (error) {
+    console.error('Error moving dummyFood to food:', error);
+    res.status(500).json({
+      error: 'An error occurred while moving dummyFood to food.',
+      details: error.message,
+    });
+  }
+
+});
+
+
+
+
+
+
+
 router.post("/barcodefood", async (req, res) => {
   try {
     let existingFoodcheck = 0;
@@ -643,6 +952,7 @@ router.post("/changepaymentMethod", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
 router.get("/getPaymentType", async (req, res) => {
   try {
     const invoiceId = req.query.invoiceId;
@@ -879,6 +1189,8 @@ router.post("/printinvoice", async (req, res) => {
     };
 
     await generateImage(); // Generate the image asynchronously
+    await printForRole("./image.png", "كاشير")
+
     await printImageAsync("./image.png", printincount);
     res.status(200).json({ msg: "done" });
   } catch (err) {

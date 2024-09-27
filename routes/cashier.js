@@ -22,6 +22,21 @@ router.get("/", async (req, res) => {
   });
 });
 
+router.get("/getTable", async (req, res) => {
+  const category = await Category.find().populate("foods");
+  const user = await User.findById(req.user);
+  const systemSetting = await SystemSetting.findOne();
+  const table = await Table.find().sort({ number: 1 }); // Sort the tables by number in ascending order
+  console.log(category);
+  res.json({
+    category,
+    table,
+    role: user.role,
+    systemSetting: systemSetting,
+  });
+});
+
+
 router.get("/menu/", async (req, res) => {
   let tableid = req.query.tableid || "_id";
   const systemSetting = await SystemSetting.findOne();
@@ -33,7 +48,17 @@ router.get("/menu/", async (req, res) => {
   const category = await Category.find().populate("foods");
   console.log(category);
 
-  res.render("cashier-food", { category, table, tableid, role: user.role,systemSetting:systemSetting });
+  res.render("cashier-food", { category, table, tableid, role: user.role, systemSetting: systemSetting });
 });
+
+router.get("/getCategory/", async (req, res) => {
+  const user = await User.findById(req.user);
+
+  const category = await Category.find().populate("foods");
+  console.log(category);
+
+  res.json( { category });
+});
+
 
 module.exports = router;

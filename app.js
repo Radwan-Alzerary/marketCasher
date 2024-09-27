@@ -31,14 +31,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-//express session
-app.use(
-  session({
-    secret: "secret",
-    resave: true,
-    saveUninitialized: true,
-  })
-);
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Use true if your server is running over HTTPS
+    httpOnly: false, // Set to true if you don't need to access the cookie via JavaScript
+    sameSite: 'Lax', // Adjust as needed ('Strict', 'Lax', 'None')
+      },
+}));
 
 //use flash
 app.use(flash());
@@ -70,7 +72,11 @@ const checkTokenExpiry = async (req, res, next) => {
 // Apply the middleware globally, so all routes are protected
 app.use(checkTokenExpiry);
 
-app.use(cors());
+// CORS Configuration
+app.use(cors({
+  origin: true, // Reflects the request origin, allowing all origins
+  credentials: true, // Allows cookies to be sent and received
+}));
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");

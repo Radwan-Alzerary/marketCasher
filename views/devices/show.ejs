@@ -1,0 +1,56 @@
+<!-- views/devices/show.ejs -->
+
+<%- include('../header') %>
+
+<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+  <h1 class="text-2xl font-semibold mb-6">Device Details</h1>
+
+  <div class="mb-4">
+    <span class="font-semibold">Name:</span> <span class="text-gray-700"><%= device.name %></span>
+  </div>
+
+  <div class="mb-4">
+    <span class="font-semibold">Type:</span> <span class="text-gray-700"><%= device.type %></span>
+  </div>
+
+  <div class="mb-4">
+    <span class="font-semibold">Roles:</span> <span class="text-gray-700"><%= device.role.join(', ') %></span>
+  </div>
+
+  <div class="mb-4">
+    <span class="font-semibold">IP Address:</span> <span class="text-gray-700"><%= device.ip %></span>
+  </div>
+
+  <div class="mb-4">
+    <span class="font-semibold">Connection Type:</span> <span class="text-gray-700"><%= device.connectionType %></span>
+  </div>
+
+  <div class="mb-4">
+    <span class="font-semibold">Number of Prints:</span> <span class="text-gray-700"><%= device.numberOfPrint %></span>
+  </div>
+
+  <div class="mb-4">
+    <span class="font-semibold">Status:</span>
+    <% if (device.status === 'Active') { %>
+      <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-sm">Active</span>
+    <% } else { %>
+      <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-sm">Inactive</span>
+    <% } %>
+  </div>
+
+  <div class="mb-4">
+    <span class="font-semibold">Location:</span> <span class="text-gray-700"><%= device.location || 'N/A' %></span>
+  </div>
+
+  <div class="mb-6">
+    <span class="font-semibold">Description:</span>
+    <p class="text-gray-700"><%= device.description || 'N/A' %></p>
+  </div>
+
+  <div class="flex space-x-4">
+    <a href="/devices/<%= device._id %>/edit" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition duration-200">Edit</a>
+    <a href="/devices" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition duration-200">Back to Devices</a>
+  </div>
+</div>
+
+<%- include('../footer',{currentpage:'cashier'}) %>

@@ -1,0 +1,49 @@
+<div class="max-w-6xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-semibold">All Devices</h1>
+    <a href="/devices/new" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200">Add New Device</a>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white">
+      <thead>
+        <tr>
+          <th class="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">Name</th>
+          <th class="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">Type</th>
+          <th class="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">Roles</th>
+          <th class="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">IP</th>
+          <th class="px-6 py-3 border-b-2 border-gray-200 text-left text-sm font-semibold text-gray-700">Status</th>
+          <th class="px-6 py-3 border-b-2 border-gray-200 text-center text-sm font-semibold text-gray-700">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% devices.forEach(function(device) { %>
+          <tr class="hover:bg-gray-100">
+            <td class="px-6 py-4 border-b border-gray-200"><%= device.name %></td>
+            <td class="px-6 py-4 border-b border-gray-200"><%= device.type %></td>
+            <td class="px-6 py-4 border-b border-gray-200"><%= device.role.join(', ') %></td>
+            <td class="px-6 py-4 border-b border-gray-200"><%= device.ip %></td>
+            <td class="px-6 py-4 border-b border-gray-200">
+              <% if (device.status === 'Active') { %>
+                <span class="px-2 py-1 bg-green-200 text-green-800 rounded-full text-sm">Active</span>
+              <% } else { %>
+                <span class="px-2 py-1 bg-red-200 text-red-800 rounded-full text-sm">Inactive</span>
+              <% } %>
+            </td>
+            <td class="px-6 py-4 border-b border-gray-200 text-center">
+              <a href="/devices/<%= device._id %>" class="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 mr-2">View</a>
+              <a href="/devices/<%= device._id %>/edit" class="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition duration-200 mr-2">Edit</a>
+              <form action="/devices/<%= device._id %>?_method=DELETE" method="POST" class="inline-block">
+                <button type="submit" onclick="return confirm('Are you sure you want to delete this device?');"
+                        class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-200">
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+

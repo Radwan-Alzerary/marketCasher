@@ -32,14 +32,15 @@
             class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
             اعدادات المخزن
         </button>
+
         <!-- <button type="button" onclick="showDiscountSetting()"
             class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
             اعدادات الخصوم
         </button> -->
-        <!-- <button type="button" onclick="showDeviceSetting()"
+        <button type="button" onclick="showDeviceSetting()"
             class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
             اعدادات الاجهزة
-        </button> -->
+        </button>
         <!-- <button type="button" onclick="showAdminSetting()"
             class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
             اعدادات الادمنية
@@ -81,16 +82,16 @@
                     </select>
                 </div>
                 <div class="w-full flex items-center justify-end">
-                    <%if(systemSetting.type === "casher"){%>
+                    <%if(systemSetting.type==="casher" ){%>
                         <input type="submit" value="اضافة زبون"
-                        class="w-1/4 rounded-lg h-12 bg-green-200 cursor-pointer hover:bg-green-400">
+                            class="w-1/4 rounded-lg h-12 bg-green-200 cursor-pointer hover:bg-green-400">
 
-                    <%}else if(systemSetting.type === "restaurant"){%>
-                        <input type="submit" value="اضافة طاولة"
-                        class="w-1/4 rounded-lg h-12 bg-green-200 cursor-pointer hover:bg-green-400">
+                        <%}else if(systemSetting.type==="restaurant" ){%>
+                            <input type="submit" value="اضافة طاولة"
+                                class="w-1/4 rounded-lg h-12 bg-green-200 cursor-pointer hover:bg-green-400">
 
 
-                    <%}%>
+                            <%}%>
                 </div>
             </form>
             <div class="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:py-1.5 lg:max-w-7xl ">
@@ -106,16 +107,11 @@
                                     <div
                                         class="hover:bg-slate-200<%if(tables.invoice[0]){%> bg-green-200 <%}else{%> bg-white<%}%> aspect-h-1  aspect-w-1 w-full  overflow-hidden rounded-lg  xl:aspect-h-5 xl:aspect-w-5">
                                         <div class="text-center flex flex-col justify-center items-center">
-                                            <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            height="5em"
-                                            viewBox="0 0 448 512"
-                                          >
-                                            <path
-                                              d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
-                                            />
-                                          </svg>
-                                                                          <p class="text-black font-bold">زبون رقم : <%=tables.number%>
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="5em" viewBox="0 0 448 512">
+                                                <path
+                                                    d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" />
+                                            </svg>
+                                            <p class="text-black font-bold">زبون رقم : <%=tables.number%>
                                             </p>
                                         </div>
                                     </div>
@@ -201,7 +197,8 @@
                 </div>
                 <div class="mb-6 w-full">
                     <label for="default-input"
-                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">نهاية القائمة</label>
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">نهاية
+                        القائمة</label>
                     <input value="<%=setting[0].invoicefooter%>" type="text" placeholder="قم بادخال كتابة نهاية القائمة"
                         name="invoicefooter" id="default-input"
                         class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -224,14 +221,14 @@
                 <input name="image"
                     class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                     aria-describedby="file_input_help" id="file_input" type="file">
-                
+
                 <input type="text" id="foodcategoryid" name="foodcategoryid" class="hidden">
                 <div class="mb-6 w-full">
                     <label for="default-input"
-                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"> 
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         ارتفاع باركود الطباعة</label>
-                    <input value="<%=setting[0].barcodeYsize%>" type="number" placeholder="قم بادخال ارتفاع باركود الطباعة" name="barcodeYsize"
-                        id="default-input"
+                    <input value="<%=setting[0].barcodeYsize%>" type="number"
+                        placeholder="قم بادخال ارتفاع باركود الطباعة" name="barcodeYsize" id="default-input"
                         class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required>
                 </div>
@@ -239,22 +236,23 @@
                     <label for="default-input"
                         class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         عرض باركود الطباعة</label>
-                    <input value="<%=setting[0].barcodeXsize%>" type="number" placeholder="قم بادخال عرض باركود الطباعة" name="barcodeXsize"
-                    
-                        id="default-input"
+                    <input value="<%=setting[0].barcodeXsize%>" type="number" placeholder="قم بادخال عرض باركود الطباعة"
+                        name="barcodeXsize" id="default-input"
                         class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required>
                 </div>
 
                 <div class="mb-6 w-full">
-                    <label for="default-select" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    <label for="default-select"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         نوع ورق الطباعة
                     </label>
                     <select name="printerType" id="default-select"
                         class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required>
-                        <option value="A4" <%= setting[0].printerType === 'A4' ? 'selected' : '' %>>A4</option>
-                        <option value="Thermal" <%= setting[0].printerType === 'Thermal' ? 'selected' : '' %>>حراري</option>
+                        <option value="A4" <%=setting[0].printerType==='A4' ? 'selected' : '' %>>A4</option>
+                        <option value="Thermal" <%=setting[0].printerType==='Thermal' ? 'selected' : '' %>>حراري
+                        </option>
                     </select>
                 </div>
                 <div class="mb-6 w-full">
@@ -262,7 +260,6 @@
                         class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         وحدة الكمية</label>
                     <input value="<%=setting[0].amountUnit%>" placeholder="وحدة الكمية" name="amountUnit"
-                    
                         id="default-input"
                         class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required>
@@ -304,6 +301,10 @@
             </form>
 
         </div>
+        <div id="DeviceSetting" class="hidden w-full h-full">
+            <%- include('devices/index', { role: role,devices:devices }); %>
+        </div>
+
     </div>
 
     <script>
@@ -419,7 +420,7 @@
                 });
         });
 
-        
+
 
 
         $(document).on('click', '[id^=unactivetable]', function () {

@@ -1,0 +1,99 @@
+<!-- views/devices/new.ejs -->
+
+<%- include('../header') %>
+
+<div class="max-w-4xl mx-auto p-6 h-[80%] bg-white rounded-lg shadow-md  overflow-scroll">
+  <h1 class="text-2xl font-semibold mb-6 ">Add New Device</h1>
+
+  <form action="/devices" method="POST">
+    <!-- Device Name -->
+    <div class="mb-4 " >
+      <label for="name" class="block text-gray-700">Device Name</label>
+      <input type="text" id="name" name="device[name]" required
+             class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <!-- Device Type -->
+    <div class="mb-4">
+      <label for="type" class="block text-gray-700">Device Type</label>
+      <select id="type" name="device[type]" required
+              class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="" disabled selected>Select Type</option>
+        <% deviceTypes.forEach(function(type) { %>
+          <option value="<%= type %>"><%= type %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <!-- Device Roles -->
+    <div class="mb-4">
+      <span class="block text-gray-700 mb-2">Device Roles</span>
+      <div class="flex flex-wrap">
+        <% deviceRoles.forEach(function(role) { %>
+          <label class="mr-4 mb-2 flex items-center">
+            <input type="checkbox" name="device[role]" value="<%= role %>" class="form-checkbox h-5 w-5 text-blue-600">
+            <span class="ml-2 text-gray-700"><%= role %></span>
+          </label>
+        <% }); %>
+      </div>
+    </div>
+
+    <!-- Connection Type -->
+    <div class="mb-4">
+      <label for="connectionType" class="block text-gray-700">Connection Type</label>
+      <select id="connectionType" name="device[connectionType]" required
+              class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="" disabled selected>Select Connection Type</option>
+        <% connectionTypes.forEach(function(type) { %>
+          <option value="<%= type %>"><%= type %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <!-- IP Address -->
+    <div class="mb-4">
+      <label for="ip" class="block text-gray-700">IP Address</label>
+      <input type="text" id="ip" name="device[ip]" required
+             class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <!-- Number of Prints -->
+    <div class="mb-4">
+      <label for="numberOfPrint" class="block text-gray-700">Number of Prints</label>
+      <input type="number" id="numberOfPrint" name="device[numberOfPrint]" min="0" value="0"
+             class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <!-- Status -->
+    <div class="mb-4">
+      <label for="status" class="block text-gray-700">Status</label>
+      <select id="status" name="device[status]"
+              class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="Active" selected>Active</option>
+        <option value="Inactive">Inactive</option>
+      </select>
+    </div>
+
+    <!-- Location -->
+    <div class="mb-4">
+      <label for="location" class="block text-gray-700">Location</label>
+      <input type="text" id="location" name="device[location]"
+             class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <!-- Description -->
+    <div class="mb-6">
+      <label for="description" class="block text-gray-700">Description</label>
+      <textarea id="description" name="device[description]" rows="3"
+                class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit"
+            class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200">
+      اضافة طابعة
+    </button>
+  </form>
+</div>
+
+<%- include('../footer',{currentpage:'cashier'}) %>

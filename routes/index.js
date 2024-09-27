@@ -16,5 +16,6 @@ router.use("/dashboard",isfulladmin, ensureAuthenticated, require("./dashboard")
 router.use("/custemer", ensureAuthenticated, require("./custemer"));
 router.use("/debt", ensureAuthenticated, require("./debt"));
 router.use("/setting",isfulladmin, ensureAuthenticated, require("./setting"));
+router.use("/devices",isfulladmin, ensureAuthenticated, require("./devices"));
 
 module.exports = router;
