@@ -26,9 +26,9 @@ const browserPromise = puppeteer.launch(); // Launch the browser once
 const TelegramBot = require("node-telegram-bot-api");
 const { printForRole } = require("../service/thermalPrintService");
 
-const token = "7011940534:AAHjtNHpdR5yzgkSX6CruBaog_blb1TjsOo";
+// const token = "7011940534:AAHjtNHpdR5yzgkSX6CruBaog_blb1TjsOo";
 
-const bot = new TelegramBot(token, { polling: true });
+// const bot = new TelegramBot(token, { polling: true });
 
 async function printImageAsync(imagePath, printincount) {
   const setting = await Setting.findOne();
@@ -51,10 +51,10 @@ async function printImageAsync(imagePath, printincount) {
     await printer.printImage(imagePath); // Print PNG image
     await printer.cut();
     const systemSetting = await SystemSetting.findOne();
-    if (systemSetting.telegramBotId) {
-      const imageUrl = imagePath; // Replace with your image URL or local path
-      bot.sendPhoto(systemSetting.telegramBotId, imageUrl, { caption: "فاتورة جديدة" });
-    }
+    // if (systemSetting.telegramBotId) {
+    //   const imageUrl = imagePath; // Replace with your image URL or local path
+    //   bot.sendPhoto(systemSetting.telegramBotId, imageUrl, { caption: "فاتورة جديدة" });
+    // }
     for (i = 0; i < printincount; i++) {
       await printer.execute();
     }
@@ -380,8 +380,7 @@ router.post("/dummyfood", async (req, res) => {
   try {
     let existingFoodcheck = 0;
     const tableId = req.body.tableId;
-    const { foodId, quantity, discount, discountType } = req.body;
-
+    const { foodId } = req.body;
     const table = await Table.findById(tableId);
     if (!table) {
       return res.status(404).json({ error: "Table not found" });
@@ -434,7 +433,8 @@ router.post("/dummyfood", async (req, res) => {
       });
     } else {
       // If the food item doesn't exist, add it to the invoice
-      const food = await Food.findById(foodId);
+
+      const food = await Food.findById(req.body.foodId);
       await Food.findByIdAndUpdate(foodId, { quantety: food.quantety - 1 });
 
       if (!food) {
@@ -446,7 +446,6 @@ router.post("/dummyfood", async (req, res) => {
         discount: 0,
         foodCost: food.cost,
         foodPrice: food.price,
-        discountType: discountType || "cash",
       };
       food.quantety = food.quantety - 1;
       await food.save();
@@ -456,7 +455,7 @@ router.post("/dummyfood", async (req, res) => {
 
     await invoice.save();
     // Get the last added food from the invoice
-    const lastAddedFood = invoice.dummyFood[invoice.food.length - 1].id;
+    const lastAddedFood = invoice.dummyFood[invoice.dummyFood.length - 1].id;
     const editOneFood = await Food.findById(foodId);
 
     // Populate the last added food
@@ -506,7 +505,6 @@ router.post("/changeDummyFoodQuantity", async (req, res) => {
         .status(404)
         .json({ error: "Food item not found in the invoice." });
     }
-    // console.log(foodItem)
     foodItem.quantity = quantity;
     deferentValue = quantity - oldQuantity;
     const food = await Food.findById(foodId);
@@ -613,8 +611,11 @@ router.delete("/:tableId/:invoiceId/dummyFood/:foodId", async (req, res) => {
 router.post("/finishDummyFood", async (req, res) => {
   try {
     // Step 1: Find all invoices with non-empty dummyFood arrays
-    const invoices = await Invoice.find({ dummyFood: { $exists: true, $ne: [] } });
-
+    const table = await Table.findById(req.body.tableId);
+    if (!table) {
+      return res.status(404).json({ error: "Table not found" });
+    }
+    const invoices = await Invoice.findOne().sort({ number: -1 });
     if (invoices.length === 0) {
       return res.status(200).json({ message: 'No dummyFood items to move.' });
     }
@@ -624,45 +625,44 @@ router.post("/finishDummyFood", async (req, res) => {
     let totalMovedItems = 0;
 
     // Step 2: Iterate over each invoice and move dummyFood to food
-    for (const invoice of invoices) {
-      // Create a Map for existing food items for quick lookup by 'id'
-      const foodMap = new Map();
-      invoice.food.forEach(item => {
-        foodMap.set(item.id.toString(), item);
-      });
 
-      // Iterate over each dummyFood item
-      invoice.dummyFood.forEach(dummyItem => {
-        const foodIdStr = dummyItem.id.toString();
-        if (foodMap.has(foodIdStr)) {
-          // If the food item exists, sum the quantities
-          const existingFood = foodMap.get(foodIdStr);
-          existingFood.quantity += dummyItem.quantity;
+    // Create a Map for existing food items for quick lookup by 'id'
+    const foodMap = new Map();
+    invoices.food.forEach(item => {
+      foodMap.set(item.id.toString(), item);
+    });
 
-          // Optionally, update other fields if necessary
-          // For example:
-          // existingFood.foodCost += dummyItem.foodCost;
-          // existingFood.foodPrice += dummyItem.foodPrice;
-          // existingFood.discount += dummyItem.discount;
-          // existingFood.discountType = dummyItem.discountType; // or handle accordingly
-        } else {
-          // If the food item does not exist, add it to the food array
-          invoice.food.push(dummyItem);
-        }
+    // Iterate over each dummyFood item
+    invoices.dummyFood.forEach(dummyItem => {
+      const foodIdStr = dummyItem.id.toString();
+      if (foodMap.has(foodIdStr)) {
+        // If the food item exists, sum the quantities
+        const existingFood = foodMap.get(foodIdStr);
+        existingFood.quantity += dummyItem.quantity;
 
-        // Increment total moved items
-        totalMovedItems += 1;
-      });
+        // Optionally, update other fields if necessary
+        // For example:
+        // existingFood.foodCost += dummyItem.foodCost;
+        // existingFood.foodPrice += dummyItem.foodPrice;
+        // existingFood.discount += dummyItem.discount;
+        // existingFood.discountType = dummyItem.discountType; // or handle accordingly
+      } else {
+        // If the food item does not exist, add it to the food array
+        invoices.food.push(dummyItem);
+      }
 
-      // Clear the dummyFood array
-      invoice.dummyFood = [];
+      // Increment total moved items
+      totalMovedItems += 1;
+    });
 
-      // Save the updated invoice
-      await invoice.save();
+    // Clear the dummyFood array
+    invoices.dummyFood = [];
 
-      // Increment moved invoices counter
-      totalMovedInvoices += 1;
-    }
+    // Save the updated invoice
+    await invoices.save();
+
+    // Increment moved invoices counter
+    totalMovedInvoices += 1;
 
     // Step 3: Send success response
     res.status(200).json({
@@ -811,7 +811,6 @@ router.post("/changequantity", async (req, res) => {
         .status(404)
         .json({ error: "Food item not found in the invoice." });
     }
-    // console.log(foodItem)
     foodItem.quantity = quantity;
     deferentValue = quantity - oldQuantity;
     const food = await Food.findById(foodId);
@@ -855,7 +854,6 @@ router.post("/changeprice", async (req, res) => {
         .status(404)
         .json({ error: "Food item not found in the invoice." });
     }
-    // console.log(foodItem)
     foodItem.foodPrice = newPrice;
     await invoice.save();
     const editOneFood = await Food.findById(foodId);
@@ -920,7 +918,6 @@ router.post("/changepaymentMethod", async (req, res) => {
     if (!invoice) {
       return res.status(404).json({ error: "Invoice not found" });
     }
-    console.log(invoice.paymentType.name);
     let newState = "";
     // If the invoice has no paymentType set, default it to "اجل"
     if (!invoice.paymentType) {
@@ -1059,7 +1056,6 @@ router.post("/previesinvoice", async (req, res) => {
 router.post("/cancele", async (req, res) => {
   try {
     let invoice = await Invoice.findById(req.body.invoiceId);
-    // console.log(req.body);
     invoice.active = false;
     invoice.type = "ملغى";
     invoice.fullcost = req.body.totalcost;
@@ -1075,13 +1071,11 @@ router.post("/cancele", async (req, res) => {
     await currentable.save();
 
     await invoice.save();
-    // console.log(req.body.tableId)
     const updatedInvoice = await Table.findByIdAndUpdate(
       req.body.tableId,
       { $pull: { invoice: req.body.invoiceId } },
       { new: true }
     );
-    // console.log(updatedInvoice)
 
     if (!updatedInvoice) {
       return res
@@ -1199,6 +1193,103 @@ router.post("/printinvoice", async (req, res) => {
   }
 });
 
+router.post("/printDeleveryInvoice", async (req, res) => {
+  try {
+    const htmlContent = req.body.htmbody;
+    const printincount = req.body.printingcount;
+
+    const generateImage = async () => {
+      const browser = await browserPromise; // Reuse the same browser instance
+      const page = await browser.newPage();
+      await page.setContent(htmlContent);
+
+      await page.waitForSelector("main"); // Wait for the <main> element to be rendered
+      const mainElement = await page.$("main"); // Select the <main> element
+
+      await mainElement.screenshot({
+        path: "./image.png",
+        fullPage: false, // Capture only the <main> element
+        javascriptEnabled: false,
+        headless: true,
+      });
+      console.log("Image generation done");
+    };
+
+    await generateImage(); // Generate the image asynchronously
+    await printForRole("./image.png", "دلفري")
+
+    await printImageAsync("./image.png", printincount);
+    res.status(200).json({ msg: "done" });
+  } catch (err) {
+    console.error(err);
+    return res.json({ message: "No invoice found in the table", err });
+  }
+});
+
+
+router.post("/printdummyinvoice", async (req, res) => {
+  try {
+    const htmlContent = req.body.htmbody;
+
+    const generateImage = async () => {
+      const browser = await browserPromise; // Reuse the same browser instance
+      const page = await browser.newPage();
+      await page.setContent(htmlContent);
+
+      await page.waitForSelector("main"); // Wait for the <main> element to be rendered
+      const mainElement = await page.$("main"); // Select the <main> element
+
+      await mainElement.screenshot({
+        path: "./image.png",
+        fullPage: false, // Capture only the <main> element
+        javascriptEnabled: false,
+        headless: true,
+      });
+      console.log("Image generation done");
+    };
+
+    await generateImage(); // Generate the image asynchronously
+    await printForRole("./image.png", "مطبخ")
+
+    res.status(200).json({ msg: "done" });
+  } catch (err) {
+    console.error(err);
+    return res.json({ message: "No invoice found in the table", err });
+  }
+});
+
+router.post("/printalert1invoice", async (req, res) => {
+  try {
+    const htmlContent = req.body.htmbody;
+
+    const generateImage = async () => {
+      const browser = await browserPromise; // Reuse the same browser instance
+      const page = await browser.newPage();
+      await page.setContent(htmlContent);
+
+      await page.waitForSelector("main"); // Wait for the <main> element to be rendered
+      const mainElement = await page.$("main"); // Select the <main> element
+
+      await mainElement.screenshot({
+        path: "./image.png",
+        fullPage: false, // Capture only the <main> element
+        javascriptEnabled: false,
+        headless: true,
+      });
+      console.log("Image generation done");
+    };
+
+    await generateImage(); // Generate the image asynchronously
+    await printForRole("./image.png", "نداء اول")
+
+    res.status(200).json({ msg: "done" });
+  } catch (err) {
+    console.error(err);
+    return res.json({ message: "No invoice found in the table", err });
+  }
+});
+
+
 router.get("/:tableId/foodmenu", async (req, res) => {
   try {
     const { tableId } = req.params;
@@ -1235,10 +1326,47 @@ router.get("/:tableId/foodmenu", async (req, res) => {
   }
 });
 
+router.get("/:tableId/dummyfood", async (req, res) => {
+  try {
+    const { tableId } = req.params;
+    const setting = await Setting.findOne().sort({ number: -1 });
+    const table = await Table.findById(tableId).populate({
+      path: "invoice",
+      populate: {
+        path: "dummyFood.id",
+        model: "Food",
+      },
+    });
+
+    if (!table) {
+      return res.status(404).json({ error: "Table not found" });
+    }
+
+    if (table.invoice.length === 0) {
+      return res.json({ message: "No invoice found in the table", food: [] });
+    }
+
+    const invoice = table.invoice[0];
+    res.json({
+      message: "Food items retrieved successfully",
+      newquantity: invoice.dummyFood.quantity,
+      foodPrice: invoice.dummyFood.foodPrice,
+      food: invoice.dummyFood,
+      invoiceid: invoice.id,
+      setting,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 router.get("/:invoiceId/checout", async (req, res) => {
   try {
     const { invoiceId } = req.params;
     const setting = await Setting.findOne().sort({ number: -1 });
+    const systemSetting = await SystemSetting.findOne();
+
     const invoice = await Invoice.findById(invoiceId)
       .populate({
         path: "food.id",
@@ -1248,9 +1376,44 @@ router.get("/:invoiceId/checout", async (req, res) => {
     const tableid = invoice.tableid ? invoice.tableid.number : 0;
     res.json({
       message: "Food items retrieved successfully",
-      tablenumber: tableid,
+      tableNumber: tableid,
       invoicedate: invoice.progressdata,
       food: invoice.food,
+      invoiceid: invoice.id,
+      tableNumber:invoice.tableid.number,
+      setting: setting,
+      finalcost: invoice.finalcost,
+      fullcost: invoice.fullcost,
+      invoicenumber: invoice.number,
+      fulldiscont: invoice.fulldiscont,
+      systemSetting: systemSetting,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.get("/:tableId/dummychecout", async (req, res) => {
+  try {
+    const tableId = req.params.tableId;
+    const table = await Table.findById(tableId);
+    if (!table) {
+      console.log("Table not found");
+      return res.status(404).json({ error: "Table not found" });
+    }
+    let invoice = await Invoice.findById(table.invoice[0]).populate({
+      path: "dummyFood.id",
+      model: "Food",
+    });
+    console.log(invoice)
+    const setting = await Setting.findOne().sort({ number: -1 });
+    const tableid = invoice.tableid ? invoice.tableid.number : 0;
+    res.json({
+      message: "Food items retrieved successfully",
+      tableNumber: table.number,
+      invoicedate: invoice.progressdata,
+      food: invoice.dummyFood,
       invoiceid: invoice.id,
       setting: setting,
       finalcost: invoice.finalcost,
@@ -1289,6 +1452,45 @@ router.delete("/:tableId/:invoiceId/food/:foodId", async (req, res) => {
       await Table.findByIdAndUpdate(
         tableId,
         { $pull: { invoice: invoiceId } },
+        { new: true }
+      );
+    }
+    const editOneFood = await Food.findById(foodId);
+
+    return res.json({ updatedInvoice, editOneFood });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.delete("/:tableId/dummyFood/:foodId", async (req, res) => {
+  try {
+    const { foodId, tableId } = req.params;
+    const table = await Table.findById(tableId);
+    if (!table) {
+      return res.status(404).json({ error: "Table not found" });
+    }
+    const invoice = await Invoice.findOne().sort({ number: -1 });
+    if (invoice.length === 0) {
+      return res.status(200).json({ message: 'No dummyFood items to move.' });
+    }
+    const updatedInvoice = await Invoice.findByIdAndUpdate(
+      invoice.id,
+      { $pull: { dummyFood: { id: foodId } } },
+      { new: true }
+    );
+
+    if (!updatedInvoice) {
+      return res
+        .status(404)
+        .json({ message: "Invoice or food item not found" });
+    }
+    const checkempty = await Invoice.findById(invoice.id);
+    if (checkempty.food.length < 1) {
+      await Table.findByIdAndUpdate(
+        tableId,
+        { $pull: { invoice: invoice.id } },
         { new: true }
       );
     }
@@ -1382,8 +1584,6 @@ router.post("/invoiceaovetall", async (req, res) => {
     const dateFilter = {};
     if (fromDate) dateFilter.$gte = fromDate;
     if (toDate) dateFilter.$lte = toDate;
-    console.log(fromDate)
-    console.log(toDate)
     // Construct match filters for Invoice and Food collections
     const invoiceMatchFilter = {
       type: { $in: ["مكتمل", "توصيل"] }

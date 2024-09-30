@@ -13,6 +13,7 @@ const passport = require("passport");
 require("dotenv").config();
 require("./config/database");
 require("./config/passport")(passport);
+const http = require('http');
 
 require("./models/user");
 const cookieParser = require("cookie-parser");
@@ -24,6 +25,7 @@ const systemSetting = require("./models/systemSetting");
 const Food = require("./models/food");
 const Category = require("./models/category");
 const User = require("./models/user");
+const socketIo = require('socket.io');
 
 // const Visitor = require('./models/visitor');
 app.use(express.static(path.join(__dirname, "public")));
@@ -33,13 +35,8 @@ app.use(cookieParser());
 
 app.use(session({
   secret: 'secret',
-  resave: false,
+  resave: true,
   saveUninitialized: false,
-  cookie: {
-    secure: false, // Use true if your server is running over HTTPS
-    httpOnly: false, // Set to true if you don't need to access the cookie via JavaScript
-    sameSite: 'Lax', // Adjust as needed ('Strict', 'Lax', 'None')
-      },
 }));
 
 //use flash
@@ -68,6 +65,8 @@ const checkTokenExpiry = async (req, res, next) => {
     res.status(500).send("An error occurred while checking token expiry.");
   }
 };
+// Create an HTTP server
+const server = http.createServer(app);
 
 // Apply the middleware globally, so all routes are protected
 app.use(checkTokenExpiry);
@@ -195,7 +194,29 @@ systemSetting.countDocuments()
   });
 
 app.use(require("./routes"));
+// Initialize Socket.IO
+const io = socketIo(server);
 
-app.listen(port, () => {
-  console.log(`Server started on port ${port}`);
+// Handle socket connections
+io.on('connection', (socket) => {
+  console.log('New customer connected:', socket.id);
+
+  // Listen for messages from a customer
+  socket.on('message', (message) => {
+    console.log('Received message:', message);
+
+    // Broadcast the message to all connected customers
+    io.emit('message', message);
+  });
+
+  // Handle customer disconnection
+  socket.on('disconnect', () => {
+    console.log('Customer disconnected:', socket.id);
+  });
+});
+
+// Start the server
+const PORT = 3000;
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });

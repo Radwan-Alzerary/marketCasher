@@ -35,12 +35,32 @@ router.get('/register', (req, res) => {
   res.render('register')
 })
 
-router.post('/login', passport.authenticate('local', {
-  successRedirect: '/cashier',
-  failureRedirect: '/admin/login',
-  failureFlash: true,
-}), (req, res, next) => {
-})
+// routes/users.js
+const jwt = require('jsonwebtoken');
+
+// Unified Login Route (Not Recommended Due to Complexity)
+router.post('/login', (req, res, next) => {
+  const isApiClient = req.headers['x-client-type'] === 'mobile';
+  console.log(req.headers)
+  passport.authenticate('local', { session: !isApiClient }, (err, user, info) => {
+    if (err) { return next(err); }
+    if (!user) {
+      return res.status(400).json({ message: info ? info.message : 'Login failed' });
+    }
+
+    if (isApiClient) {
+      // Generate JWT token
+      const token = jwt.sign({ id: user.id, role: user.role }, 'your_jwt_secret', { expiresIn: '9999h' });
+      return res.json({ token });
+    } else {
+      // Establish session
+      req.login(user, (err) => {
+        if (err) { return next(err); }
+        return res.redirect('/cashier');
+      });
+    }
+  })(req, res, next);
+});
 
 //register post handle
 
@@ -110,11 +130,26 @@ router.post('/register', async (req, res) => {
   }
 });
 
+router.get('/verify-token', (req, res) => {
+  const token = req.headers['authorization']?.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ valid: false });
+  }
+
+  jwt.verify(token, 'your_jwt_secret', (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ valid: false });
+    } else {
+      return res.status(200).json({ valid: true });
+    }
+  });
+});
 
 
 //logout
 router.get('/logout', (req, res) => {
-  req.logout(function(err) {
+  req.logout(function (err) {
     if (err) { return next(err); }
     res.redirect('/');
   });

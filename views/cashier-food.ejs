@@ -1335,6 +1335,58 @@ fetch(`/setting/getsetting`)
   <script src="/js/casher.js"></script>
   <script src="/js/printinvoice.js"></script>
   <script src="/js/printA4.js"></script>
+  <script>
+    // Connect to the Socket.IO server
+    const socket = io('http://localhost:3000', {
+        reconnection: true,  // Enable reconnection (default)
+        reconnectionAttempts: Infinity,  // Try reconnecting forever
+        reconnectionDelay: 1000,  // Wait 1 second before retrying
+        reconnectionDelayMax: 5000,  // Maximum delay between retries
+        randomizationFactor: 0.5  // Randomization for reconnection delay
+    });
+
+console.log("socket",socket)
+    // Listen for messages from the server
+    socket.on('message', (message) => {
+      if(message==="refresh"){
+        refrash();
+      }
+      console.log(`Server: ${message}`)
+    });
+
+    // Show connection info
+    socket.on('connect', () => {
+      console.log(`Connected to the server`)
+
+    });
+
+    // Log reconnection attempts
+    socket.on('reconnecting', (attempt) => {
+      console.log(`Attempting to reconnect... (Attempt ${attempt})`)
+    });
+
+    // Log successful reconnection
+    socket.on('reconnect', (attemptNumber) => {
+      console.log(`Reconnected to the server after ${attemptNumber} attempt(s)!`)
+    });
+
+    // Log disconnection
+    socket.on('disconnect', (reason) => {
+      console.log(`Disconnected from the server. Reason: ${reason}`)
+    });
+
+    // Log reconnection errors
+    socket.on('reconnect_error', (error) => {
+      console.error(`Reconnection error: ${error}`);
+    });
+
+    // Log reconnection failure
+    socket.on('reconnect_failed', () => {
+      console.error('Failed to reconnect to the server.');
+    });
+</script>
+
+
 
   <%- include('footer',{currentpage:'cashier'}); %>
 </div>

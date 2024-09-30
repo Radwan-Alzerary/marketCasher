@@ -20,7 +20,7 @@ function printinvoice(
     .then((data) => {
       let remainingValue = "";
       let remainingString = "";
-
+      console.log(data.systemSetting.type)
       if (ReceivedAmount != 0 && RemainingAmount != 0) {
         remainingValue = `
                     <div style="margin-top: 3px;">
@@ -47,8 +47,8 @@ function printinvoice(
         itemRows.push([
           `${food.id.name}`,
           `${food.quantity}`,
-          `${food.foodPrice?food.foodPrice:food.id.price}`,
-          `${Number(food.quantity) * Number(food.foodPrice?food.foodPrice:food.id.price)}`,
+          `${food.foodPrice ? food.foodPrice : food.id.price}`,
+          `${Number(food.quantity) * Number(food.foodPrice ? food.foodPrice : food.id.price)}`,
         ]);
       });
       var items = "";
@@ -112,39 +112,61 @@ function printinvoice(
         CommentField = "";
       }
       // console.log(items)
-
       const invoicedateString = data.invoicedate;
       const invoicedate = new Date(invoicedateString);
+      
+      // Get the hours, then adjust for the 3-hour difference
+      let hours = invoicedate.getHours() - 3;
+      
+      // Handle wrapping around when the result is negative
+      if (hours < 0) {
+        hours += 24; // Wrap around to the previous day
+      
+        // Subtract one day from the date
+        invoicedate.setDate(invoicedate.getDate() - 1);
+      }
+      
+      const day = invoicedate.getDate();
+      const month = invoicedate.getMonth() + 1; // Adding 1 to get the actual month
+      const year = invoicedate.getFullYear();
+      const minutes = invoicedate.getMinutes();
+      const seconds = invoicedate.getSeconds();
+      
+      // Create a formatted string
+      const formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+      const dateyear = `${day}/${month}/${year}`;
+      const dateclock = `${hours}:${minutes}:${seconds}`;
+            console.log("tableNum", data.tableNumber);
+      console.log("systemType",data.systemSetting.type !== "casher")
+      
+      if (data.systemSetting.type !== "casher") {
+        if (data.tableNumber < 100) {
+          tablenum = `
+      <div style="margin-left: 27px;">
+      طاولة رقم ${data.tableNumber}
+      </div>
+      `;
+        } else {
+          tablenum = `
+      <div style="margin-left: 27px;">
+      التوصيل
+      </div>
+      `;
+        }
+      }else{
+        if (data.tableNumber < 100) {
+          tablenum = `
+      <div style="margin-left: 27px;">
+      </div>
+      `;
+        } else {
+          tablenum = `
+      <div style="margin-left: 27px;">
+      التوصيل
+      </div>
+      `;
+        }
 
-      // Adding 1 to get the correct month
-// Get day, month, year, hours, minutes, and seconds
-const day = invoicedate.getDate();
-const month = invoicedate.getMonth() + 1; // Adding 1 to get the actual month
-const year = invoicedate.getFullYear();
-const hours = invoicedate.getHours() - 3;
-const minutes = invoicedate.getMinutes();
-const seconds = invoicedate.getSeconds();
-
-// Create a formatted string
-const formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-let tablenum = "";
-const dateyear = `${day}/${month}/${year}`
-  const dateclock =`${hours}:${minutes}:${seconds}`;
-
-console.log(dateyear,dateclock);
-
-      if (data.tablenumber < 100) {
-        tablenum = `
-    <div style="margin-left: 27px;">
-  
-    </div>
-    `;
-      } else {
-        tablenum = `
-    <div style="margin-left: 27px;">
-    التوصيل
-    </div>
-    `;
       }
 
       const htmltoprint2 = `
@@ -293,24 +315,48 @@ ${deleveyCostView}
             `;
       // console.log(htmltoprint)
 
-      fetch("/invoice/printinvoice/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          htmbody: htmltoprint2,
-          printingcount: printingcount,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          // console.log(data)
+      if (type !== "delevery") {
+        fetch("/invoice/printinvoice/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            htmbody: htmltoprint2,
+            printingcount: printingcount,
+          }),
         })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
+          .then((response) => response.json())
+          .then((data) => {
+            // console.log(data)
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Handle errors
+          });
+
+      } else {
+        fetch("/invoice/printdeleveryinvoice/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            htmbody: htmltoprint2,
+            printingcount: printingcount,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // console.log(data)
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Handle errors
+          });
+
+      }
+
     })
     .catch((error) => {
       console.error(error);

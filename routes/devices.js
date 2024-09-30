@@ -18,7 +18,7 @@ router.get("/new",async (req, res) => {
     const user = await User.findById(req.user);
     const systemSetting = await SystemSetting.findOne();
 
-  res.render("devices/new", { deviceTypes, deviceRoles, connectionTypes,role: user.role ,systemSetting });
+  res.render("devices/new", { deviceTypes, deviceRoles, connectionTypes,role: user.role ,role: user.role,systemSetting });
 });
 
 // Add new device to DB

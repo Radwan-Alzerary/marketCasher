@@ -41,22 +41,29 @@ router.get("/", async (req, res) => {
   });
   res.render("food", { category, role: user.role, systemSetting, totalCost });
 });
+
+router.get("/getall", async (req, res) => {
+  const food = await Food.find({ deleted: false });
+  console.log(food)
+  res.json(food);
+});
+
 router.get("/categories", async (req, res) => {
   try {
-      const systemSetting = await SystemSetting.findOne();
-      const category = await Category.find().populate("foods");
-      const user = await User.findById(req.user);
-      const food = await Food.find({ deleted: false, unlimit: false });
+    const systemSetting = await SystemSetting.findOne();
+    const category = await Category.find().populate("foods");
+    const user = await User.findById(req.user);
+    const food = await Food.find({ deleted: false, unlimit: false });
 
-      let totalCost = 0;
-      food.forEach((item) => {
-          totalCost += Number(item.cost) * Number(item.quantety);
-      });
+    let totalCost = 0;
+    food.forEach((item) => {
+      totalCost += Number(item.cost) * Number(item.quantety);
+    });
 
-      res.json({ category, role: user.role, systemSetting, totalCost });
+    res.json({ category, role: user.role, systemSetting, totalCost });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Server error" });
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
@@ -208,7 +215,7 @@ router.post("/addfood", upload.single("image"), async (req, res) => {
       unlimit: unlimitecheck,
       image: { url: imagePath },
       quantety,
-      unit:unit,
+      unit: unit,
     });
 
     const newfood = await food.save();

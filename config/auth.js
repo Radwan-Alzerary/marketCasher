@@ -1,62 +1,84 @@
 const User = require("../models/user");
 
 
-exports.userlogin = (req,res,next) => {
-    if(req.isAuthenticated()) {
-        console.log(req.user)
-    return next();
+const jwt = require('jsonwebtoken');
+
+exports.userlogin = (req, res, next) => {
+    // Check for JWT token
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (token) {
+        // Validate JWT token
+        jwt.verify(token, 'your_jwt_secret', (err, decoded) => {
+            if (err) {
+                console.log(err)
+                req.flash('error_msg', 'Invalid token. Please log in.');
+                return res.redirect('/admin/login');
+            } else {
+
+                req.user = decoded.id;
+                console.log(req.user)
+
+                return next(); // JWT is valid, continue to the next middleware
+            }
+        });
+    } else {
+        // If no JWT token, check for local passport authentication
+        if (req.isAuthenticated()) {
+            return next(); // User is authenticated via local passport, continue to the next middleware
+        } else {
+            req.flash('error_msg', 'Please login to view this resource');
+            res.redirect('/admin/login');
+        }
     }
-    req.flash('error_msg' , 'please login to view this resource');
-    res.redirect('/admin/login');
-    }
-    
-exports.isfulladmin = async(req,res,next) => {
-    try{
-        user=await User.findById(req.user.id)
+};
+
+exports.isfulladmin = async (req, res, next) => {
+    try {
+        user = await User.findById(req.user.id)
         console.log(user.id)
-        if(user.role == "full" || user.role == "onlyPOS" ){
-        return next();    
+        if (user.role == "full" || user.role == "onlyPOS") {
+            return next();
         }
-        else{
-        res.redirect('/');
+        else {
+            res.redirect('/');
         }
-    }catch(err){
+    } catch (err) {
         console.error(err);
         res.render('login')
     }
 }
 
-exports.isCashire = async(req,res,next) => {
-    try{
-        user=await User.findById(req.user.id)
+exports.isCashire = async (req, res, next) => {
+    try {
+        user = await User.findById(req.user.id)
         console.log(user.id)
-        if(user.role == "cashire"){
-        return next();    
+        if (user.role == "cashire") {
+            return next();
         }
-        else{
-        res.redirect('/');
+        else {
+            res.redirect('/');
         }
-    }catch(err){
+    } catch (err) {
         console.error(err);
         res.render('login')
     }
 }
-exports.isBuyer = async(req,res,next) => {
-    try{
-        user=await User.findById(req.user.id)
+exports.isBuyer = async (req, res, next) => {
+    try {
+        user = await User.findById(req.user.id)
         console.log(user.id)
-        if(user.role == "isBuyer"){
-        return next();    
+        if (user.role == "isBuyer") {
+            return next();
         }
-        else{
-        res.redirect('/');
+        else {
+            res.redirect('/');
         }
-    }catch(err){
+    } catch (err) {
         console.error(err);
         res.render('login')
     }
 }
-    
+
 
 
 
