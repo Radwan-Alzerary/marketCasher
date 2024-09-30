@@ -9,7 +9,7 @@ function sleep(ms) {
 
 // Launch the browser once globally to reuse it across all prints
 
-async function printImageAsync(imagePath, printCount, printerIp, printerType, shopLogo) {
+async function printImageAsync(imagePath, printCount, printerIp, printerType, shopLogo,printRole) {
   let printer;
 
   // Configure printer settings based on printer type
@@ -36,6 +36,9 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
     printer.alignCenter();
     // await printer.printImage(shopLogo);
     console.log(shopLogo)
+    if(printRole === "كاشير" || printRole === "توصيل"){
+      await printer.printImage(`./public${shopLogo}`); // Print PNG image
+    }
     await printer.printImage(imagePath);
     await printer.cut();
 
@@ -72,7 +75,7 @@ async function printForRole(imagePath, role) {
     console.log(`Printing for device: ${device.name} (${device.ip})`);
 
     // Wait for the current device to finish printing before moving to the next
-    await printImageAsync(imagePath, device.numberOfPrint, device.ip, device.type, setting.shoplogo);
+    await printImageAsync(imagePath, device.numberOfPrint, device.ip, device.type, setting.shoplogo,role);
     console.log(`Printing completed for device: ${device.name}`);
 
     // Add a 500ms delay between each printer
@@ -93,7 +96,7 @@ async function printForRole(imagePath, role) {
           console.log(`Printing for secondary device: ${secondaryDevice.name} (${secondaryDevice.ip})`);
 
           // Print for secondary devices
-          await printImageAsync(imagePath, secondaryDevice.numberOfPrint, secondaryDevice.ip, secondaryDevice.type, setting.shoplogo);
+          await printImageAsync(imagePath, secondaryDevice.numberOfPrint, secondaryDevice.ip, secondaryDevice.type, setting.shoplogo,role);
           console.log(`Printing completed for secondary device: ${secondaryDevice.name}`);
 
           // Add a 500ms delay between each printer
