@@ -50,11 +50,9 @@ async function printImageAsync(imagePath, printincount) {
     await printer.printImage(`./public${setting.shoplogo}`); // Print PNG image
     await printer.printImage(imagePath); // Print PNG image
     await printer.cut();
-    const systemSetting = await SystemSetting.findOne();
-    // if (systemSetting.telegramBotId) {
-    //   const imageUrl = imagePath; // Replace with your image URL or local path
-    //   bot.sendPhoto(systemSetting.telegramBotId, imageUrl, { caption: "فاتورة جديدة" });
-    // }
+
+    printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
+
     for (i = 0; i < printincount; i++) {
       await printer.execute();
     }
@@ -64,6 +62,52 @@ async function printImageAsync(imagePath, printincount) {
     console.error("Error printing image:", error);
   }
 }
+async function openCashdraw() {
+  try {
+    const setting = await Setting.findOne();
+
+    if (!setting || !setting.printerip) {
+      throw new Error('Printer IP is not configured.');
+    }
+
+    const printer = new ThermalPrinter({
+      type: PrinterTypes.EPSON,
+      interface: `tcp://${setting.printerip}:9100`,
+      characterSet: CharacterSet.SLOVENIA,
+      removeSpecialCharacters: false,
+      lineCharacter: "=",
+      breakLine: BreakLine.WORD,
+      options: {
+        timeout: 2000, // You can adjust the timeout as needed
+      },
+    });
+
+    // Attempt to open the cash drawer
+    await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
+    console.log("Cash drawer opened successfully.");
+    return { success: true, message: "Cash drawer opened successfully." };
+  } catch (error) {
+    console.error("Error opening cash drawer:", error);
+    return { success: false, message: "Error opening cash drawer.", error: error.message };
+  }
+}
+
+router.post("/openCashdraw", ensureAuthenticated, async (req, res) => {
+  try {
+    const result = await openCashdraw();
+
+    if (result.success) {
+      return res.status(200).json({ msg: result.message });
+    } else {
+      return res.status(500).json({ msg: result.message, error: result.error });
+    }
+  } catch (error) {
+    // This catch is for any unexpected errors in the openCashdraw function
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ msg: "Unexpected server error.", error: error.message });
+  }
+});
+
 
 router.get("/list", ensureAuthenticated, async (req, res) => {
   try {
@@ -267,8 +311,8 @@ router.post("/food", async (req, res) => {
   try {
     let existingFoodcheck = 0;
     const tableId = req.body.tableId;
-    const { foodId, quantity, discount, discountType } = req.body;
-
+    const { foodId, fastClick, discount, discountType } = req.body;
+    console.log("fastfood", fastClick)
     const table = await Table.findById(tableId);
     if (!table) {
       return res.status(404).json({ error: "Table not found" });
@@ -315,29 +359,29 @@ router.post("/food", async (req, res) => {
       updatedfoodid = foodData.id;
       existingFoodcheck = 1;
       // If the food item already exists, increment the quantity by 1
-      existingFood.quantity += 1;
+      existingFood.quantity += (Number(fastClick) || 1);
       await Food.findByIdAndUpdate(existingFood.id, {
-        quantety: foodData.quantety - 1,
+        quantety: foodData.quantety - (Number(fastClick) || 1),
       });
     } else {
       // If the food item doesn't exist, add it to the invoice
       const food = await Food.findById(foodId);
-      await Food.findByIdAndUpdate(foodId, { quantety: food.quantety - 1 });
+      await Food.findByIdAndUpdate(foodId, { quantety: food.quantety - (Number(fastClick) || 1) });
 
       if (!food) {
         return res.status(404).json({ error: "Food not found" });
       }
       const newFood = {
         id: food._id,
-        quantity: 1,
+        quantity: Number(fastClick) || 1,
         discount: 0,
         foodCost: food.cost,
         foodPrice: food.price,
         discountType: discountType || "cash",
       };
-      food.quantety = food.quantety - 1;
+      food.quantety = food.quantety - (Number(fastClick) || 1);
       await food.save();
-
+      console.log(newFood)
       invoice.food.push(newFood);
     }
 
@@ -366,7 +410,7 @@ router.post("/food", async (req, res) => {
         editOneFood: editOneFood,
         food: populatedFood,
         invoiceId: invoice.id,
-        newquantity: 1,
+        newquantity: Number(fastClick) || 1,
         foodPrice: populatedFood.price,
       });
     }
@@ -1380,7 +1424,7 @@ router.get("/:invoiceId/checout", async (req, res) => {
       invoicedate: invoice.progressdata,
       food: invoice.food,
       invoiceid: invoice.id,
-      tableNumber:invoice.tableid.number,
+      tableNumber: invoice.tableid.number,
       setting: setting,
       finalcost: invoice.finalcost,
       fullcost: invoice.fullcost,

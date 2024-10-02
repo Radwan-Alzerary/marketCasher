@@ -1,0 +1,40 @@
+<form
+  action="/table/convertable"
+  method="POST"
+  id="editableform"
+  class="fixed flex hidden flex-col justify-center gap-5 items-center w-1/2 h-1/2 bg-white p-5 rounded-xl z-50"
+  style="left: 50%; top: 50%; transform: translate(-50%, -50%)"
+>
+  <div class="mb-6 w-full">
+    <label
+      for="default-input"
+      class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >الاسم</label
+    >
+    <div>
+      <select
+        id="countries"
+        name="newtable"
+        class="bg-gray-50 border border-gray-300 text-right w-full text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+      >
+        <%table.forEach(function(tables,index) { %>
+        <option value="<%=tables.id%>">
+          <%if(tables.number==1000000){%> دلفري <%}else{%> <%=tables.number%>
+          <%}%>
+        </option>
+        <%})%>
+      </select>
+      <input
+        name="currentable"
+        class="hidden"
+        type="text"
+        value="<%=tableid%>"
+      />
+    </div>
+  </div>
+  <input
+    type="submit"
+    class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
+    value="تحويل"
+  />
+</form>

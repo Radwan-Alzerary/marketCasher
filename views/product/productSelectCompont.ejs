@@ -1,0 +1,81 @@
+<div class="bg-gray-100 w-3/4">
+    <div class="mx-auto max-w-2xl px-4 pb-16 sm:px-6 sm:py-1.5 lg:max-w-7xl lg:px-8">
+        <!-- Categories Bar -->
+        <div class="flex items-center overflow-x-auto gap-2 h-12 sm:h-16 bg-white rounded-lg mb-6 p-2 sm:p-3" style="direction: rtl">
+            <% if (category[0]) { %>
+                <% category.forEach(function(categorys, index) { %>
+                    <div id="categorydoor<%= categorys.id %>"
+                        class="h-8 flex whitespace-nowrap cursor-pointer items-center p-2 hover:bg-orange-300 bg-orange-100 rounded-xl">
+                        <p>
+                            <%= categorys.name %>
+                        </p>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="h-8 cursor-pointer flex items-center p-2 hover:bg-orange-300 bg-orange-100 rounded-xl">
+                    لا يوجد اقسام
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Numbers -->
+        <div class="w-full flex gap-2 h-12 sm:h-14 overflow-x-auto">
+            <% for (let i = 1; i <= 20; i++) { %>
+                <div id="number-<%= i %>" onclick="setNumberSelect('<%= i %>')"
+                    class="number-div border h-10 w-10 sm:h-12 sm:w-12 rounded-full flex justify-center items-center cursor-pointer active:bg-green-600">
+                    <%= i %>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Food Items -->
+        <div>
+            <% if (category[0]) { %>
+                <% category.forEach(function(categorys, index) { %>
+                    <div id="cataegoryfoodscontect<%= categorys.id %>" class="<%= index == 0 ? '' : 'hidden' %>">
+                        <div class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+                            <% if (categorys.foods) { %>
+                                <% categorys.foods.forEach(function(food) { %>
+                                    <% if (food.active) { %>
+                                        <div class="group text-center rounded-lg <%= food.quantety < 1 && !food.unlimit ? 'bg-red-50' : 'bg-white' %>"
+                                            id="selectfood<%= food.id %>">
+                                            <div class="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-t-lg bg-gray-200">
+                                                <% if (food.image && food.image.url) { %>
+                                                    <img src="<%= food.image.url %>"
+                                                        alt="<%= food.name %>"
+                                                        class="h-full w-full object-cover object-center cursor-pointer group-hover:opacity-75" />
+                                                <% } else { %>
+                                                    <img src="/img/money/noimg.png"
+                                                        alt="<%= food.name %>"
+                                                        class="h-full w-full object-cover object-center cursor-pointer group-hover:opacity-75" />
+                                                <% } %>
+                                            </div>
+                                            <h3 class="mt-4 text-sm text-gray-700">
+                                                <%= food.name %>
+                                            </h3>
+                                            <div class="border-t-2 border-violet-50 pb-3 w-full">
+                                                <p class="mt-1 text-lg font-medium text-gray-900">
+                                                    <%= food.price %> IQD
+                                                </p>
+                                                <% if (!food.unlimit) { %>
+                                                    <p id="quntityleft-<%= food.id %>"
+                                                        class="text-sm opacity-60 font-medium text-gray-900">
+                                                        <%= food.quantety %> المتبقي
+                                                    </p>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% }) %>
+                            <% } else { %>
+                                <p>لا يوجد اطعمة مضافة</p>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+
+    </div>
+
+</div>
