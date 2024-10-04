@@ -1,939 +1,936 @@
 <%- include('header'); %>
 
-<div
-  id="shadedbackground"
-  class="hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"
-></div>
-
-<%-include('./product/convertTableForm')%>
-<%-include('./product/moneyBack')%>
-<%-include('./product/printCount')%>
-
-<div class="flex justify-center">
-  <%-include('./product/productInvoiceOverView')%>
-  <%-include('./product/productSelectCompont')%>
-
-
-  <a id="invoiceidelement" class="hidden"></a>
-  <a id="totalcost" class="hidden"></a>
-</div>
-
-
-  <script>
-let fastClick = 1;
-
-const setNumberSelect= (number)=>{
-          // Remove 'bg-green-500' from all divs
-          const divs = document.querySelectorAll('.number-div');
-        divs.forEach(div => div.classList.remove('bg-green-500'));
-
-        // Add 'bg-green-500' to the clicked div
-        const selectedDiv = document.getElementById(`number-${number}`);
-        selectedDiv.classList.add('bg-green-500');
-
-  fastClick=number
-}
-
-    $("#paymentTypeChange").on("click", function () {
-      // Function to change the payment method
-      async function changePaymentMethod(invoiceId) {
-        try {
-          // Define the API endpoint
-          const endpoint = "/invoice/changepaymentMethod";
-
-          // Make the POST request
-          const response = await fetch(endpoint, {
-            method: "POST", // Specify the method as POST
-            headers: {
-              "Content-Type": "application/json", // Set the content type to JSON
-            },
-            body: JSON.stringify({
-              invoiceId: invoiceId, // Pass the invoice ID in the body
-            }),
-          });
-
-          // Parse the JSON response
-          const result = await response.json();
-          if (result.newPaymentType === "اجل") {
-            $("#paymentTypeChange").removeClass(
-              "bg-gray-100 hover:bg-gray-200"
-            );
-            $("#paymentTypeChange").addClass("bg-red-200 hover:bg-red-200");
-          } else if (result.newPaymentType === "نقدي") {
-            $("#paymentTypeChange").removeClass("bg-red-200 hover:bg-red-200");
-            $("#paymentTypeChange").addClass("bg-gray-100 hover:bg-gray-200");
-          }
-
-          console.log(result);
-          // Check if the request was successful
-          if (response.ok) {
-            console.log("Payment method changed successfully:", result);
-          } else {
-            console.error("Error changing payment method:", result.error);
-          }
-        } catch (error) {
-          console.error("Network error:", error);
-        }
-      }
 
 
 
-      // Example usage
-      const invoiceId = $("#invoiceidelement").text(); // Replace with the actual invoice ID
-      changePaymentMethod(invoiceId);
-    });
-  </script>
+  <%-include('./global/backGroundShadow')%>
+    <%-include('./product/convertTableForm')%>
+      <%-include('./product/moneyBack')%>
+        <%-include('./product/printCount')%>
 
-  <script>
-    $(document).ready(function () {
-      $("#resivename").on("input", function () {
-        let searchName = $(this).val();
+            <div class="flex w-full h-full justify-center">
+              <%-include('./product/productInvoiceOverView')%>
+                <%-include('./product/productSelectCompont')%>
+                  <a id="invoiceidelement" class="hidden"></a>
+                  <a id="totalcost" class="hidden"></a>
+            </div>
 
-        if (searchName.length > 1) {
-          $.ajax({
-            url: `/custemer/getbyname/${encodeURIComponent(searchName)}`,
-            type: "GET",
-            success: function (response) {
-              console.log(response);
 
-              // Assuming the response is an array of customer names
-              let customerNames = response.map((customer) => customer.name);
+          <script>
+            let fastClick = 1;
 
-              // Clear any previous suggestions
-              $("#autocomplete-list").remove();
+            const setNumberSelect = (number) => {
+              // Remove 'bg-green-500' from all divs
+              const divs = document.querySelectorAll('.number-div');
+              divs.forEach(div => div.classList.remove('bg-green-500'));
 
-              // Create a new suggestions list
-              let suggestionList = $(
-                '<ul id="autocomplete-list" class="autocomplete-list" style="cursor: pointer;"></ul>'
-              );
-              customerNames.forEach(function (name) {
-                suggestionList.append(
-                  `<li class="autocomplete-item hover:bg-green-200 p-3" style="display: flex;height: 40px;flex-direction: row-reverse;justify-content: flex-start;align-items: center; " >${name}</li>`
-                );
+              // Add 'bg-green-500' to the clicked div
+              const selectedDiv = document.getElementById(`number-${number}`);
+              selectedDiv.classList.add('bg-green-500');
+
+              fastClick = number
+            }
+
+            $("#paymentTypeChange").on("click", function () {
+              // Function to change the payment method
+              async function changePaymentMethod(invoiceId) {
+                try {
+                  // Define the API endpoint
+                  const endpoint = "/invoice/changepaymentMethod";
+
+                  // Make the POST request
+                  const response = await fetch(endpoint, {
+                    method: "POST", // Specify the method as POST
+                    headers: {
+                      "Content-Type": "application/json", // Set the content type to JSON
+                    },
+                    body: JSON.stringify({
+                      invoiceId: invoiceId, // Pass the invoice ID in the body
+                    }),
+                  });
+
+                  // Parse the JSON response
+                  const result = await response.json();
+                  if (result.newPaymentType === "اجل") {
+                    $("#paymentTypeChange").removeClass(
+                      "bg-gray-100 hover:bg-gray-200"
+                    );
+                    $("#paymentTypeChange").addClass("bg-red-200 hover:bg-red-200");
+                  } else if (result.newPaymentType === "نقدي") {
+                    $("#paymentTypeChange").removeClass("bg-red-200 hover:bg-red-200");
+                    $("#paymentTypeChange").addClass("bg-gray-100 hover:bg-gray-200");
+                  }
+
+                  console.log(result);
+                  // Check if the request was successful
+                  if (response.ok) {
+                    console.log("Payment method changed successfully:", result);
+                  } else {
+                    console.error("Error changing payment method:", result.error);
+                  }
+                } catch (error) {
+                  console.error("Network error:", error);
+                }
+              }
+
+
+
+              // Example usage
+              const invoiceId = $("#invoiceidelement").text(); // Replace with the actual invoice ID
+              changePaymentMethod(invoiceId);
+            });
+          </script>
+
+          <script>
+            $(document).ready(function () {
+              $("#resivename").on("input", function () {
+                let searchName = $(this).val();
+
+                if (searchName.length > 1) {
+                  $.ajax({
+                    url: `/custemer/getbyname/${encodeURIComponent(searchName)}`,
+                    type: "GET",
+                    success: function (response) {
+                      console.log(response);
+
+                      // Assuming the response is an array of customer names
+                      let customerNames = response.map((customer) => customer.name);
+
+                      // Clear any previous suggestions
+                      $("#autocomplete-list").remove();
+
+                      // Create a new suggestions list
+                      let suggestionList = $(
+                        '<ul id="autocomplete-list" class="autocomplete-list" style="cursor: pointer;"></ul>'
+                      );
+                      customerNames.forEach(function (name) {
+                        suggestionList.append(
+                          `<li class="autocomplete-item hover:bg-green-200 p-3" style="display: flex;height: 40px;flex-direction: row-reverse;justify-content: flex-start;align-items: center; " >${name}</li>`
+                        );
+                      });
+
+                      // Attach the list to the container
+                      $("#autocomplete-container").append(suggestionList);
+
+                      // Handle click on suggestion
+                      $(".autocomplete-item").on("click", function () {
+                        console.log($(this))
+
+                        $("#resivename").val($(this).text());
+                        fetch(`/custemer/getbyname/${$(this).text()}`)
+                          .then((response) => response.json())
+                          .then((costemerInfo) => {
+                            console.log(costemerInfo)
+                            $("#deloveryname").val(costemerInfo[0].addresses);
+                            $("#deloveryphone").val(costemerInfo[0].phoneNumber);
+
+
+
+                          })
+                          .catch((error) => {
+                            console.error("Error fetching settings:", error);
+                          });
+
+
+                        $("#autocomplete-list").remove(); // Remove suggestions after selection
+                      });
+                    },
+                    error: function (xhr, status, error) {
+                      console.error("Error fetching customer names:", error);
+                    },
+                  });
+                } else {
+                  $("#autocomplete-list").remove(); // Clear the list if input is too short
+                }
               });
 
-              // Attach the list to the container
-              $("#autocomplete-container").append(suggestionList);
+              // Remove the suggestions list if the user clicks outside of it
+              $(document).on("click", function (e) {
+                if (
+                  !$(e.target).closest("#resivename, #autocomplete-container").length
+                ) {
+                  $("#autocomplete-list").remove();
+                }
+              });
+            });
+          </script>
 
-              // Handle click on suggestion
-              $(".autocomplete-item").on("click", function () {
-                console.log($(this))
+          <script>
+            document
+              .querySelector("#autoComplete")
+              .addEventListener("selection", function (event) {
+                const currentUrl = window.location.href;
+                console.log("Current URL:", currentUrl);
+                const url = new URL(currentUrl);
+                const searchParams = new URLSearchParams(url.search);
+                const table = searchParams.get("tableid");
+                const foodId = event.detail.selection.value._id;
+                console.log("ID:", table);
+                const tableId = table; // Replace with the actual table ID
+                fetch("/invoice/food/", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ tableId, foodId }),
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    if (data.editOneFood && !data.editOneFood.unlimit) {
+                      const totalTd = document.getElementById(`quntityleft-${foodId}`);
+                      totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                    }
 
-                $("#resivename").val($(this).text());
-                fetch(`/custemer/getbyname/${$(this).text()}`)
+                    if (data.message == "alredyadd") {
+                      console.log(data);
+                      $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
+                      console.log($(`#quantity${data.food._id}`).text());
+                      getprices($("#invoiceidelement").text());
+                    } else {
+                      invoiceid = $("#invoiceidelement").text();
+                      console.log(data.food);
+                      newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
+                      getprices($("#invoiceidelement").text());
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error:", error);
+                    // Handle errors
+                  });
+              });
+          </script>
+
+          <script>
+    <%if (category[0]) {%>
+    var previosopendoor = "<%=category[0].id%>";
+    <%}%>
+              $(document).on('click', '[id^=categorydoor]', function () {
+                var id = this.id;
+                var categoryid = id.replace('categorydoor', '');
+                if ($(`#cataegoryfoodscontect${categoryid}`).css('display') === 'none') {
+                  $(`#cataegoryfoodscontect${categoryid}`).removeClass('hidden');
+                  if (previosopendoor) {
+                    $(`#cataegoryfoodscontect${previosopendoor}`).addClass('hidden');
+                  }
+                } else {
+
+                }
+                previosopendoor = categoryid
+              });
+          </script>
+
+          <script>
+            // Initialize variables to store barcode data
+            let barcode = "";
+            let originBarcode = "";
+
+            // Function to handle key press events
+            const handleKeyPress = (event) => {
+              // Check for a special character (e.g., Enter) to determine the end of the barcode
+              if (event.key === "Enter") {
+                // Do something with the barcode data (e.g., send it to a server)
+                if (barcode !== "") {
+                  console.log("Barcode Scanned:", barcode);
+
+                  const currentUrl = window.location.href;
+                  console.log("Current URL:", currentUrl);
+                  const url = new URL(currentUrl);
+                  const searchParams = new URLSearchParams(url.search);
+                  const table = searchParams.get("tableid");
+                  console.log("ID:", table);
+                  const tableId = table; // Replace with the actual table ID
+                  fetch("/invoice/barcodefood/", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ tableId, barcode }),
+                  })
                     .then((response) => response.json())
-                    .then((costemerInfo) => {
-                      console.log(costemerInfo)
-                      $("#deloveryname").val(costemerInfo[0].addresses);
-                      $("#deloveryphone").val(costemerInfo[0].phoneNumber);
+                    .then((data) => {
+                      $("#invoiceidelement").text(`${data.invoiceId}`);
 
-                      
+                      if (data.message == "alredyadd") {
+                        console.log(data);
+                        $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
+                        console.log($(`#quantity${data.food._id}`).text());
+                        getprices($("#invoiceidelement").text());
+                      } else {
+                        invoiceid = $("#invoiceidelement").text();
+                        console.log(data);
+                        newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
+                        getprices($("#invoiceidelement").text());
+                      }
+                    })
+                    .catch((error) => {
+                      console.error("Error:", error);
+                      // Handle errors
+                    });
 
+                  originBarcode = barcode;
+                  barcode = "";
+                }
+              } else {
+                // Append the scanned character to the barcode string
+                barcode += event.key;
+              }
+            };
+
+            // Function to reset the barcode after a timeout
+            const resetBarcode = () => {
+              barcode = "";
+            };
+
+            // Set a timeout to reset the barcode after 20 milliseconds
+            setTimeout(resetBarcode, 20);
+
+            // Add an event listener to capture keyboard input
+            window.addEventListener("keypress", handleKeyPress);
+
+            // Function to clean up the event listener when needed
+            const removeKeyListener = () => {
+              window.removeEventListener("keypress", handleKeyPress);
+            };
+          </script>
+
+          <script>
+            const currentUrl = window.location.href;
+            console.log("Current URL:", currentUrl);
+            const url = new URL(currentUrl);
+            const searchParams = new URLSearchParams(url.search);
+            const table = searchParams.get("tableid");
+            console.log("ID:", table);
+            refrash();
+
+            function refrash() {
+              const invoiceFoodDiv = document.getElementById("invoicefood");
+              invoiceFoodDiv.innerHTML = "";
+
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const table = searchParams.get("tableid");
+              console.log("ID:", table);
+
+              fetch(`/invoice/${table}/foodmenu`)
+                .then((response) => response.json())
+                .then(async (data) => {
+                  let totalPrice = 0; // Initialize the total price variable
+                  let fulldiscount = 0;
+                  let invoiceid = data.invoiceid;
+                  $("#invoiceidelement").text(`${invoiceid}`);
+
+                  // Iterate over each food item and create the corresponding HTML
+                  data.food.forEach((food) => {
+                    console.log(food.foodPrice ? food.foodPrice : food.id.price);
+                    const foodTotalPrice = food.foodPrice
+                      ? food.foodPrice
+                      : food.id.price * food.quantity;
+                    totalPrice += foodTotalPrice;
+                    fulldiscount += food.discount;
+
+                    newitem(food.id, invoiceid, food.quantity, food.foodPrice);
+                    getprices($("#invoiceidelement").text());
+                  });
+
+                  console.log("Overall total price:", totalPrice);
+                  console.log("Overall total price:", fulldiscount);
+
+                  // Fetch the payment type based on the invoice ID
+                  const paymentType = await getPaymentType(invoiceid);
+                  console.log(paymentType);
+                  // Toggle the background color based on the payment type
+                  if (paymentType === "اجل") {
+                    $("#paymentTypeChange").removeClass(
+                      "bg-gray-100 hover:bg-gray-200"
+                    );
+                    $("#paymentTypeChange").addClass("bg-red-200 hover:bg-red-200");
+                  } else if (paymentType === "نقدي") {
+                    $("#paymentTypeChange").removeClass("bg-red-200 hover:bg-red-200");
+                    $("#paymentTypeChange").addClass("bg-gray-100 hover:bg-gray-200");
+                  }
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+
+              // Function to get the payment type
+              async function getPaymentType(invoiceId) {
+                try {
+                  // Define the API endpoint
+                  const endpoint = `/invoice/getPaymentType`; // Adjust the endpoint as needed
+
+                  // Make the GET request
+                  const response = await fetch(`${endpoint}?invoiceId=${invoiceId}`);
+
+                  // Parse the JSON response
+                  const result = await response.json();
+
+                  // Check if the request was successful
+                  if (response.ok) {
+                    return result.paymentTypeName; // Assuming the API returns paymentTypeName
+                  } else {
+                    console.error("Error fetching payment type:", result.error);
+                    return null;
+                  }
+                } catch (error) {
+                  console.error("Network error:", error);
+                  return null;
+                }
+              }
+            }
+
+            $(document).on("click", "[id^=selectfood]", function () {
+              var id = this.id;
+              const foodId = id.replace("selectfood", "");
+
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const table = searchParams.get("tableid");
+              console.log("ID:", table);
+              console.log("fastNum", fastClick)
+
+              const tableId = table; // Replace with the actual table ID
+              fetch("/invoice/food/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ tableId, foodId, fastClick }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.editOneFood && !data.editOneFood.unlimit) {
+                    const totalTd = document.getElementById(`quntityleft-${foodId}`);
+                    totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                  }
+                  setNumberSelect(1)
+                  $("#invoiceidelement").text(`${data.invoiceId}`);
+
+                  if (data.message == "alredyadd") {
+                    console.log(data);
+                    $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
+                    console.log($(`#quantity${data.food._id}`).text());
+                    getprices($("#invoiceidelement").text());
+                  } else {
+                    invoiceid = $("#invoiceidelement").text();
+                    console.log(data.food);
+                    newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
+                    getprices($("#invoiceidelement").text());
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
+            });
+
+            $(document).on("click", "[id^=removeinvoice]", function () {
+              var id = this.id;
+              var foodid = id.replace("removeinvoice", "");
+              var foodjson = JSON.parse(foodid);
+              console.log(foodjson);
+
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+
+              fetch(
+                `/invoice/${tableId}/${foodjson.invoiceid}/food/${foodjson.foodid}`,
+                {
+                  method: "DELETE",
+                }
+              )
+                .then((res) => res.json()) // or res.json()
+                .then((res) => {
+                  deletedfoodprice = Number($(`#price${foodjson.foodid}`).text());
+                  deletedfoodquantity = Number($(`#quantity${foodjson.foodid}`).val());
+                  deletedfoodfinalprice = deletedfoodquantity * deletedfoodprice;
+                  corentfinalprice =
+                    Number($("#totalprice").text()) - deletedfoodfinalprice;
+                  console.log(deletedfoodfinalprice);
+                  console.log(corentfinalprice);
+                  // $("#totaldiscount").text(`${fulldiscount}`);
+                  getprices($("#invoiceidelement").text());
+                  console.log("Food item removed successfully");
+                  const divToRemove = document.getElementById(`${foodjson.foodid}`);
+                  // Check if the div element exists
+                  if (res.editOneFood && !res.editOneFood.unlimit) {
+                    const totalTd = document.getElementById(
+                      `quntityleft-${foodjson.foodid}`
+                    );
+                    totalTd.innerHTML = res.editOneFood.quantety + " المتبقي";
+                  }
+                  if (divToRemove) {
+                    // Remove the div element
+                    divToRemove.remove();
+                  } else {
+                    console.log("Div element not found.");
+                  }
+                  console.log(res);
+                })
+                .catch((error) => {
+                  console.error(error);
+                });
+            });
+
+            $(document).on("click", "[id^=sentencElement]", function () {
+              var id = this.id;
+              var foodid = id.replace("sentencElement", "");
+              var foodjson = JSON.parse(foodid);
+              console.log(foodjson);
+
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+            });
+
+            function cancele() {
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+              const invoiceId = $("#invoiceidelement").text();
+              const finalcost = $("#finalcost").text();
+              const totalcost = $("#totalprice").text();
+              const totaldicont = $("#totaldiscount").text();
+
+              fetch("/invoice/cancele/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  tableId,
+                  invoiceId,
+                  finalcost,
+                  totalcost,
+                  totaldicont,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  $("#finalcost").text(0);
+                  $("#totalprice").text(0);
+                  $("#totaldiscount").text(0);
+                  console.log(data);
+                  $("#invoiceidelement").text(" ");
+                  const invoiceFoodDiv = document.getElementById("invoicefood");
+                  invoiceFoodDiv.innerHTML = "";
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
+            }
+            async function getSetting() {
+              try {
+                const response = await fetch(`/setting/getsetting`);
+                const setting = await response.json();
+                return setting;  // Return the setting data from the function
+              } catch (error) {
+                console.error(error);
+                return null; // Return a default value in case of an error
+              }
+            }
+
+            async function finish() {
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+              const finalcost = $("#finalcost").text();
+              const totalcost = $("#totalprice").text();
+              const resivename = $("#resivename").val();
+              const deloveryname = $("#deloveryname").val();
+              const deloveryphone = $("#deloveryphone").val();
+              const totaldicont = $("#totaldiscount").text();
+              const foodcost = $("#totalcost").text();
+              const invoiceId = $("#invoiceidelement").text();
+              fetch("/invoice/finish/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  tableId,
+                  foodcost,
+                  resivename,
+                  deloveryname,
+                  deloveryphone,
+                  invoiceId,
+                  finalcost,
+                  totalcost,
+                  totaldicont,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  const ReceivedAmount = $("#Received-amount").text();
+                  const RemainingAmount = $("#Remaining-amount").text();
+                  const deloveryphone = $('#deloveryphone').val();
+                  const deloveryname = $('#deloveryname').val();
+
+                  console.log(data);
+                  $("#finalcost").text(0);
+                  $("#totalprice").text(0);
+                  $("#totaldiscount").text(0);
+                  $("#invoiceidelement").text(" ");
+
+                  $("#Received-amount").text(0);
+                  $("#Remaining-amount").text(0);
+                  $("#ReceivedAmountInput").val(0);
+
+                  $("#paymentTypeChange").removeClass("bg-red-200 hover:bg-red-200");
+                  $("#paymentTypeChange").addClass("bg-gray-100 hover:bg-gray-200");
+
+                  $("#totalcost").text(data.totalcost);
+
+                  const invoiceFoodDiv = document.getElementById("invoicefood");
+                  invoiceFoodDiv.innerHTML = "";
+
+                  const printingcountvalue = $("#printingcount").val();
+                  const Comments = $("#comments").val();
+
+                  const settingOption = getSetting()
+                  fetch(`/setting/getsetting`)
+                    .then((response) => response.json())
+                    .then((settingOption) => {
+                      if (settingOption.printerType == "A4") {
+                        printA4invoice(
+                          invoiceId,
+                          resivename,
+                          deloveryname,
+                          deloveryphone,
+                          ReceivedAmount,
+                          RemainingAmount,
+                          printingcountvalue,
+                          Comments,
+                          "",
+                          "cashire"
+                        );
+                      } else {
+                        printinvoice(
+                          invoiceId,
+                          resivename,
+                          "",
+                          "",
+                          ReceivedAmount,
+                          RemainingAmount,
+                          printingcountvalue,
+                          Comments,
+                          "",
+                          "cashire"
+                        );
+                      }
                     })
                     .catch((error) => {
                       console.error("Error fetching settings:", error);
                     });
 
 
-                $("#autocomplete-list").remove(); // Remove suggestions after selection
-              });
-            },
-            error: function (xhr, status, error) {
-              console.error("Error fetching customer names:", error);
-            },
-          });
-        } else {
-          $("#autocomplete-list").remove(); // Clear the list if input is too short
-        }
-      });
 
-      // Remove the suggestions list if the user clicks outside of it
-      $(document).on("click", function (e) {
-        if (
-          !$(e.target).closest("#resivename, #autocomplete-container").length
-        ) {
-          $("#autocomplete-list").remove();
-        }
-      });
-    });
-  </script>
-
-  <script>
-    document
-      .querySelector("#autoComplete")
-      .addEventListener("selection", function (event) {
-        const currentUrl = window.location.href;
-        console.log("Current URL:", currentUrl);
-        const url = new URL(currentUrl);
-        const searchParams = new URLSearchParams(url.search);
-        const table = searchParams.get("tableid");
-        const foodId = event.detail.selection.value._id;
-        console.log("ID:", table);
-        const tableId = table; // Replace with the actual table ID
-        fetch("/invoice/food/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tableId, foodId }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.editOneFood && !data.editOneFood.unlimit) {
-              const totalTd = document.getElementById(`quntityleft-${foodId}`);
-              totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
             }
+          </script>
 
-            if (data.message == "alredyadd") {
-              console.log(data);
-              $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
-              console.log($(`#quantity${data.food._id}`).text());
-              getprices($("#invoiceidelement").text());
-            } else {
-              invoiceid = $("#invoiceidelement").text();
-              console.log(data.food);
-              newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
-              getprices($("#invoiceidelement").text());
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-            // Handle errors
-          });
-      });
-  </script>
+          <script>
+            $(document).on("click", "[id^=increaseQuantity]", function () {
+              var id = this.id;
+              var foodId = id.replace("increaseQuantity", "");
+              const currentValue = $(`#quantity${foodId}`).val();
+              $(`#quantity${foodId}`).val(Number(currentValue) + 1);
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+              const quantity = $(`#quantity${foodId}`).val();
+              console.log(quantity);
+              const invoiceId = $("#invoiceidelement").text();
+              fetch("/invoice/changequantity/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ tableId, invoiceId, foodId, quantity }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log(data.foodItem.quantity);
+                  getprices(invoiceId);
+                  if (!data.editOneFood.unlimit) {
+                    const totalTd = document.getElementById(`quntityleft-${foodId}`);
+                    totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                  }
 
-  <script>
-    <%if (category[0]) {%>
-    var previosopendoor = "<%=category[0].id%>";
-    <%}%>
-        $(document).on('click', '[id^=categorydoor]', function () {
-            var id = this.id;
-            var categoryid = id.replace('categorydoor', '');
-            if ($(`#cataegoryfoodscontect${categoryid}`).css('display') === 'none') {
-                $(`#cataegoryfoodscontect${categoryid}`).removeClass('hidden');
-                if (previosopendoor) {
-                    $(`#cataegoryfoodscontect${previosopendoor}`).addClass('hidden');
-                }
-            } else {
-
-            }
-            previosopendoor = categoryid
-        });
-  </script>
-
-  <script>
-    // Initialize variables to store barcode data
-    let barcode = "";
-    let originBarcode = "";
-
-    // Function to handle key press events
-    const handleKeyPress = (event) => {
-      // Check for a special character (e.g., Enter) to determine the end of the barcode
-      if (event.key === "Enter") {
-        // Do something with the barcode data (e.g., send it to a server)
-        if (barcode !== "") {
-          console.log("Barcode Scanned:", barcode);
-
-          const currentUrl = window.location.href;
-          console.log("Current URL:", currentUrl);
-          const url = new URL(currentUrl);
-          const searchParams = new URLSearchParams(url.search);
-          const table = searchParams.get("tableid");
-          console.log("ID:", table);
-          const tableId = table; // Replace with the actual table ID
-          fetch("/invoice/barcodefood/", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ tableId, barcode }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              $("#invoiceidelement").text(`${data.invoiceId}`);
-
-              if (data.message == "alredyadd") {
-                console.log(data);
-                $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
-                console.log($(`#quantity${data.food._id}`).text());
-                getprices($("#invoiceidelement").text());
-              } else {
-                invoiceid = $("#invoiceidelement").text();
-                console.log(data);
-                newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
-                getprices($("#invoiceidelement").text());
-              }
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              // Handle errors
+                  // $("#finalcost").text();
+                  // $("#totalprice").text();
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
             });
 
-          originBarcode = barcode;
-          barcode = "";
-        }
-      } else {
-        // Append the scanned character to the barcode string
-        barcode += event.key;
-      }
-    };
-
-    // Function to reset the barcode after a timeout
-    const resetBarcode = () => {
-      barcode = "";
-    };
-
-    // Set a timeout to reset the barcode after 20 milliseconds
-    setTimeout(resetBarcode, 20);
-
-    // Add an event listener to capture keyboard input
-    window.addEventListener("keypress", handleKeyPress);
-
-    // Function to clean up the event listener when needed
-    const removeKeyListener = () => {
-      window.removeEventListener("keypress", handleKeyPress);
-    };
-  </script>
-
-  <script>
-    const currentUrl = window.location.href;
-    console.log("Current URL:", currentUrl);
-    const url = new URL(currentUrl);
-    const searchParams = new URLSearchParams(url.search);
-    const table = searchParams.get("tableid");
-    console.log("ID:", table);
-    refrash();
-
-    function refrash() {
-      const invoiceFoodDiv = document.getElementById("invoicefood");
-      invoiceFoodDiv.innerHTML = "";
-
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const table = searchParams.get("tableid");
-      console.log("ID:", table);
-
-      fetch(`/invoice/${table}/foodmenu`)
-        .then((response) => response.json())
-        .then(async (data) => {
-          let totalPrice = 0; // Initialize the total price variable
-          let fulldiscount = 0;
-          let invoiceid = data.invoiceid;
-          $("#invoiceidelement").text(`${invoiceid}`);
-
-          // Iterate over each food item and create the corresponding HTML
-          data.food.forEach((food) => {
-            console.log(food.foodPrice ? food.foodPrice : food.id.price);
-            const foodTotalPrice = food.foodPrice
-              ? food.foodPrice
-              : food.id.price * food.quantity;
-            totalPrice += foodTotalPrice;
-            fulldiscount += food.discount;
-
-            newitem(food.id, invoiceid, food.quantity, food.foodPrice);
-            getprices($("#invoiceidelement").text());
-          });
-
-          console.log("Overall total price:", totalPrice);
-          console.log("Overall total price:", fulldiscount);
-
-          // Fetch the payment type based on the invoice ID
-          const paymentType = await getPaymentType(invoiceid);
-          console.log(paymentType);
-          // Toggle the background color based on the payment type
-          if (paymentType === "اجل") {
-            $("#paymentTypeChange").removeClass(
-              "bg-gray-100 hover:bg-gray-200"
-            );
-            $("#paymentTypeChange").addClass("bg-red-200 hover:bg-red-200");
-          } else if (paymentType === "نقدي") {
-            $("#paymentTypeChange").removeClass("bg-red-200 hover:bg-red-200");
-            $("#paymentTypeChange").addClass("bg-gray-100 hover:bg-gray-200");
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-
-      // Function to get the payment type
-      async function getPaymentType(invoiceId) {
-        try {
-          // Define the API endpoint
-          const endpoint = `/invoice/getPaymentType`; // Adjust the endpoint as needed
-
-          // Make the GET request
-          const response = await fetch(`${endpoint}?invoiceId=${invoiceId}`);
-
-          // Parse the JSON response
-          const result = await response.json();
-
-          // Check if the request was successful
-          if (response.ok) {
-            return result.paymentTypeName; // Assuming the API returns paymentTypeName
-          } else {
-            console.error("Error fetching payment type:", result.error);
-            return null;
-          }
-        } catch (error) {
-          console.error("Network error:", error);
-          return null;
-        }
-      }
-    }
-
-    $(document).on("click", "[id^=selectfood]", function () {
-      var id = this.id;
-      const foodId = id.replace("selectfood", "");
-
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const table = searchParams.get("tableid");
-      console.log("ID:", table);
-      console.log("fastNum",fastClick)
-
-      const tableId = table; // Replace with the actual table ID
-      fetch("/invoice/food/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tableId, foodId,fastClick }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.editOneFood && !data.editOneFood.unlimit) {
-            const totalTd = document.getElementById(`quntityleft-${foodId}`);
-            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
-          }
-          setNumberSelect(1)
-          $("#invoiceidelement").text(`${data.invoiceId}`);
-
-          if (data.message == "alredyadd") {
-            console.log(data);
-            $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
-            console.log($(`#quantity${data.food._id}`).text());
-            getprices($("#invoiceidelement").text());
-          } else {
-            invoiceid = $("#invoiceidelement").text();
-            console.log(data.food);
-            newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
-            getprices($("#invoiceidelement").text());
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
-    });
-
-    $(document).on("click", "[id^=removeinvoice]", function () {
-      var id = this.id;
-      var foodid = id.replace("removeinvoice", "");
-      var foodjson = JSON.parse(foodid);
-      console.log(foodjson);
-
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-
-      fetch(
-        `/invoice/${tableId}/${foodjson.invoiceid}/food/${foodjson.foodid}`,
-        {
-          method: "DELETE",
-        }
-      )
-        .then((res) => res.json()) // or res.json()
-        .then((res) => {
-          deletedfoodprice = Number($(`#price${foodjson.foodid}`).text());
-          deletedfoodquantity = Number($(`#quantity${foodjson.foodid}`).val());
-          deletedfoodfinalprice = deletedfoodquantity * deletedfoodprice;
-          corentfinalprice =
-            Number($("#totalprice").text()) - deletedfoodfinalprice;
-          console.log(deletedfoodfinalprice);
-          console.log(corentfinalprice);
-          // $("#totaldiscount").text(`${fulldiscount}`);
-          getprices($("#invoiceidelement").text());
-          console.log("Food item removed successfully");
-          const divToRemove = document.getElementById(`${foodjson.foodid}`);
-          // Check if the div element exists
-          if (res.editOneFood && !res.editOneFood.unlimit) {
-            const totalTd = document.getElementById(
-              `quntityleft-${foodjson.foodid}`
-            );
-            totalTd.innerHTML = res.editOneFood.quantety + " المتبقي";
-          }
-          if (divToRemove) {
-            // Remove the div element
-            divToRemove.remove();
-          } else {
-            console.log("Div element not found.");
-          }
-          console.log(res);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    });
-
-    $(document).on("click", "[id^=sentencElement]", function () {
-      var id = this.id;
-      var foodid = id.replace("sentencElement", "");
-      var foodjson = JSON.parse(foodid);
-      console.log(foodjson);
-
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-    });
-
-    function cancele() {
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-      const invoiceId = $("#invoiceidelement").text();
-      const finalcost = $("#finalcost").text();
-      const totalcost = $("#totalprice").text();
-      const totaldicont = $("#totaldiscount").text();
-
-      fetch("/invoice/cancele/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          tableId,
-          invoiceId,
-          finalcost,
-          totalcost,
-          totaldicont,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          $("#finalcost").text(0);
-          $("#totalprice").text(0);
-          $("#totaldiscount").text(0);
-          console.log(data);
-          $("#invoiceidelement").text(" ");
-          const invoiceFoodDiv = document.getElementById("invoicefood");
-          invoiceFoodDiv.innerHTML = "";
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
-    }
-    async function getSetting() {
-        try {
-            const response = await fetch(`/setting/getsetting`);
-            const setting = await response.json();
-            return setting;  // Return the setting data from the function
-        } catch (error) {
-            console.error(error);
-            return null; // Return a default value in case of an error
-        }
-    }
-
-    async function finish() {
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-      const finalcost = $("#finalcost").text();
-      const totalcost = $("#totalprice").text();
-      const resivename = $("#resivename").val();
-      const deloveryname = $("#deloveryname").val();
-      const deloveryphone = $("#deloveryphone").val();
-      const totaldicont = $("#totaldiscount").text();
-      const foodcost = $("#totalcost").text();
-      const invoiceId = $("#invoiceidelement").text();
-      fetch("/invoice/finish/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          tableId,
-          foodcost,
-          resivename,
-          deloveryname,
-          deloveryphone,
-          invoiceId,
-          finalcost,
-          totalcost,
-          totaldicont,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          const ReceivedAmount = $("#Received-amount").text();
-          const RemainingAmount = $("#Remaining-amount").text();
-          const deloveryphone = $('#deloveryphone').val();
-          const deloveryname = $('#deloveryname').val();
-
-          console.log(data);
-          $("#finalcost").text(0);
-          $("#totalprice").text(0);
-          $("#totaldiscount").text(0);
-          $("#invoiceidelement").text(" ");
-
-          $("#Received-amount").text(0);
-          $("#Remaining-amount").text(0);
-          $("#ReceivedAmountInput").val(0);
-
-          $("#paymentTypeChange").removeClass("bg-red-200 hover:bg-red-200");
-          $("#paymentTypeChange").addClass("bg-gray-100 hover:bg-gray-200");
-
-          $("#totalcost").text(data.totalcost);
-
-          const invoiceFoodDiv = document.getElementById("invoicefood");
-          invoiceFoodDiv.innerHTML = "";
-
-          const printingcountvalue = $("#printingcount").val();
-          const Comments = $("#comments").val();
-
-const settingOption = getSetting()
-fetch(`/setting/getsetting`)
-      .then((response) => response.json())
-      .then((settingOption) => {
-        if (settingOption.printerType == "A4") {
-          printA4invoice(
-            invoiceId,
-            resivename,
-            deloveryname,
-            deloveryphone,
-            ReceivedAmount,
-            RemainingAmount,
-            printingcountvalue,
-            Comments,
-            "",
-            "cashire"
-          );
-        } else {
-          printinvoice(
-            invoiceId,
-            resivename,
-            "",
-            "",
-            ReceivedAmount,
-            RemainingAmount,
-            printingcountvalue,
-            Comments,
-            "",
-            "cashire"
-          );
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching settings:", error);
-      });
-
-
-    
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
-    }
-  </script>
-
-  <script>
-    $(document).on("click", "[id^=increaseQuantity]", function () {
-      var id = this.id;
-      var foodId = id.replace("increaseQuantity", "");
-      const currentValue = $(`#quantity${foodId}`).val();
-      $(`#quantity${foodId}`).val(Number(currentValue) + 1);
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-      const quantity = $(`#quantity${foodId}`).val();
-      console.log(quantity);
-      const invoiceId = $("#invoiceidelement").text();
-      fetch("/invoice/changequantity/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tableId, invoiceId, foodId, quantity }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data.foodItem.quantity);
-          getprices(invoiceId);
-          if (!data.editOneFood.unlimit) {
-            const totalTd = document.getElementById(`quntityleft-${foodId}`);
-            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
-          }
-
-          // $("#finalcost").text();
-          // $("#totalprice").text();
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
-    });
-
-    $(document).on("click", "[id^=decreaseQuantity]", function () {
-      var id = this.id;
-      var foodId = id.replace("decreaseQuantity", "");
-      const currentValue = $(`#quantity${foodId}`).val();
-      if (Number(currentValue) > 1) {
-        $(`#quantity${foodId}`).val(Number(currentValue) - 1);
-      }
-
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-      const quantity = $(`#quantity${foodId}`).val();
-      console.log(quantity);
-      const invoiceId = $("#invoiceidelement").text();
-      fetch("/invoice/changequantity/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tableId, invoiceId, foodId, quantity }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data.foodItem.quantity);
-          if (!data.editOneFood.unlimit) {
-            const totalTd = document.getElementById(`quntityleft-${foodId}`);
-            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
-          }
-
-          getprices(invoiceId);
-          // $("#finalcost").text();
-          // $("#totalprice").text();
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
-    });
-
-    function quantitychange(event) {
-      const inputElement = event.target;
-
-      // Retrieve the ID of the input element
-      const inputId = inputElement.id;
-      var foodId = inputId.replace("quantity", "");
-
-      // Use the inputId as needed
-
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-      const quantity = $(`#${inputId}`).val();
-      console.log(quantity);
-      const invoiceId = $("#invoiceidelement").text();
-      fetch("/invoice/changequantity/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tableId, invoiceId, foodId, quantity }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data.foodItem.quantity);
-
-          getprices(invoiceId);
-          if (!data.editOneFood.unlimit) {
-            const totalTd = document.getElementById(`quntityleft-${foodId}`);
-            totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
-          }
-
-          // $("#finalcost").text();
-          // $("#totalprice").text();
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
-    }
-
-    function onPriceChange(event) {
-      const inputElement = event.target;
-
-      // Retrieve the ID of the input element
-      const inputId = inputElement.id;
-      var foodId = inputId.replace("price", "");
-
-      // Use the inputId as needed
-
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-      const newPrice = $(`#${inputId}`).val();
-      const invoiceId = $("#invoiceidelement").text();
-      fetch("/invoice/changeprice/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          tableId,
-          invoiceId,
-          foodId,
-          newPrice: newPrice,
-        }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          getprices(invoiceId);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
-    }
-
-    function discountchange(event) {
-      const inputElement = event.target;
-
-      // Retrieve the ID of the input element
-      const inputId = inputElement.id;
-
-      // Use the inputId as needed
-      const discount = $("#discontinput").val();
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-      const invoiceId = $("#invoiceidelement").text();
-      fetch("/invoice/changedescount/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ invoiceId, discount }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          getprices(invoiceId);
-          // $("#finalcost").text();
-          // $("#totalprice").text();
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
-    }
-
-    // function ReceivedAmountInput(event) {
-
-    // }
-
-
-    
-    $("#previosinvoice").on("click", (event) => {
-      const currentUrl = window.location.href;
-      console.log("Current URL:", currentUrl);
-      const url = new URL(currentUrl);
-      const searchParams = new URLSearchParams(url.search);
-      const tableId = searchParams.get("tableid");
-
-      console.log(tableId);
-      fetch("/invoice/previesinvoice/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tableId }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.reloded == true) {
-            $("#invoiceidelement").text(`${data.lastinvoiceid}`);
-            refrash();
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          // Handle errors
-        });
-    });
-  </script>
-
-  <script src="/js/casher.js"></script>
-  <script src="/js/printinvoice.js"></script>
-  <script src="/js/printA4.js"></script>
-
-  <script>
-    // Connect to the Socket.IO server
-    const socket = io('http://localhost:3000', {
-        reconnection: true,  // Enable reconnection (default)
-        reconnectionAttempts: Infinity,  // Try reconnecting forever
-        reconnectionDelay: 1000,  // Wait 1 second before retrying
-        reconnectionDelayMax: 5000,  // Maximum delay between retries
-        randomizationFactor: 0.5  // Randomization for reconnection delay
-    });
-
-    console.log("socket",socket)
-
-    // Listen for messages from the server
-    socket.on('message', (message) => {
-      if(message==="refresh"){
-        refrash();
-      }
-      console.log(`Server: ${message}`)
-    });
-
-    // Show connection info
-    socket.on('connect', () => {
-      console.log(`Connected to the server`)
-    });
-
-    // Log reconnection attempts
-    socket.on('reconnecting', (attempt) => {
-      console.log(`Attempting to reconnect... (Attempt ${attempt})`)
-    });
-
-    // Log successful reconnection
-    socket.on('reconnect', (attemptNumber) => {
-      console.log(`Reconnected to the server after ${attemptNumber} attempt(s)!`)
-    });
-
-    // Log disconnection
-    socket.on('disconnect', (reason) => {
-      console.log(`Disconnected from the server. Reason: ${reason}`)
-    });
-
-    // Log reconnection errors
-    socket.on('reconnect_error', (error) => {
-      console.error(`Reconnection error: ${error}`);
-    });
-
-    // Log reconnection failure
-    socket.on('reconnect_failed', () => {
-      console.error('Failed to reconnect to the server.');
-    });
-</script>
-
-
-
-  <%- include('footer',{currentpage:'cashier'}); %>
+            $(document).on("click", "[id^=decreaseQuantity]", function () {
+              var id = this.id;
+              var foodId = id.replace("decreaseQuantity", "");
+              const currentValue = $(`#quantity${foodId}`).val();
+              if (Number(currentValue) > 1) {
+                $(`#quantity${foodId}`).val(Number(currentValue) - 1);
+              }
+
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+              const quantity = $(`#quantity${foodId}`).val();
+              console.log(quantity);
+              const invoiceId = $("#invoiceidelement").text();
+              fetch("/invoice/changequantity/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ tableId, invoiceId, foodId, quantity }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log(data.foodItem.quantity);
+                  if (!data.editOneFood.unlimit) {
+                    const totalTd = document.getElementById(`quntityleft-${foodId}`);
+                    totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                  }
+
+                  getprices(invoiceId);
+                  // $("#finalcost").text();
+                  // $("#totalprice").text();
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
+            });
+
+            function quantitychange(event) {
+              const inputElement = event.target;
+
+              // Retrieve the ID of the input element
+              const inputId = inputElement.id;
+              var foodId = inputId.replace("quantity", "");
+
+              // Use the inputId as needed
+
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+              const quantity = $(`#${inputId}`).val();
+              console.log(quantity);
+              const invoiceId = $("#invoiceidelement").text();
+              fetch("/invoice/changequantity/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ tableId, invoiceId, foodId, quantity }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  console.log(data.foodItem.quantity);
+
+                  getprices(invoiceId);
+                  if (!data.editOneFood.unlimit) {
+                    const totalTd = document.getElementById(`quntityleft-${foodId}`);
+                    totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
+                  }
+
+                  // $("#finalcost").text();
+                  // $("#totalprice").text();
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
+            }
+
+            function onPriceChange(event) {
+              const inputElement = event.target;
+
+              // Retrieve the ID of the input element
+              const inputId = inputElement.id;
+              var foodId = inputId.replace("price", "");
+
+              // Use the inputId as needed
+
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+              const newPrice = $(`#${inputId}`).val();
+              const invoiceId = $("#invoiceidelement").text();
+              fetch("/invoice/changeprice/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  tableId,
+                  invoiceId,
+                  foodId,
+                  newPrice: newPrice,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  getprices(invoiceId);
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
+            }
+
+            function discountchange(event) {
+              const inputElement = event.target;
+
+              // Retrieve the ID of the input element
+              const inputId = inputElement.id;
+
+              // Use the inputId as needed
+              const discount = $("#discontinput").val();
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+              const invoiceId = $("#invoiceidelement").text();
+              fetch("/invoice/changedescount/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ invoiceId, discount }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  getprices(invoiceId);
+                  // $("#finalcost").text();
+                  // $("#totalprice").text();
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
+            }
+
+            // function ReceivedAmountInput(event) {
+
+            // }
+
+
+
+            $("#previosinvoice").on("click", (event) => {
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+
+              console.log(tableId);
+              fetch("/invoice/previesinvoice/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ tableId }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.reloded == true) {
+                    $("#invoiceidelement").text(`${data.lastinvoiceid}`);
+                    refrash();
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
+            });
+          </script>
+
+          <script src="/js/casher.js"></script>
+          <script src="/js/printinvoice.js"></script>
+          <script src="/js/printA4.js"></script>
+
+          <script>
+            // Connect to the Socket.IO server
+            const socket = io('http://localhost:3000', {
+              reconnection: true,  // Enable reconnection (default)
+              reconnectionAttempts: Infinity,  // Try reconnecting forever
+              reconnectionDelay: 1000,  // Wait 1 second before retrying
+              reconnectionDelayMax: 5000,  // Maximum delay between retries
+              randomizationFactor: 0.5  // Randomization for reconnection delay
+            });
+
+            console.log("socket", socket)
+
+            // Listen for messages from the server
+            socket.on('message', (message) => {
+              if (message === "refresh") {
+                refrash();
+              }
+              console.log(`Server: ${message}`)
+            });
+
+            // Show connection info
+            socket.on('connect', () => {
+              console.log(`Connected to the server`)
+            });
+
+            // Log reconnection attempts
+            socket.on('reconnecting', (attempt) => {
+              console.log(`Attempting to reconnect... (Attempt ${attempt})`)
+            });
+
+            // Log successful reconnection
+            socket.on('reconnect', (attemptNumber) => {
+              console.log(`Reconnected to the server after ${attemptNumber} attempt(s)!`)
+            });
+
+            // Log disconnection
+            socket.on('disconnect', (reason) => {
+              console.log(`Disconnected from the server. Reason: ${reason}`)
+            });
+
+            // Log reconnection errors
+            socket.on('reconnect_error', (error) => {
+              console.error(`Reconnection error: ${error}`);
+            });
+
+            // Log reconnection failure
+            socket.on('reconnect_failed', () => {
+              console.error('Failed to reconnect to the server.');
+            });
+          </script>
+
+
+
+          <%- include('footer',{currentpage:'cashier'}); %>

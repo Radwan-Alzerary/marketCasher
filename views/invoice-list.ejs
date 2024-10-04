@@ -1,590 +1,401 @@
 <%- include('header'); %>
-<div
-  id="shadedbackground"
-  onclick="hideAddForm()"
-  class="hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"
-></div>
+  <div id="shadedbackground" onclick="hideAddForm()"
+    class="hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"></div>
 
-<form
-  action="/food/addpurchasesfood"
-  method="POST"
-  enctype="multipart/form-data"
-  id="showData"
-  class="hidden  fixed flex flex-col justify-center gap-5 items-center w-1/2 bg-white p-5 rounded-xl z-50"
-  style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%)"
->
-  <div class="relative overflow-x-auto w-full h-full">
-    <table
-      class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
-    >
-      <thead
-        class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400"
-      >
-        <tr>
-          <th scope="col" class="px-6 py-3 rounded-s-lg">اسم المنتج</th>
-          <th scope="col" class="px-6 py-3">الكمية</th>
-          <th scope="col" class="px-6 py-3 rounded-e-lg">السعر</th>
-        </tr>
-      </thead>
-      <tbody id="listViewItem"></tbody>
-      <hr />
-      <tfoot>
-        <tr class="font-semibold text-gray-900 dark:text-white">
-          <th scope="row" class="px-6 py-3 text-base">المجموع</th>
-          <td class="px-6 py-3" id="totalQuantity"></td>
-          <td class="px-6 py-3" id="totalprice"></td>
-        </tr>
-        <tr class="font-semibold text-gray-900 dark:text-white">
-          <th scope="row" class="px-6 py-3 text-base">الخصومات</th>
-          <td class="px-6 py-3" id="totalQuantity"></td>
-          <td class="px-6 py-3" id="totaldiscount"></td>
-        </tr>
-        <tr class="font-semibold text-gray-900 dark:text-white">
-          <th scope="row" class="px-6 py-3 text-base">الكلي</th>
-          <td class="px-6 py-3" id="totalQuantity"></td>
-          <td class="px-6 py-3" id="finalprice"></td>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
-</form>
-
-<div class="p-6">
-  <div class="w-full h-12 flex justify-center items-center gap-4">
-    <div
-      id="selectPurchasesList"
-      class="w-1/2 h-full bg-white cursor-pointer hover:bg-green-400 rounded-full flex justify-center items-center"
-    >
-      جدول المشتريات
+  <form action="/food/addpurchasesfood" method="POST" enctype="multipart/form-data" id="showData"
+    class="hidden  fixed flex flex-col justify-center gap-5 items-center w-1/2 bg-white p-5 rounded-xl z-50"
+    style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%)">
+    <div class="relative overflow-x-auto w-full h-full">
+      <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+            <th scope="col" class="px-6 py-3 rounded-s-lg">اسم المنتج</th>
+            <th scope="col" class="px-6 py-3">الكمية</th>
+            <th scope="col" class="px-6 py-3 rounded-e-lg">السعر</th>
+          </tr>
+        </thead>
+        <tbody id="listViewItem"></tbody>
+        <hr />
+        <tfoot>
+          <tr class="font-semibold text-gray-900 dark:text-white">
+            <th scope="row" class="px-6 py-3 text-base">المجموع</th>
+            <td class="px-6 py-3" id="totalQuantity"></td>
+            <td class="px-6 py-3" id="totalprice"></td>
+          </tr>
+          <tr class="font-semibold text-gray-900 dark:text-white">
+            <th scope="row" class="px-6 py-3 text-base">الخصومات</th>
+            <td class="px-6 py-3" id="totalQuantity"></td>
+            <td class="px-6 py-3" id="totaldiscount"></td>
+          </tr>
+          <tr class="font-semibold text-gray-900 dark:text-white">
+            <th scope="row" class="px-6 py-3 text-base">الكلي</th>
+            <td class="px-6 py-3" id="totalQuantity"></td>
+            <td class="px-6 py-3" id="finalprice"></td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
-    <div
-      id="selectSellerList"
-      class="w-1/2 h-full bg-green-400 cursor-pointer hover:bg-green-400 rounded-full flex justify-center items-center"
-    >
-      جدول المبيعات
-    </div>
-  </div>
-</div>
+  </form>
 
-<div id="purchasesList" class="w-full h-full overflow-auto">
-  <div
-    class="relative overflow-x-auto p-5 shadow-md sm:rounded-lg"
-    style="height: 77%"
-  >
-    <div class="flex items-center justify-between pb-4">
-      <label for="table-search" class="sr-only">Search</label>
-      <div class="relative">
-        <div
-          onclick="search()"
-          class="absolute cursor-pointer z-40 inset-y-0 left-0 flex items-center pl-3"
-        >
-          <svg
-            class="w-5 h-5 text-gray-500 dark:text-gray-400"
-            aria-hidden="true"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
-        </div>
-        <input
-          type="text"
-          id="searchValue"
-          class="block p-2 pl-10 text-sm z-0 text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          placeholder="Search for items"
-        />
-      </div>
-      <div class="flex gap-5">
-        <div>
-          <button
-            id="showstateconainor"
-            class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-            type="button"
-          >
-            <svg
-              class="w-3 h-3 text-gray-500 dark:text-gray-400 mr-2.5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"
-              />
-            </svg>
-            تصنيف حسب الحالة
-            <svg
-              class="w-2.5 h-2.5 ml-2.5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 10 6"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m1 1 4 4 4-4"
-              />
-            </svg>
-          </button>
-          <!-- Dropdown menu -->
-          <div
-            id="stateconainor"
-            class="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
-            style="position: absolute"
-          >
-            <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200">
-              <li>
-                <div
-                  onclick="statesort('مكتمل')"
-                  class="flex items-center text-right p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  <label
-                    for="filter-radio-example-1"
-                    class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                    >مكتمل</label
-                  >
-                </div>
-              </li>
-              <li>
-                <div
-                  onclick="statesort('ملغى')"
-                  class="flex text-right items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  <label
-                    for="filter-radio-example-2"
-                    class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                  >
-                    ملغى</label
-                  >
-                </div>
-              </li>
-              <li>
-                <div
-                  onclick="statesort('قيد المعالجة')"
-                  class="flex items-center text-right p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  <label
-                    for="filter-radio-example-3"
-                    class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                  >
-                    قيد المعالجة</label
-                  >
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
+  <div class="h-full">
 
-        <div class="relative">
-          <button
-            id="showdateconainor"
-            class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-            type="button"
-          >
-            <svg
-              class="w-3 h-3 text-gray-500 dark:text-gray-400 mr-2.5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z"
-              />
-            </svg>
-            تصنيف حسب الوقت
-            <svg
-              class="w-2.5 h-2.5 ml-2.5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 10 6"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m1 1 4 4 4-4"
-              />
-            </svg>
-          </button>
-          <!-- Dropdown menu -->
-          <div
-            id="dateconainor"
-            class="z-10 absolute hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
-            style=""
-          >
-            <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200">
-              <li>
-                <div
-                  class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  <input
-                    onclick="showlastday()"
-                    type="radio"
-                    value=""
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label
-                    for="filter-radio-example-1"
-                    class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                    >اليوم</label
-                  >
-                </div>
-              </li>
-              <li>
-                <div
-                  class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  <input
-                    onclick="showlast7day()"
-                    type="radio"
-                    value=""
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label
-                    for="filter-radio-example-2"
-                    class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                  >
-                    اخر 7 ايام</label
-                  >
-                </div>
-              </li>
-              <li>
-                <div
-                  class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  <input
-                    onclick="showlast30day()"
-                    type="radio"
-                    value=""
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label
-                    for="filter-radio-example-3"
-                    class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                  >
-                    اخر 30 يوم</label
-                  >
-                </div>
-              </li>
-              <li>
-                <div
-                  class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  <input
-                    onclick="showlastmonth()"
-                    type="radio"
-                    value=""
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label
-                    for="filter-radio-example-4"
-                    class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                    >اخر شهر</label
-                  >
-                </div>
-              </li>
-              <li>
-                <div
-                  class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
-                >
-                  <input
-                    onclick="showlastyear()"
-                    type="radio"
-                    value=""
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                  />
-                  <label
-                    for="filter-radio-example-5"
-                    class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300"
-                    >اخر سنه</label
-                  >
-                </div>
-              </li>
-            </ul>
-          </div>
+    <div class="p-6">
+      <div class="w-full h-12 flex justify-center items-center gap-4">
+        <div id="selectPurchasesList"
+          class="w-1/2 h-full bg-white cursor-pointer hover:bg-green-400 rounded-full flex justify-center items-center">
+          جدول المشتريات
+        </div>
+        <div id="selectSellerList"
+          class="w-1/2 h-full bg-green-400 cursor-pointer hover:bg-green-400 rounded-full flex justify-center items-center">
+          جدول المبيعات
         </div>
       </div>
     </div>
-    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-      <thead
-        class="text-xs overflow-auto text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-      >
-        <tr>
-          <th scope="col" class="text-center px-6 py-3">رقم الوصل</th>
-          <th scope="col" class="text-center px-6 py-3">السعر الكلي</th>
-          <th scope="col" class="text-center px-6 py-3">مجموع الخصومات</th>
-          <th scope="col" class="text-center px-6 py-3">مجموع الاطعمة</th>
-          <th scope="col" class="text-center px-6 py-3">الحالة</th>
-          <th scope="col" class="text-center px-6 py-3">التاريخ</th>
-          <th scope="col" class="text-center px-6 py-3">طباعة</th>
-          <th scope="col" class="text-center px-6 py-3">معاينة</th>
-          <th scope="col" class="text-center px-6 py-3">حذف</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%invoice.forEach(function(invoices,index) { %>
-        <tr
-          class="<%if(!invoices.deleted){%> bg-white<%}else{%>bg-red-300<%}%> border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-        >
-          <th
-            scope="row"
-            class="text-center px-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-          >
-            <%=invoices.number%>
-          </th>
-          <td class="text-center px-3 py-4"><%=invoices.finalcost%></td>
-          <td class="text-center px-3 py-4"><%=invoices.fulldiscont%></td>
-          <td class="text-center px-3 py-4">
-            <% if(invoices.food){%> <%=invoices.food.length%> <%}%>
-          </td>
-          <td class="text-center px-3 py-4">
-            <div
-              class="<%if(invoices.type == 'ملغى'){%>bg-red-200 <%}else if(invoices.type == 'مكتمل' || invoices.type == 'توصيل'){%> bg-green-200<%}else if(invoices.type == 'قيد المعالجة'){%> bg-blue-200 <%}%> rounded-xl text-black w-24 h-6 flex justify-center items-center"
-            >
-              <%=invoices.type%>
-            </div>
-          </td>
-          <td class="text-center px-3 py-4">
-            <% const formatter=new Intl.DateTimeFormat('en-US', { year:
-            'numeric' , month: 'numeric' , day: 'numeric' , hour: 'numeric' ,
-            minute: 'numeric' , second: 'numeric' , hour12: true }); const
-            formattedDate=formatter.format(invoices.progressdata);
-            console.log(formattedDate); %> <%=formattedDate%>
-          </td>
 
-          <td
-            onclick='printinvoice("<%=invoices.id%>","","","","","",1,"","")'
-            class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-blue-200 hover:bg-blue-300"
-          >
-            <div class="font-medium dark:text-blue-500 hover:underline">
-              <svg
-                class="mx-auto fill-blue-800"
-                xmlns="http://www.w3.org/2000/svg"
-                height="1em"
-                viewBox="0 0 512 512"
-              >
-                <path
-                  d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
-                />
+    <div id="purchasesList" class="w-full  h-full overflow-auto">
+      <div class="relative overflow-x-auto p-5 shadow-md sm:rounded-lg" >
+        <div class="flex items-center justify-between pb-4">
+          <label for="table-search" class="sr-only">Search</label>
+          <div class="relative">
+            <div onclick="search()" class="absolute cursor-pointer z-40 inset-y-0 left-0 flex items-center pl-3">
+              <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" aria-hidden="true" fill="currentColor"
+                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd"
+                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                  clip-rule="evenodd"></path>
               </svg>
             </div>
-          </td>
-
-          <td
-            onclick='showInfo("<%=invoices.id%>")'
-            class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-green-100 hover:bg-green-300"
-          >
-            <div
-              class="font-medium dark:text-blue-500 flex justify-center items-center hover:underline"
-            >
-              <svg
-                class="fill-green-700"
-                xmlns="http://www.w3.org/2000/svg"
-                height="1em"
-                viewBox="0 0 576 512"
-              >
-                <path
-                  d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"
-                />
-              </svg>
+            <input type="text" id="searchValue"
+              class="block p-2 pl-10 text-sm z-0 text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Search for items" />
+          </div>
+          <div class="flex gap-5">
+            <div>
+              <button id="showstateconainor"
+                class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                type="button">
+                <svg class="w-3 h-3 text-gray-500 dark:text-gray-400 mr-2.5" xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                </svg>
+                تصنيف حسب الحالة
+                <svg class="w-2.5 h-2.5 ml-2.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m1 1 4 4 4-4" />
+                </svg>
+              </button>
+              <!-- Dropdown menu -->
+              <div id="stateconainor"
+                class="z-10 hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                style="position: absolute">
+                <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200">
+                  <li>
+                    <div onclick="statesort('مكتمل')"
+                      class="flex items-center text-right p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <label for="filter-radio-example-1"
+                        class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">مكتمل</label>
+                    </div>
+                  </li>
+                  <li>
+                    <div onclick="statesort('ملغى')"
+                      class="flex text-right items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <label for="filter-radio-example-2"
+                        class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
+                        ملغى</label>
+                    </div>
+                  </li>
+                  <li>
+                    <div onclick="statesort('قيد المعالجة')"
+                      class="flex items-center text-right p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <label for="filter-radio-example-3"
+                        class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
+                        قيد المعالجة</label>
+                    </div>
+                  </li>
+                </ul>
+              </div>
             </div>
-          </td>
 
-          <td
-            onclick="deleteInvoice('<%=invoices.id%>')"
-            class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-red-200 hover:bg-red-300"
-          >
-            <a
-              href="#"
-              class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-            >
-              <svg
-                class="mx-auto fill-red-400"
-                xmlns="http://www.w3.org/2000/svg"
-                height="1em"
-                viewBox="0 0 448 512"
-              >
-                <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                <path
-                  d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z"
-                />
-              </svg>
-            </a>
-          </td>
-        </tr>
-        <%})%>
-      </tbody>
-    </table>
-    <nav aria-label="Page navigation example flex justify-center items-center">
-      <ul class="flex items-center -space-x-px h-10 text-base justify-center">
-        <li>
-          <a
-            href="#"
-            class="flex items-center justify-center px-4 h-10 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-          >
-            <span class="sr-only">Previous</span>
-            <svg
-              class="w-3 h-3"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 6 10"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 1 1 5l4 4"
-              />
-            </svg>
-          </a>
-        </li>
-        <%const invoicount=Math.ceil(invoiceCount/10); for(let i=1;i<=10;i++){
-        %>
-        <li>
-          <a
-            id="page<%=i%>"
-            class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-          >
-            <%=i%>
-          </a>
-        </li>
-        <%}%>
-        <li>
-          <a
-            href="#"
-            class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-          >
-            <span class="sr-only">Next</span>
-            <svg
-              class="w-3 h-3"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 6 10"
-            >
-              <path
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m1 9 4-4-4-4"
-              />
-            </svg>
-          </a>
-        </li>
-      </ul>
-    </nav>
+            <div class="relative">
+              <button id="showdateconainor"
+                class="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                type="button">
+                <svg class="w-3 h-3 text-gray-500 dark:text-gray-400 mr-2.5" aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm3.982 13.982a1 1 0 0 1-1.414 0l-3.274-3.274A1.012 1.012 0 0 1 9 10V6a1 1 0 0 1 2 0v3.586l2.982 2.982a1 1 0 0 1 0 1.414Z" />
+                </svg>
+                تصنيف حسب الوقت
+                <svg class="w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                  viewBox="0 0 10 6">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m1 1 4 4 4-4" />
+                </svg>
+              </button>
+              <!-- Dropdown menu -->
+              <div id="dateconainor"
+                class="z-10 absolute hidden w-48 bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600"
+                style="">
+                <ul class="p-3 space-y-1 text-sm text-gray-700 dark:text-gray-200">
+                  <li>
+                    <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <input onclick="showlastday()" type="radio" value=""
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                      <label for="filter-radio-example-1"
+                        class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">اليوم</label>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <input onclick="showlast7day()" type="radio" value=""
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                      <label for="filter-radio-example-2"
+                        class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
+                        اخر 7 ايام</label>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <input onclick="showlast30day()" type="radio" value=""
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                      <label for="filter-radio-example-3"
+                        class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">
+                        اخر 30 يوم</label>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <input onclick="showlastmonth()" type="radio" value=""
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                      <label for="filter-radio-example-4"
+                        class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">اخر شهر</label>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="flex items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
+                      <input onclick="showlastyear()" type="radio" value=""
+                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                      <label for="filter-radio-example-5"
+                        class="w-full ml-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">اخر سنه</label>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <thead class="text-xs overflow-auto text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="text-center px-6 py-3">رقم الوصل</th>
+              <th scope="col" class="text-center px-6 py-3">السعر الكلي</th>
+              <th scope="col" class="text-center px-6 py-3">مجموع الخصومات</th>
+              <th scope="col" class="text-center px-6 py-3">مجموع الاطعمة</th>
+              <th scope="col" class="text-center px-6 py-3">الحالة</th>
+              <th scope="col" class="text-center px-6 py-3">التاريخ</th>
+              <th scope="col" class="text-center px-6 py-3">طباعة</th>
+              <th scope="col" class="text-center px-6 py-3">معاينة</th>
+              <th scope="col" class="text-center px-6 py-3">حذف</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%invoice.forEach(function(invoices,index) { %>
+              <tr
+                class="<%if(!invoices.deleted){%> bg-white<%}else{%>bg-red-300<%}%> border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <th scope="row"
+                  class="text-center px-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  <%=invoices.number%>
+                </th>
+                <td class="text-center px-3 py-4">
+                  <%=invoices.finalcost%>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <%=invoices.fulldiscont%>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <% if(invoices.food){%>
+                    <%=invoices.food.length%>
+                      <%}%>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <div
+                    class="<%if(invoices.type == 'ملغى'){%>bg-red-200 <%}else if(invoices.type == 'مكتمل' || invoices.type == 'توصيل'){%> bg-green-200<%}else if(invoices.type == 'قيد المعالجة'){%> bg-blue-200 <%}%> rounded-xl text-black w-24 h-6 flex justify-center items-center">
+                    <%=invoices.type%>
+                  </div>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <% const formatter=new Intl.DateTimeFormat('en-US', { year: 'numeric' , month: 'numeric' ,
+                    day: 'numeric' , hour: 'numeric' , minute: 'numeric' , second: 'numeric' , hour12: true }); const
+                    formattedDate=formatter.format(invoices.progressdata); console.log(formattedDate); %>
+                    <%=formattedDate%>
+                </td>
+
+                <td onclick='printinvoice("<%=invoices.id%>","","","","","",1,"","")'
+                  class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-blue-200 hover:bg-blue-300">
+                  <div class="font-medium dark:text-blue-500 hover:underline">
+                    <svg class="mx-auto fill-blue-800" xmlns="http://www.w3.org/2000/svg" height="1em"
+                      viewBox="0 0 512 512">
+                      <path
+                        d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />
+                    </svg>
+                  </div>
+                </td>
+
+                <td onclick='showInfo("<%=invoices.id%>")'
+                  class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-green-100 hover:bg-green-300">
+                  <div class="font-medium dark:text-blue-500 flex justify-center items-center hover:underline">
+                    <svg class="fill-green-700" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512">
+                      <path
+                        d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z" />
+                    </svg>
+                  </div>
+                </td>
+
+                <td onclick="deleteInvoice('<%=invoices.id%>')"
+                  class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-red-200 hover:bg-red-300">
+                  <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
+                    <svg class="mx-auto fill-red-400" xmlns="http://www.w3.org/2000/svg" height="1em"
+                      viewBox="0 0 448 512">
+                      <!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                      <path
+                        d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" />
+                    </svg>
+                  </a>
+                </td>
+              </tr>
+              <%})%>
+          </tbody>
+        </table>
+        <nav aria-label="Page navigation example flex justify-center items-center">
+          <ul class="flex items-center -space-x-px h-10 text-base justify-center">
+            <li>
+              <a href="#"
+                class="flex items-center justify-center px-4 h-10 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                <span class="sr-only">Previous</span>
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                  viewBox="0 0 6 10">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M5 1 1 5l4 4" />
+                </svg>
+              </a>
+            </li>
+            <%const invoicount=Math.ceil(invoiceCount/10); for(let i=1;i<=10;i++){ %>
+              <li>
+                <a id="page<%=i%>"
+                  class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                  <%=i%>
+                </a>
+              </li>
+              <%}%>
+                <li>
+                  <a href="#"
+                    class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                    <span class="sr-only">Next</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                      viewBox="0 0 6 10">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="m1 9 4-4-4-4" />
+                    </svg>
+                  </a>
+                </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div id="sallerList" class="w-full h-full hidden overflow-auto">
+      <div class="relative overflow-x-auto p-5 shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <thead class="text-xs overflow-auto text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" class="text-center px-6 py-3">رقم الوصل</th>
+              <th scope="col" class="text-center px-6 py-3">السعر الكلي</th>
+              <th scope="col" class="text-center px-6 py-3">اسم المجهز</th>
+              <th scope="col" class="text-center px-6 py-3">اسم المخزن</th>
+              <th scope="col" class="text-center px-6 py-3">عدد الراجع</th>
+              <th scope="col" class="text-center px-6 py-3">نوع الدفع</th>
+              <th scope="col" class="text-center px-6 py-3">مجموع الخصومات</th>
+              <th scope="col" class="text-center px-6 py-3">مجموع الهدايا</th>
+              <th scope="col" class="text-center px-6 py-3">الحالة</th>
+              <th scope="col" class="text-center px-6 py-3">التاريخ</th>
+              <th scope="col" class="text-center px-6 py-3">معاينة</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%purchases.forEach(function(purchase,index) { %>
+              <tr
+                class="<%if(!purchase.deleted){%> bg-white<%}else{%>bg-red-300<%}%> border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <th scope="row"
+                  class="text-center px-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                  <%=purchase.serialNumber%>
+                </th>
+                <td class="text-center px-3 py-4">
+                  <%=purchase.fullCost%>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <%=purchase.Supplier%>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <%=purchase.storge.name%>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <%=purchase.fullreturn%>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <%=purchase.PaymentType.name%>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <%=purchase.fulldiscount%>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <%=purchase.fullgift%>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <div
+                    class="<%if(purchase.state == 'ملغى'){%>bg-red-200 <%}else if(purchase.state == 'مكتمل' || purchase.state == 'توصيل'){%> bg-green-200<%}else if(purchase.type == 'قيد المعالجة'){%> bg-blue-200 <%}%> rounded-xl text-black w-24 h-6 flex justify-center items-center">
+                    <%=purchase.state%>
+                  </div>
+                </td>
+                <td class="text-center px-3 py-4">
+                  <% const formatter=new Intl.DateTimeFormat('en-US', { year: 'numeric' , month: 'numeric' ,
+                    day: 'numeric' , hour: 'numeric' , minute: 'numeric' , second: 'numeric' , hour12: true }); const
+                    formattedDate=formatter.format(purchase.invoiceDate); console.log(formattedDate); %>
+                    <%=formattedDate%>
+                </td>
+
+                <td onclick='showInfo("<%=purchase.id%>")'
+                  class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-green-100 hover:bg-green-300">
+                  <div class="font-medium dark:text-blue-500 flex justify-center items-center hover:underline">
+                    <svg class="fill-green-700" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512">
+                      <path
+                        d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z" />
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+              <%})%>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-</div>
 
-<div id="sallerList" class="w-full h-full overflow-auto">
-  <div
-    class="relative overflow-x-auto p-5 shadow-md sm:rounded-lg"
-    style="height: 77%"
-  >
-    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-      <thead
-        class="text-xs overflow-auto text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
-      >
-        <tr>
-          <th scope="col" class="text-center px-6 py-3">رقم الوصل</th>
-          <th scope="col" class="text-center px-6 py-3">السعر الكلي</th>
-          <th scope="col" class="text-center px-6 py-3">اسم المجهز</th>
-          <th scope="col" class="text-center px-6 py-3">اسم المخزن</th>
-          <th scope="col" class="text-center px-6 py-3">عدد الراجع</th>
-          <th scope="col" class="text-center px-6 py-3">نوع الدفع</th>
-          <th scope="col" class="text-center px-6 py-3">مجموع الخصومات</th>
-          <th scope="col" class="text-center px-6 py-3">مجموع الهدايا</th>
-          <th scope="col" class="text-center px-6 py-3">الحالة</th>
-          <th scope="col" class="text-center px-6 py-3">التاريخ</th>
-          <th scope="col" class="text-center px-6 py-3">معاينة</th>
-        </tr>
-      </thead>
-      <tbody>
-        <%purchases.forEach(function(purchase,index) { %>
-        <tr
-          class="<%if(!purchase.deleted){%> bg-white<%}else{%>bg-red-300<%}%> border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-        >
-          <th
-            scope="row"
-            class="text-center px-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-          >
-            <%=purchase.serialNumber%>
-          </th>
-          <td class="text-center px-3 py-4"><%=purchase.fullCost%></td>
-          <td class="text-center px-3 py-4"><%=purchase.Supplier%></td>
-          <td class="text-center px-3 py-4"><%=purchase.storge.name%></td>
-          <td class="text-center px-3 py-4"><%=purchase.fullreturn%></td>
-          <td class="text-center px-3 py-4"><%=purchase.PaymentType.name%></td>
-          <td class="text-center px-3 py-4"><%=purchase.fulldiscount%></td>
-          <td class="text-center px-3 py-4"><%=purchase.fullgift%></td>
-          <td class="text-center px-3 py-4">
-            <div
-              class="<%if(purchase.state == 'ملغى'){%>bg-red-200 <%}else if(purchase.state == 'مكتمل' || purchase.state == 'توصيل'){%> bg-green-200<%}else if(purchase.type == 'قيد المعالجة'){%> bg-blue-200 <%}%> rounded-xl text-black w-24 h-6 flex justify-center items-center"
-            >
-              <%=purchase.state%>
-            </div>
-          </td>
-          <td class="text-center px-3 py-4">
-            <% const formatter=new Intl.DateTimeFormat('en-US', { year:
-            'numeric' , month: 'numeric' , day: 'numeric' , hour: 'numeric' ,
-            minute: 'numeric' , second: 'numeric' , hour12: true }); const
-            formattedDate=formatter.format(purchase.invoiceDate);
-            console.log(formattedDate); %> <%=formattedDate%>
-          </td>
+  <script>
+    function showInfo(id) {
+      console.log(id);
+      let valueList = "";
+      let totalprice = 0;
+      let totalQuantity = 0;
+      $("#shadedbackground").show();
+      $("#showData").show();
 
-          <td
-            onclick='showInfo("<%=purchase.id%>")'
-            class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-green-100 hover:bg-green-300"
-          >
-            <div
-              class="font-medium dark:text-blue-500 flex justify-center items-center hover:underline"
-            >
-              <svg
-                class="fill-green-700"
-                xmlns="http://www.w3.org/2000/svg"
-                height="1em"
-                viewBox="0 0 576 512"
-              >
-                <path
-                  d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"
-                />
-              </svg>
-            </div>
-          </td>
-        </tr>
-        <%})%>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<script>
-  function showInfo(id) {
-    console.log(id);
-    let valueList = "";
-    let totalprice = 0;
-    let totalQuantity = 0;
-    $("#shadedbackground").show();
-    $("#showData").show();
-
-    // Example usage:
-    const apiUrl = `/invoice/info/${id}`;
-    fetchData(apiUrl).then((data) => {
-      data.food.forEach((element) => {
-        totalQuantity += element.quantity;
-        valueList += `
+      // Example usage:
+      const apiUrl = `/invoice/info/${id}`;
+      fetchData(apiUrl).then((data) => {
+        data.food.forEach((element) => {
+          totalQuantity += element.quantity;
+          valueList += `
         <tr class="bg-white dark:bg-gray-800">
           <th
             scope="row"
@@ -594,156 +405,155 @@
           </th>
           <td class="px-6 py-4">            ${element.quantity}
 </td>
-          <td class="px-6 py-4">${
-            element.foodPrice
+          <td class="px-6 py-4">${element.foodPrice
               ? element.foodPrice
               : element.id.price * element.quantity
-          }</td>
+            }</td>
         </tr>`;
-        console.log(data);
+          console.log(data);
+        });
+        $("#totalprice").text(data.finalcost);
+        $("#totaldiscount").text(data.fulldiscont);
+        $("#finalprice").text(data.fullcost);
+        $("#listViewItem").html(valueList);
       });
-      $("#totalprice").text(data.finalcost);
-      $("#totaldiscount").text(data.fulldiscont);
-      $("#finalprice").text(data.fullcost);
-      $("#listViewItem").html(valueList);
+    }
+
+    function fetchData(url) {
+      // Using the fetch function to make a GET request
+      return fetch(url)
+        .then((response) => {
+          // Check if the request was successful (status code 200-299)
+          if (!response.ok) {
+            throw new Error(
+              `Network response was not ok: ${response.statusText}`
+            );
+          }
+          // Parse the response as JSON and return it
+          return response.json();
+        })
+        .catch((error) => {
+          // Handle any errors that occurred during the fetch
+          console.error("Error during fetch operation:", error);
+        });
+    }
+
+    function search() {
+      console.log($("#searchValue").val());
+      url = window.location.href;
+
+      window.location.href = `/invoice/findlist/${$("#searchValue").val()}`;
+    }
+  </script>
+  <script>
+    // Handle click events
+    $("#selectPurchasesList").click(function () {
+      // Remove bg-green from both elements
+      $("#selectSellerList").removeClass("bg-green-400");
+      $("#selectSellerList").addClass("bg-white");
+      $("#sallerList").show();
+      $("#purchasesList").hide();
+      // Add bg-green to the clicked element
+      $(this).removeClass("bg-white").addClass("bg-green-400");
     });
-  }
 
-  function fetchData(url) {
-    // Using the fetch function to make a GET request
-    return fetch(url)
-      .then((response) => {
-        // Check if the request was successful (status code 200-299)
-        if (!response.ok) {
-          throw new Error(
-            `Network response was not ok: ${response.statusText}`
-          );
-        }
-        // Parse the response as JSON and return it
-        return response.json();
+    $(" #selectSellerList").click(function () {
+      // Remove bg-green from both elements
+      $("#selectPurchasesList").removeClass("bg-green-400");
+
+      // Add bg-white to both elements
+      $("#selectPurchasesList").addClass("bg-white");
+      $("#sallerList").hide();
+      $("#purchasesList").show();
+
+      // Add bg-green to the clicked element
+      $(this).removeClass("bg-white").addClass("bg-green-400");
+    });
+  </script>
+
+  <script>
+    function deleteInvoice(invoiceId) {
+      fetch("/invoice/deleteinvoice/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: invoiceId }),
       })
-      .catch((error) => {
-        // Handle any errors that occurred during the fetch
-        console.error("Error during fetch operation:", error);
-      });
-  }
-
-  function search() {
-    console.log($("#searchValue").val());
-    url = window.location.href;
-
-    window.location.href = `/invoice/findlist/${$("#searchValue").val()}`;
-  }
-</script>
-<script>
-  // Handle click events
-  $("#selectPurchasesList").click(function () {
-    // Remove bg-green from both elements
-    $("#selectSellerList").removeClass("bg-green-400");
-    $("#selectSellerList").addClass("bg-white");
-    $("#sallerList").show();
-    $("#purchasesList").hide();
-    // Add bg-green to the clicked element
-    $(this).removeClass("bg-white").addClass("bg-green-400");
-  });
-
-  $(" #selectSellerList").click(function () {
-    // Remove bg-green from both elements
-    $("#selectPurchasesList").removeClass("bg-green-400");
-
-    // Add bg-white to both elements
-    $("#selectPurchasesList").addClass("bg-white");
-    $("#sallerList").hide();
-    $("#purchasesList").show();
-
-    // Add bg-green to the clicked element
-    $(this).removeClass("bg-white").addClass("bg-green-400");
-  });
-</script>
-
-<script>
-  function deleteInvoice(invoiceId) {
-    fetch("/invoice/deleteinvoice/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id: invoiceId }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        location.reload();
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        // Handle errors
-      });
-  }
-
-  $(document).on("click", "[id^=page]", function () {
-    var id = this.id;
-    const pagenum = id.replace("page", "");
-    url = window.location.href;
-    if (url.includes("page")) {
-      url = url.replace(/page=[^&]+/, `page=${pagenum}`);
-    } else if (!url.includes("?")) {
-      url += `?page=${pagenum}`;
-    } else {
-      url += `&page=${pagenum}`;
+        .then((response) => response.json())
+        .then((data) => {
+          location.reload();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          // Handle errors
+        });
     }
-    window.location.href = url;
-  });
 
-  function printThis(invoicesid) {
-    // alert(invoicesid)
-  }
+    $(document).on("click", "[id^=page]", function () {
+      var id = this.id;
+      const pagenum = id.replace("page", "");
+      url = window.location.href;
+      if (url.includes("page")) {
+        url = url.replace(/page=[^&]+/, `page=${pagenum}`);
+      } else if (!url.includes("?")) {
+        url += `?page=${pagenum}`;
+      } else {
+        url += `&page=${pagenum}`;
+      }
+      window.location.href = url;
+    });
 
-  function showlastday() {
-    location.href = "/invoice/list?dateview=lastday";
-  }
-  function showlast7day() {
-    location.href = "/invoice/list?dateview=last7day";
-  }
-  function showlast30day() {
-    location.href = "/invoice/list?dateview=last30day";
-  }
-  function showlastmonth() {
-    location.href = "/invoice/list?dateview=lastmonth";
-  }
-  function showlastyear() {
-    location.href = "/invoice/list?dateview=lastyear";
-  }
-
-  $("#showdateconainor").on("click", () => {
-    if (!$("#dateconainor").hasClass("hidden")) {
-      $("#dateconainor").addClass("hidden");
-    } else {
-      $(`#dateconainor`).removeClass("hidden");
+    function printThis(invoicesid) {
+      // alert(invoicesid)
     }
-  });
-  $("#showstateconainor").on("click", () => {
-    if (!$("#stateconainor").hasClass("hidden")) {
-      $("#stateconainor").addClass("hidden");
-    } else {
-      $(`#stateconainor`).removeClass("hidden");
-    }
-  });
-  function hideAddForm() {
-    $("#shadedbackground").hide();
-    $("#showData").hide();
-  }
-  function statesort(state) {
-    url = window.location.href;
-    if (url.includes("state")) {
-      url = url.replace(/state=[^&]+/, `state=${state}`);
-    } else if (!url.includes("?")) {
-      url += `?state=${state}`;
-    } else {
-      url += `&state=${state}`;
-    }
-    window.location.href = url;
-  }
-</script>
-<script src="/js/printinvoice.js"></script>
 
-<%- include('footer',{currentpage:'invoicelist'}); %>
+    function showlastday() {
+      location.href = "/invoice/list?dateview=lastday";
+    }
+    function showlast7day() {
+      location.href = "/invoice/list?dateview=last7day";
+    }
+    function showlast30day() {
+      location.href = "/invoice/list?dateview=last30day";
+    }
+    function showlastmonth() {
+      location.href = "/invoice/list?dateview=lastmonth";
+    }
+    function showlastyear() {
+      location.href = "/invoice/list?dateview=lastyear";
+    }
+
+    $("#showdateconainor").on("click", () => {
+      if (!$("#dateconainor").hasClass("hidden")) {
+        $("#dateconainor").addClass("hidden");
+      } else {
+        $(`#dateconainor`).removeClass("hidden");
+      }
+    });
+    $("#showstateconainor").on("click", () => {
+      if (!$("#stateconainor").hasClass("hidden")) {
+        $("#stateconainor").addClass("hidden");
+      } else {
+        $(`#stateconainor`).removeClass("hidden");
+      }
+    });
+    function hideAddForm() {
+      $("#shadedbackground").hide();
+      $("#showData").hide();
+    }
+    function statesort(state) {
+      url = window.location.href;
+      if (url.includes("state")) {
+        url = url.replace(/state=[^&]+/, `state=${state}`);
+      } else if (!url.includes("?")) {
+        url += `?state=${state}`;
+      } else {
+        url += `&state=${state}`;
+      }
+      window.location.href = url;
+    }
+  </script>
+  <script src="/js/printinvoice.js"></script>
+
+  <%- include('footer',{currentpage:'invoicelist'}); %>

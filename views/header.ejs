@@ -1,32 +1,10 @@
 <!doctype html>
-<html class="h-full">
+<html class="h-full ">
+    <%- include('./structure/head'); %>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="/js/charts.js"></script>
-    <script src="/js/datepicker.min.js"></script>
-    <script src="/js/socketio.js"></script>
-    <script src="/js/autoComplete.js"></script>
-    <!-- Load jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.3.min.js"></script>
-    <script src="/js/jsbarcode.js"></script>
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@tarekraafat/autocomplete.js@10.2.7/dist/css/autoComplete.02.min.css">
-    <script src="/js/jquery-3.6.3.min.js"></script>
-    <link href="/css/style.css" rel="stylesheet">
-    <link href="/dist/output.css" rel="stylesheet">
-    <link href="/css/all.min.css" rel="stylesheet">
-    <script src="/js/axios.js"
-        integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script type="text/javascript" src="/js/moment.js"></script>
-    <script type="text/javascript" src="/js/daterangepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="/css/datapicker.css" />
 
-</head>
-
-<body class="bg-gray-100 h-screen overflow-hidden">
+<body class="bg-gray-100 h-full flex  overflow-hidden" >
+<section class="flex w-[95%] justify-between" style="flex-direction:column;overflow: scroll;"> 
     <header class="bg-white mb-0.5 px-4">
         <div class="flex h-16 items-center">
             <div class="w-1/2 flex">
@@ -136,5 +114,6 @@
         </script>
 
     </header>
-    <div class="h-full  flex relative">
-        <div class=" w-[94%] h-full bg-gray-100 ">
+
+
+

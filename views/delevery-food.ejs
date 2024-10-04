@@ -1,13 +1,16 @@
 <%- include('header'); %>
 
 
-    <div id="shadedbackground" class=" hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"></div>
+<%-include('./global/backGroundShadow')%>
 
 <%-include('./product/convertTableForm')%>
 <%-include('./product/moneyBack')%>
 <%-include('./product/printCount')%>
+<div class="w-full h-full">
 
-    <div class="flex">
+
+<div class="flex w-full justify-center">
+
         <div class="w-1/4" style="width: 30%;">
             <div class="bg-white mb-0.5 items-center " style="height: 6%; display: flex;justify-content: space-around;">
                 <div class="flex gap-3 py-2">
@@ -159,8 +162,10 @@
                 </div>
             </div>
         </div>
-
         <%-include('./product/productSelectCompont')%>
+    </div>
+</div>
+
         <a id="invoiceidelement" class="hidden"></a>
         <script>
             document
