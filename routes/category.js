@@ -142,13 +142,13 @@ router.post('/getCategoryComments', async (req, res) => {
         console.log(ids)
         // Validate the input
         if (!ids || !Array.isArray(ids) || ids.length === 0) {
-            return res.status(400).json({ message: 'Invalid or missing foodIds in request body.' });
+            return res.status(200).json({ message: 'Invalid or missing foodIds in request body.' });
         }
 
         // Ensure all provided IDs are valid ObjectIds
         const validFoodIds = ids.filter(id => mongoose.Types.ObjectId.isValid(id));
         if (validFoodIds.length === 0) {
-            return res.status(400).json({ message: 'No valid Food IDs provided.' });
+            return res.status(200).json({ message: 'No valid Food IDs provided.' });
         }
 
         const comments = await Food.aggregate([
@@ -186,7 +186,7 @@ router.post('/getCategoryComments', async (req, res) => {
 
         if (comments.length === 0) {
             console.log('No comments found for the associated Categories.')
-            return res.status(404).json({ message: 'No comments found for the associated Categories.' });
+            return res.status(200).json({ message: 'No comments found for the associated Categories.' });
         }
 
         // Respond with the collected comments
@@ -198,7 +198,7 @@ router.post('/getCategoryComments', async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching category comments:', error);
-        return res.status(500).json({ message: 'Internal server error.' });
+        return res.status(200).json({ message: 'Internal server error.' });
     }
 });
 function transformComments(comments) {

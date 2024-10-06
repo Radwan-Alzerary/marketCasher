@@ -1271,7 +1271,6 @@ if (!fs.existsSync(imagesDir)) {
 router.post("/printdummyinvoice", async (req, res) => {
   try {
     const htmlContent = req.body.htmbody;
-    console.log(req.body.category);
 
     const generateImage = async () => {
       const browser = await browserPromise; // Reuse the same browser instance
@@ -1284,7 +1283,6 @@ router.post("/printdummyinvoice", async (req, res) => {
 
         const uniqueFilename = `image-${uuidv4()}.png`;
         const filePath = path.join(__dirname, 'images', uniqueFilename); // Ensure 'images' directory exists
-        console.log(filePath)
         await mainElement.screenshot({
           path: filePath,
           fullPage: false, // Capture only the <main> element
@@ -1299,9 +1297,13 @@ router.post("/printdummyinvoice", async (req, res) => {
     };
 
     const imagePath = await generateImage(); // Generate the image asynchronously
-    console.log(imagePath)
-    await printForRole(imagePath, "مطبخ"); // Ensure printForRole handles unique paths correctly
-
+    console.log("printer",req.body.category)
+    if (req.body.category !== "Unassigned") {
+      await printForRole(imagePath, req.body.category, "category"); // Ensure printForRole handles unique paths correctly
+    } else {
+      await printForRole(imagePath, "مطبخ"); // Ensure printForRole handles unique paths correctly
+    }
+    
     // // Optionally delete the image after printing to save disk space
     // await fs.unlink(imagePath);
     console.log(`Image deleted: ${imagePath}`);

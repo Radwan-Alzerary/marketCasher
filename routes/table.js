@@ -64,7 +64,6 @@ router.post("/getfooddata", async (req, res) => {
 router.post("/editfood", async (req, res) => {
   try {
     let table = await Food.findById(req.body.tableId);
-    console.log(req.body);
     table.number = req.body.number;
 
     await table.save();
@@ -89,7 +88,6 @@ router.delete("/:tableId/tableremove", async (req, res) => {
       invoice.progressdata = Date.now();
 
       const newinvoice = await invoice.save();
-      console.log(newinvoice);
       const removeInvoiceFromTable = await Table.findByIdAndUpdate(
         tableid,
         { $pull: { invoice: invoiceid } },

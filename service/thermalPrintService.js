@@ -58,55 +58,74 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
 
 
 // The main service function to loop through devices by role and print
-async function printForRole(imagePath, role) {
-  // Fetch devices with the given role
-  const devices = await Devices.find({ role, status: "Active" });
-  console.log(devices);
-  console.log(devices.length);
+async function printForRole(imagePath, role, type) {
+  if (type === "category") {
+    console.log("printAsCategory")
+    const devices = await Devices.find({ categoryRole : role, status: "Active" });
+    for (const device of devices) {
+      console.log(`Printing for device: ${device.name} (${device.ip})`);
+      const setting = await Setting.findOne();
 
-  if (!devices.length) {
-    console.log(`No active devices found for role: ${role}`);
-    return;
-  }
+      // Wait for the current device to finish printing before moving to the next
+      await printImageAsync(imagePath, device.numberOfPrint, device.ip, device.type, setting.shoplogo, role);
+      console.log(`Printing completed for device: ${device.name}`);
 
-  const setting = await Setting.findOne();
+      // Add a 500ms delay between each printer
+      await sleep(500);
+    }
 
-  // Loop through devices with the main role
-  for (const device of devices) {
-    console.log(`Printing for device: ${device.name} (${device.ip})`);
+  } else {
+    // Fetch devices with the given role
+    const devices = await Devices.find({ role, status: "Active" });
+    console.log(devices);
+    console.log(devices.length);
 
-    // Wait for the current device to finish printing before moving to the next
-    await printImageAsync(imagePath, device.numberOfPrint, device.ip, device.type, setting.shoplogo, role);
-    console.log(`Printing completed for device: ${device.name}`);
+    if (!devices.length) {
+      console.log(`No active devices found for role: ${role}`);
+      return;
+    }
 
-    // Add a 500ms delay between each printer
-    await sleep(500);
-  }
+    const setting = await Setting.findOne();
 
-  // Now check for secondary roles after all devices with the main role have been printed
-  for (const device of devices) {
-    const secondaryRole = device.secenderyRole[0]; // Assuming the secondary role is a single value
-    if (secondaryRole) {
-      console.log(`Checking secondary role for device: ${device.name} - Secondary Role: ${secondaryRole}`);
+    // Loop through devices with the main role
+    for (const device of devices) {
+      console.log(`Printing for device: ${device.name} (${device.ip})`);
 
-      // Fetch devices that have the main role equal to the secondary role
-      const secondaryDevices = await Devices.find({ role: secondaryRole, status: "Active" });
+      // Wait for the current device to finish printing before moving to the next
+      await printImageAsync(imagePath, device.numberOfPrint, device.ip, device.type, setting.shoplogo, role);
+      console.log(`Printing completed for device: ${device.name}`);
 
-      if (secondaryDevices.length) {
-        for (const secondaryDevice of secondaryDevices) {
-          console.log(`Printing for secondary device: ${secondaryDevice.name} (${secondaryDevice.ip})`);
+      // Add a 500ms delay between each printer
+      await sleep(500);
+    }
 
-          // Print for secondary devices
-          await printImageAsync(imagePath, secondaryDevice.numberOfPrint, secondaryDevice.ip, secondaryDevice.type, setting.shoplogo, role);
-          console.log(`Printing completed for secondary device: ${secondaryDevice.name}`);
+    // Now check for secondary roles after all devices with the main role have been printed
+    for (const device of devices) {
+      const secondaryRole = device.secenderyRole[0]; // Assuming the secondary role is a single value
+      if (secondaryRole) {
+        console.log(`Checking secondary role for device: ${device.name} - Secondary Role: ${secondaryRole}`);
 
-          // Add a 500ms delay between each printer
-          await sleep(500);
+        // Fetch devices that have the main role equal to the secondary role
+        const secondaryDevices = await Devices.find({ role: secondaryRole, status: "Active" });
+
+        if (secondaryDevices.length) {
+          for (const secondaryDevice of secondaryDevices) {
+            console.log(`Printing for secondary device: ${secondaryDevice.name} (${secondaryDevice.ip})`);
+
+            // Print for secondary devices
+            await printImageAsync(imagePath, secondaryDevice.numberOfPrint, secondaryDevice.ip, secondaryDevice.type, setting.shoplogo, role);
+            console.log(`Printing completed for secondary device: ${secondaryDevice.name}`);
+
+            // Add a 500ms delay between each printer
+            await sleep(500);
+          }
+        } else {
+          console.log(`No active devices found for secondary role: ${secondaryRole}`);
         }
-      } else {
-        console.log(`No active devices found for secondary role: ${secondaryRole}`);
       }
     }
+
+
   }
 
   console.log("All print jobs for main and secondary roles completed.");
