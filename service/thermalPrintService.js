@@ -1,6 +1,7 @@
 const { ThermalPrinter, PrinterTypes, CharacterSet, BreakLine } = require("node-thermal-printer");
 const Devices = require("../models/devices"); // Assuming the Devices model is in the models folder
 const Setting = require("../models/pagesetting");
+const Category = require("../models/category");
 
 // Sleep function to pause execution for a specified time
 function sleep(ms) {
@@ -61,22 +62,15 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
 async function printForRole(imagePath, role, type) {
   if (type === "category") {
     console.log("printAsCategory")
-    const devices = await Devices.find({
-      categoryRole: { $in: [role] },
-      status: "Active"
-    });
-    console.log(devices)
-    for (const device of devices) {
-      console.log(`Printing for device: ${device.name} (${device.ip})`);
+    console.log(role)
+    const devices = await Devices.findById(role);
+    console.log("device", role)
+      console.log(`Printing for device: ${devices.name} (${devices.ip})`);
       const setting = await Setting.findOne();
 
       // Wait for the current device to finish printing before moving to the next
-      await printImageAsync(imagePath, device.numberOfPrint, device.ip, device.type, setting.shoplogo, role);
-      console.log(`Printing completed for device: ${device.name}`);
-
-      // Add a 500ms delay between each printer
-      await sleep(500);
-    }
+      await printImageAsync(imagePath, devices.numberOfPrint, devices.ip, devices.type, setting.shoplogo, role);
+      console.log(`Printing completed for device: ${devices.name}`);
 
   } else {
     // Fetch devices with the given role
