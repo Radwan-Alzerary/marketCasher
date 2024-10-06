@@ -61,7 +61,11 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
 async function printForRole(imagePath, role, type) {
   if (type === "category") {
     console.log("printAsCategory")
-    const devices = await Devices.find({ categoryRole : role, status: "Active" });
+    const devices = await Devices.find({
+      categoryRole: { $in: [role] },
+      status: "Active"
+    });
+    console.log(devices)
     for (const device of devices) {
       console.log(`Printing for device: ${device.name} (${device.ip})`);
       const setting = await Setting.findOne();
