@@ -71,6 +71,7 @@ async function printForRole(imagePath, role, type) {
       // Wait for the current device to finish printing before moving to the next
       await printImageAsync(imagePath, devices.numberOfPrint, devices.ip, devices.type, setting.shoplogo, role);
       console.log(`Printing completed for device: ${devices.name}`);
+      await sleep(500);
 
   } else {
     // Fetch devices with the given role
