@@ -1,101 +1,179 @@
 <%- include('header'); %>
 
-<div class="bg-gray-100 w-full">
-    <div
-      class="grid h-3 grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-x-8 overflow-y-scroll"
-      style="height: 90vh"
-    >
-      <%if(table[0]){%> <%table.forEach(function(tables,index) { %> <%
-      if(tables.number> 100) { return; } %> <%if(tables.active){%>
-      <div class="relative">
-        <a href="/cashier/menu?tableid=<%=tables.id%>" class="group text-cente">
-          <div
-          class="hover:bg-slate-200 <% if(tables.invoice[0]) { %> bg-green-200 <% } else if(tables.book.state) { %> bg-purple-200 <% } else { %> bg-white <% } %> aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg xl:aspect-h-5 xl:aspect-w-5"
-          >
-            <div class="text-center flex flex-col justify-center items-center">
-              <%if(systemSetting.type === "casher") {%>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="5em"
-                viewBox="0 0 448 512"
-              >
-                <path
-                  d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"
-                />
-              </svg>
-              <%}else if(systemSetting.type === "restaurant"){%>
-              <img
-                class="w-3/4 h-3/4 mx-auto"
-                src="/img/websiteimg/table.svg"
-              />
-
-              <%}%>
-              <p class="text-black font-bold">زبون رقم : <%=tables.number%></p>
-            </div>
-          </div>
-        </a>
-        <%if(!tables.invoice[0]){%>
-        <div
-          class="absolute hover:opacity-50 cursor-pointer top-0 right-0 h-16 w-16 rounded-bl-xl bg-purple-200 flex justify-center items-center"
-          onclick="onBookedClickHandle('<%=tables.id%>')"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="1em"
-            viewBox="0 0 384 512"
-          >
-            <!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-            <path
-              d="M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z"
-            />
-          </svg>
-        </div>
-
-        <%}%>
-      </div>
-      <%}})}else{%>
+  <div class="bg-gray-100 w-full">
+    <div class="w-full h-12  p-1  flex">
       <div
-        class="h-8 cursor-pointer flex items-center p-3 hover:bg-orange-300 bg-orange-100 rounded-xl"
-      >
-        لا يوجد طاولات
-      </div>
-      <%}%>
+      onclick="getTableByType('Families')"
+        class="w-1/2 h-full   bg-pink-200 hover:bg-pink-400  cursor-pointer rounded-l-full flex justify-center items-center">
+        صالة العوائل</div>
+      <div
+      onclick="getTableByType('male')"
+
+        class="w-1/2 h-full bg-green-200 hover:bg-green-400 cursor-pointer rounded-r-full flex justify-center items-center">
+        صالة الشباب</div>
     </div>
-</div>
+    <div id="tablesContainer"
+      class="grid h-3 grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-x-8 overflow-y-scroll"
+      style="height: 90vh">
+      <!-- Tables will be dynamically inserted here -->
+    </div>
+  </div>
 
-<script>
-  const onBookedClickHandle = (id) => {
-    // Define the payload you want to send with the request
-    const payload = {
-      id: id,
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Fetch the table data when the DOM is fully loaded
+      axios
+        .get('/table/getAll') // Assume the backend has an endpoint to get the tables data
+        .then(function (response) {
+          const tables = response.data.tables;
+          const systemSetting = response.data.systemSetting;
+          renderTables(tables, systemSetting);
+        })
+        .catch(function (error) {
+          console.error('Error fetching tables:', error);
+        });
+    });
+
+    const getTableByType = (type) => {
+      $("#tablesContainer").html("")
+      axios
+        .get(`/table/getByType/${type}`) // Assume the backend has an endpoint to get the tables data
+        .then(function (response) {
+          const tables = response.data.tables;
+          const systemSetting = response.data.systemSetting;
+          renderTables(tables, systemSetting);
+        })
+        .catch(function (error) {
+          console.error('Error fetching tables:', error);
+        });
+
+    }
+
+    function renderTables(tables, systemSetting) {
+      const container = document.getElementById('tablesContainer');
+
+      if (tables.length > 0) {
+        tables.forEach(function (table) {
+          if (table.number > 100) {
+            return;
+          }
+
+          if (table.active) {
+            const tableDiv = document.createElement('div');
+            tableDiv.classList.add('relative');
+
+            const link = document.createElement('a');
+            link.href = `/cashier/menu?tableid=${table._id}`;
+            link.classList.add('group', 'text-center');
+
+            const innerDiv = document.createElement('div');
+            innerDiv.classList.add('hover:bg-slate-200', 'aspect-h-1', 'aspect-w-1', 'w-full', 'overflow-hidden', 'rounded-lg', 'xl:aspect-h-5', 'xl:aspect-w-5');
+
+            if (table.invoice && table.invoice.length > 0) {
+              innerDiv.classList.add('bg-green-200');
+            } else if (table.book && table.book.state) {
+              innerDiv.classList.add('bg-purple-200');
+            } else {
+              innerDiv.classList.add('bg-white');
+            }
+
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('text-center', 'flex', 'flex-col', 'justify-center', 'items-center');
+
+            if (systemSetting.type === 'casher') {
+              const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+              svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+              svg.setAttribute('height', '5em');
+              svg.setAttribute('viewBox', '0 0 448 512');
+
+              const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+              path.setAttribute('d', 'M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z');
+
+              svg.appendChild(path);
+              contentDiv.appendChild(svg);
+            } else if (systemSetting.type === 'restaurant') {
+              const img = document.createElement('img');
+              img.classList.add('w-3/4', 'h-3/4', 'mx-auto');
+              img.src = '/img/websiteimg/table.svg';
+              contentDiv.appendChild(img);
+            }
+
+            const tableNumber = document.createElement('p');
+            tableNumber.classList.add('text-black', 'font-bold');
+            tableNumber.textContent = `زبون رقم : ${table.number}`;
+            contentDiv.appendChild(tableNumber);
+
+            innerDiv.appendChild(contentDiv);
+            link.appendChild(innerDiv);
+            tableDiv.appendChild(link);
+
+            if (!table.invoice || table.invoice.length === 0) {
+              const bookedDiv = document.createElement('div');
+              bookedDiv.classList.add('absolute', 'hover:opacity-50', 'cursor-pointer', 'top-0', 'right-0', 'h-16', 'w-16', 'rounded-bl-xl', 'bg-purple-200', 'flex', 'justify-center', 'items-center');
+              bookedDiv.onclick = function () {
+                onBookedClickHandle(table.id);
+              };
+
+              const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+              svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+              svg.setAttribute('height', '1em');
+              svg.setAttribute('viewBox', '0 0 384 512');
+
+              const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+              path.setAttribute('d', 'M0 48V487.7C0 501.1 10.9 512 24.3 512c5 0 9.9-1.5 14-4.4L192 400 345.7 507.6c4.1 2.9 9 4.4 14 4.4c13.4 0 24.3-10.9 24.3-24.3V48c0-26.5-21.5-48-48-48H48C21.5 0 0 21.5 0 48z');
+
+              svg.appendChild(path);
+              bookedDiv.appendChild(svg);
+              tableDiv.appendChild(bookedDiv);
+            }
+
+            container.appendChild(tableDiv);
+          }
+        });
+      } else {
+        const noTablesDiv = document.createElement('div');
+        noTablesDiv.classList.add('h-8', 'cursor-pointer', 'flex', 'items-center', 'p-3', 'hover:bg-orange-300', 'bg-orange-100', 'rounded-xl');
+        noTablesDiv.textContent = 'لا يوجد طاولات';
+        container.appendChild(noTablesDiv);
+      }
+    }
+  </script>
+
+  <script>
+    const onBookedClickHandle = (id) => {
+      // Define the payload you want to send with the request
+      const payload = {
+        id: id,
+      };
+
+      // Make the POST request using fetch
+      fetch("/table/booking", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            // Handle HTTP errors
+            throw new Error("Network response was not ok " + response.statusText);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // Handle success
+          console.log("Booking successful:", data);
+          // You can update the UI or state here based on the response
+        })
+        .catch((error) => {
+          // Handle error
+          console.error("Error booking the table:", error);
+          // You can show an error message to the user here
+        });
     };
+  </script>
 
-    // Make the POST request using fetch
-    fetch("/table/booking", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          // Handle HTTP errors
-          throw new Error("Network response was not ok " + response.statusText);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // Handle success
-        console.log("Booking successful:", data);
-        // You can update the UI or state here based on the response
-      })
-      .catch((error) => {
-        // Handle error
-        console.error("Error booking the table:", error);
-        // You can show an error message to the user here
-      });
-  };
-</script>
-
-<%- include('footer',{currentpage:'cashier'}); %>
+  <%- include('footer',{currentpage:'cashier'}); %>

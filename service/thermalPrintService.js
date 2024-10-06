@@ -38,7 +38,7 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
     console.log(shopLogo)
     if (printRole === "كاشير" || printRole === "توصيل") {
       await printer.printImage(`./public${shopLogo}`); // Print PNG image
-      printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
+      await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
     }
     await printer.printImage(imagePath);
     await printer.cut();

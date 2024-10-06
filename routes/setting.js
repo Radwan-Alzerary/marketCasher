@@ -39,6 +39,8 @@ router.post("/update", upload.single("image"), async (req, res) => {
     setting.barcodeYsize = req.body.barcodeYsize;
     setting.printerType = req.body.printerType;
     setting.amountUnit = req.body.amountUnit;
+    setting.printerActive = req.body.printerActive || false;
+    console.log(req.body)
     if (req.file) {
       // Delete the previous image if it exists
       console.log(req.file);

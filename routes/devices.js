@@ -10,6 +10,7 @@ const deviceTypes = ["A4 Printer", "Thermal Printer"];
 const deviceRoles = ["كاشير", "دلفري", "مطبخ", "نداء اول", "نداء ثاني"];
 const connectionTypes = ["USB", "Ethernet", "Wi-Fi"];
 const SystemSetting = require("../models/systemSetting");
+const Category = require("../models/category");
 
 /* CREATE */
 
@@ -17,8 +18,8 @@ const SystemSetting = require("../models/systemSetting");
 router.get("/new",async (req, res) => {
     const user = await User.findById(req.user);
     const systemSetting = await SystemSetting.findOne();
-
-  res.render("devices/new", { deviceTypes, deviceRoles, connectionTypes,role: user.role ,role: user.role,systemSetting });
+    const category = await Category.find()
+  res.render("devices/new", { deviceTypes, deviceRoles, connectionTypes,role: user.role ,role: user.role,systemSetting,category });
 });
 
 // Add new device to DB
@@ -75,8 +76,9 @@ router.get("/:id/edit", async (req, res) => {
 
     const device = await Device.findById(req.params.id);
     const user = await User.findById(req.user);
+    const category = await Category.find()
 
-    res.render("devices/edit", { device, deviceTypes, deviceRoles, connectionTypes,role: user.role,systemSetting });
+    res.render("devices/edit", { device, deviceTypes, deviceRoles, connectionTypes,role: user.role,systemSetting,category });
   } catch (err) {
     console.error(err);
     res.send("Error retrieving device");
@@ -87,6 +89,7 @@ router.get("/:id/edit", async (req, res) => {
 router.post("/update", async (req, res) => {
   try {
     await Device.findByIdAndUpdate(req.body.id, req.body.device);
+    console.log(req.body.device)
     res.redirect(`/devices/${req.body.id}`);
   } catch (err) {
     console.error(err);

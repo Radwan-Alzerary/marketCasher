@@ -103,16 +103,26 @@
                                 return; // Stop the forEach loop
                                 }
                                 %>
-                                <a class="group  text-cente <%if(!(tables.active)){%> opacity-40 <%}%>">
+                                <a class="group text-cente <%if(!(tables.active)){%> opacity-40 <%}%>">
                                     <div
-                                        class="hover:bg-slate-200<%if(tables.invoice[0]){%> bg-green-200 <%}else{%> bg-white<%}%> aspect-h-1  aspect-w-1 w-full  overflow-hidden rounded-lg  xl:aspect-h-5 xl:aspect-w-5">
+                                        class="relative hover:bg-slate-200<%if(tables.invoice[0]){%> bg-green-200 <%}else{%> bg-white<%}%> aspect-h-1  aspect-w-1 w-full  overflow-hidden rounded-lg  xl:aspect-h-5 xl:aspect-w-5">
+                                        <div onclick="handleFamiliesClick('<%=tables.id%>')" class="absolute cursor:pointer bg-black hover:bg-pink-500 <%if(tables.Families){%> bg-pink-200 <%}else{%> bg-black<%}%> z-[500]"
+                                            style="width: 24px;height: 24px;"></div>
+
                                         <div class="text-center flex flex-col justify-center items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" height="5em" viewBox="0 0 448 512">
                                                 <path
                                                     d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" />
                                             </svg>
-                                            <p class="text-black font-bold">زبون رقم : <%=tables.number%>
-                                            </p>
+                                            <%if(systemSetting.type==="casher" ){%>
+                                                <p class="text-black font-bold">زبون رقم : <%=tables.number%>
+                                                </p>
+
+                                                <%}else if(systemSetting.type==="restaurant" ){%>
+                                                    <p class="text-black font-bold">طاولة رقم : <%=tables.number%>
+                                                    </p>
+                                                    <%}%>
+
                                         </div>
                                     </div>
 
@@ -204,6 +214,17 @@
                         class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required>
                 </div>
+                <label class="inline-flex items-center cursor-pointer">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="printerActive" name="printerActive" class="sr-only peer"
+                            <%=setting[0].printerActive ? 'checked' : '' %> value="true">
+                        <div
+                            class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                        </div>
+                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">تفعيل طابعة
+                            رئيسية</span>
+                    </label>
+                </label>
 
                 <div class="mb-6 w-full">
                     <label for="default-input"
@@ -265,7 +286,6 @@
                         required>
                 </div>
 
-
                 <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
                     value="تعديل">
             </form>
@@ -307,6 +327,42 @@
 
     </div>
 
+    <script>
+        const handleFamiliesClick = (id) => {
+          // Define the payload you want to send with the request
+          const payload = {
+            id: id,
+          };
+      
+          // Make the POST request using fetch
+          fetch("/table/Families", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                // Handle HTTP errors
+                throw new Error("Network response was not ok " + response.statusText);
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Handle success
+              console.log("Booking successful:", data);
+              // You can update the UI or state here based on the response
+            })
+            .catch((error) => {
+              // Handle error
+              console.error("Error booking the table:", error);
+              // You can show an error message to the user here
+            });
+        };
+      </script>
+      
+    
     <script>
         function showWorkerSetting() {
             $(`#StorgeSetting`).addClass('hidden');

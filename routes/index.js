@@ -7,6 +7,7 @@ router.use("/admin", require("./users"));
 router.use("/", require("./routes"));
 router.use("/food",ensureAuthenticated, require("./food"));
 router.use("/cashier",ensureAuthenticated, require("./cashier"));
+router.use("/category",ensureAuthenticated, require("./category"));
 router.use("/table", ensureAuthenticated, require("./table"));
 router.use("/storge",ensureAuthenticated, require("./storge"));
 router.use("/delevery",ensureAuthenticated, require("./delevery"));

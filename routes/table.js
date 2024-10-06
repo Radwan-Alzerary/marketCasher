@@ -3,20 +3,31 @@ const Category = require("../models/category");
 const Food = require("../models/food");
 const Table = require("../models/table");
 const Invoice = require("../models/invoice");
+const SystemSetting = require("../models/systemSetting");
 
 router.post("/booking", async (req, res) => {
   try {
     const table = await Table.findById(req.body.id);
     table.book.state = !table.book.state;
     table.book.startBookedDate = Date.now();
-    
+
     await table.save();
     res.json(table);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
+router.post("/Families", async (req, res) => {
+  try {
+    const table = await Table.findById(req.body.id);
+    table.Families = !table.Families;
 
+    await table.save();
+    res.json(table);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 router.post("/addtable", async (req, res) => {
   const table = new Table({
     number: req.body.tablenum,
@@ -28,7 +39,6 @@ router.post("/addtable", async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-
 router.patch("/:tableId/active/", async (req, res) => {
   try {
     const table = await Table.findById(req.params.tableId);
@@ -40,7 +50,6 @@ router.patch("/:tableId/active/", async (req, res) => {
     res.sendStatus(500);
   }
 });
-
 router.post("/getfooddata", async (req, res) => {
   try {
     const fooddata = await Food.findById(req.body.id);
@@ -156,5 +165,27 @@ router.post("/convertable", async (req, res) => {
     res.redirect("/z");
   }
 });
+router.get("/getall", async (req, res) => {
+  const tables = await Table.find();
+  const systemSetting = await SystemSetting.findOne()
+  res.json({ tables, systemSetting });
+});
+
+router.get("/getByType/:type", async (req, res) => {
+  const type = req.params.type
+  if (type === "Families") {
+    const tables = await Table.find({ Families: true });
+    const systemSetting = await SystemSetting.findOne()
+    res.json({ tables, systemSetting });
+  } else {
+    const tables = await Table.find({ $or: [{ Families: false }, { Families: { $exists: false } }] }); const systemSetting = await SystemSetting.findOne()
+    res.json({ tables, systemSetting });
+
+  }
+
+});
+
+
+
 
 module.exports = router;

@@ -4,15 +4,23 @@ const SettingSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    
     shoplogo: {
         type: String,
         default: ""
 
     },
+
+    printerActive: {
+        type:Boolean,
+        default: true
+    },
+
     printerip: {
         type: String,
         default: ""
     },
+
     adress: {
         type: String,
         default: ""

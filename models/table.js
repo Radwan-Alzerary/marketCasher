@@ -14,6 +14,7 @@ const TableSchema = new mongoose.Schema(
       startBookedDate: { type: Date },
       bookedEndDate: { type: Date },
     },
+    Families:{type:Boolean,default:false},
     invoice: [
       {
         type: mongoose.Schema.Types.ObjectId,

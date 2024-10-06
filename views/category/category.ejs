@@ -1,0 +1,73 @@
+<!-- views/category.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= category.name %> - Comments</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <h1>Category: <%= category.name %></h1>
+
+    <h2>Comments</h2>
+    <ul id="comments-list">
+        <% category.comments.forEach(comment => { %>
+            <li id="comment-<%= comment._id %>">
+                <%= comment.text %>
+                <button onclick="deleteComment('<%= comment._id %>')">Delete</button>
+            </li>
+        <% }) %>
+    </ul>
+
+    <h3>Add a Comment</h3>
+    <form id="comment-form">
+        <input type="text" id="comment-text" name="text" required>
+        <button type="submit">Add Comment</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const categoryId = '<%= category._id %>';
+
+        // Handle form submission
+        document.getElementById('comment-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const text = document.getElementById('comment-text').value;
+
+            try {
+                const response = await axios.post(`/category/${categoryId}/comments`, { text });
+                const newComment = response.data.comments[response.data.comments.length - 1];
+                const commentsList = document.getElementById('comments-list');
+
+                // Create a new list item
+                const li = document.createElement('li');
+                li.id = `comment-${newComment._id}`;
+                li.innerHTML = `${newComment.text} <button onclick="deleteComment('${newComment._id}')">Delete</button>`;
+                commentsList.appendChild(li);
+
+                // Clear the input
+                document.getElementById('comment-text').value = '';
+            } catch (err) {
+                console.error(err);
+                alert('Error adding comment');
+            }
+        });
+
+        // Function to delete a comment
+        async function deleteComment(commentId) {
+            if (!confirm('Are you sure you want to delete this comment?')) return;
+
+            try {
+                await axios.delete(`/category/${categoryId}/comments/${commentId}`);
+                const commentElement = document.getElementById(`comment-${commentId}`);
+                if (commentElement) {
+                    commentElement.remove();
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error deleting comment');
+            }
+        }
+    </script>
+</body>
+</html>

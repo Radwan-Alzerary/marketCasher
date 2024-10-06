@@ -2,118 +2,144 @@
 
 <%- include('../header') %>
 
-<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-  <h1 class="text-2xl font-semibold mb-6">Edit Device</h1>
+  <div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+    <h1 class="text-2xl font-semibold mb-6">Edit Device</h1>
 
 
-  <form action="/devices/update" method="POST">
-    <!-- Device Name -->
-    <div class="mb-4">
-      <label for="name" class="block text-gray-700">Device Name</label>
-      <input type="text" id="name" name="device[name]" value="<%= device.name %>" required
-             class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-    </div>
-    <input type="text" id="name" name="id" value="<%= device._id%>" required
-    class="hidden mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-    <!-- Device Type -->
-    <div class="mb-4">
-      <label for="type" class="block text-gray-700">Device Type</label>
-      <select id="type" name="device[type]" required
-              class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="" disabled>Select Type</option>
-        <% deviceTypes.forEach(function(typeOption) { %>
-          <option value="<%= typeOption %>" <%= device.type === typeOption ? 'selected' : '' %>><%= typeOption %></option>
-        <% }); %>
-      </select>
-    </div>
-
-    
-    <!-- Device Roles -->
-    <div class="mb-4">
-      <span class="block text-gray-700 mb-2">Device Roles</span>
-      <div class="flex flex-wrap">
-        <% deviceRoles.forEach(function(role) { %>
-          <label class="mr-4 mb-2 flex items-center">
-            <input type="checkbox" name="device[role]" value="<%= role %>"
-                   class="form-checkbox h-5 w-5 text-blue-600" <%= device.role.includes(role) ? 'checked' : '' %>>
-            <span class="ml-2 text-gray-700"><%= role %></span>
-          </label>
-        <% }); %>
+    <form action="/devices/update" method="POST">
+      <!-- Device Name -->
+      <div class="mb-4">
+        <label for="name" class="block text-gray-700">Device Name</label>
+        <input type="text" id="name" name="device[name]" value="<%= device.name %>" required
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
-    </div>
+      <input type="text" id="name" name="id" value="<%= device._id%>" required
+        class="hidden mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
 
-    <!-- Device Roles -->
-    <div class="mb-4">
-      <span class="block text-gray-700 mb-2">Device Secendery Roles</span>
-      <div class="flex flex-wrap">
-        <% deviceRoles.forEach(function(role) { %>
-          <label class="mr-4 mb-2 flex items-center">
-            <input type="checkbox" name="device[secenderyRole]" value="<%= role %>"
-                   class="form-checkbox h-5 w-5 text-blue-600" <%= device.secenderyRole.includes(role) ? 'checked' : '' %>>
-            <span class="ml-2 text-gray-700"><%= role %></span>
-          </label>
-        <% }); %>
+      <!-- Device Type -->
+      <div class="mb-4">
+        <label for="type" class="block text-gray-700">Device Type</label>
+        <select id="type" name="device[type]" required
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="" disabled>Select Type</option>
+          <% deviceTypes.forEach(function(typeOption) { %>
+            <option value="<%= typeOption %>" <%=device.type===typeOption ? 'selected' : '' %>><%= typeOption %>
+            </option>
+            <% }); %>
+        </select>
       </div>
-    </div>
 
 
-    <!-- Connection Type -->
-    <div class="mb-4">
-      <label for="connectionType" class="block text-gray-700">Connection Type</label>
-      <select id="connectionType" name="device[connectionType]" required
-              class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="" disabled>Select Connection Type</option>
-        <% connectionTypes.forEach(function(typeOption) { %>
-          <option value="<%= typeOption %>" <%= device.connectionType === typeOption ? 'selected' : '' %>><%= typeOption %></option>
-        <% }); %>
-      </select>
-    </div>
+      <!-- Device Roles -->
+      <div class="mb-4">
+        <span class="block text-gray-700 mb-2">Device Roles</span>
+        <div class="flex flex-wrap">
+          <% deviceRoles.forEach(function(role) { %>
+            <label class="mr-4 mb-2 flex items-center">
+              <input type="checkbox" name="device[role]" value="<%= role %>" class="form-checkbox h-5 w-5 text-blue-600"
+                <%=device.role.includes(role) ? 'checked' : '' %>>
+              <span class="ml-2 text-gray-700">
+                <%= role %>
+              </span>
+            </label>
+            <% }); %>
+        </div>
+      </div>
 
-    <!-- IP Address -->
-    <div class="mb-4">
-      <label for="ip" class="block text-gray-700">IP Address</label>
-      <input type="text" id="ip" name="device[ip]" value="<%= device.ip %>" required
-             class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-    </div>
+      <!-- Device Roles -->
+      <div class="mb-4">
+        <span class="block text-gray-700 mb-2">Device Secendery Roles</span>
+        <div class="flex flex-wrap">
+          <% deviceRoles.forEach(function(role) { %>
+            <label class="mr-4 mb-2 flex items-center">
+              <input type="checkbox" name="device[secenderyRole]" value="<%= role %>"
+                class="form-checkbox h-5 w-5 text-blue-600" <%=device.secenderyRole.includes(role) ? 'checked' : '' %>>
+              <span class="ml-2 text-gray-700">
+                <%= role %>
+              </span>
+            </label>
+            <% }); %>
+        </div>
+      </div>
 
-    <!-- Number of Prints -->
-    <div class="mb-4">
-      <label for="numberOfPrint" class="block text-gray-700">Number of Prints</label>
-      <input type="number" id="numberOfPrint" name="device[numberOfPrint]" min="0" value="<%= device.numberOfPrint %>"
-             class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-    </div>
+      <!-- Device Roles -->
+      <div class="mb-4">
+        <span class="block text-gray-700 mb-2">Device category Role</span>
+        <div class="flex flex-wrap">
+          <% category.forEach(function(role) { %>
+            <label class="mr-4 mb-2 flex items-center">
+              <input type="checkbox" name="device[categoryRole]" value="<%= role.id %>"
+                class="form-checkbox h-5 w-5 text-blue-600" <%=device.categoryRole.includes(role.id) ? 'checked' : '' %>
+              >
 
-    <!-- Status -->
-    <div class="mb-4">
-      <label for="status" class="block text-gray-700">Status</label>
-      <select id="status" name="device[status]"
-              class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="Active" <%= device.status === 'Active' ? 'selected' : '' %>>Active</option>
-        <option value="Inactive" <%= device.status === 'Inactive' ? 'selected' : '' %>>Inactive</option>
-      </select>
-    </div>
+              <span class="ml-2 text-gray-700">
+                <%= role.name %>
+              </span>
+            </label>
+            <% }); %>
 
-    <!-- Location -->
-    <div class="mb-4">
-      <label for="location" class="block text-gray-700">Location</label>
-      <input type="text" id="location" name="device[location]" value="<%= device.location %>"
-             class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-    </div>
+        </div>
+      </div>
 
-    <!-- Description -->
-    <div class="mb-6">
-      <label for="description" class="block text-gray-700">Description</label>
-      <textarea id="description" name="device[description]" rows="3"
-                class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"><%= device.description %></textarea>
-    </div>
 
-    <!-- Submit Button -->
-    <button type="submit"
-            class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200">
-      Update Device
-    </button>
-  </form>
-</div>
+      <!-- Connection Type -->
+      <div class="mb-4">
+        <label for="connectionType" class="block text-gray-700">Connection Type</label>
+        <select id="connectionType" name="device[connectionType]" required
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="" disabled>Select Connection Type</option>
+          <% connectionTypes.forEach(function(typeOption) { %>
+            <option value="<%= typeOption %>" <%=device.connectionType===typeOption ? 'selected' : '' %>><%= typeOption
+                %>
+            </option>
+            <% }); %>
+        </select>
+      </div>
 
-<%- include('../footer',{currentpage:'cashier'}) %>
+      <!-- IP Address -->
+      <div class="mb-4">
+        <label for="ip" class="block text-gray-700">IP Address</label>
+        <input type="text" id="ip" name="device[ip]" value="<%= device.ip %>" required
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- Number of Prints -->
+      <div class="mb-4">
+        <label for="numberOfPrint" class="block text-gray-700">Number of Prints</label>
+        <input type="number" id="numberOfPrint" name="device[numberOfPrint]" min="0" value="<%= device.numberOfPrint %>"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- Status -->
+      <div class="mb-4">
+        <label for="status" class="block text-gray-700">Status</label>
+        <select id="status" name="device[status]"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="Active" <%=device.status==='Active' ? 'selected' : '' %>>Active</option>
+          <option value="Inactive" <%=device.status==='Inactive' ? 'selected' : '' %>>Inactive</option>
+        </select>
+      </div>
+
+      <!-- Location -->
+      <div class="mb-4">
+        <label for="location" class="block text-gray-700">Location</label>
+        <input type="text" id="location" name="device[location]" value="<%= device.location %>"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <!-- Description -->
+      <div class="mb-6">
+        <label for="description" class="block text-gray-700">Description</label>
+        <textarea id="description" name="device[description]" rows="3"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"><%= device.description %></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit"
+        class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition duration-200">
+        Update Device
+      </button>
+    </form>
+  </div>
+
+  <%- include('../footer',{currentpage:'cashier'}) %>

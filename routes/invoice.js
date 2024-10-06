@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const Category = require("../models/category");
+const { v4: uuidv4 } = require('uuid');
+
 const Food = require("../models/food");
 const Table = require("../models/table");
 const Invoice = require("../models/invoice");
@@ -25,10 +27,9 @@ const paymentType = require("../models/paymentType");
 const browserPromise = puppeteer.launch(); // Launch the browser once
 const TelegramBot = require("node-telegram-bot-api");
 const { printForRole } = require("../service/thermalPrintService");
+const path = require("path");
+const fs = require("fs");
 
-// const token = "7011940534:AAHjtNHpdR5yzgkSX6CruBaog_blb1TjsOo";
-
-// const bot = new TelegramBot(token, { polling: true });
 
 async function printImageAsync(imagePath, printincount) {
   const setting = await Setting.findOne();
@@ -51,7 +52,7 @@ async function printImageAsync(imagePath, printincount) {
     await printer.printImage(imagePath); // Print PNG image
     await printer.cut();
 
-    printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
+    await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
 
     for (i = 0; i < printincount; i++) {
       await printer.execute();
@@ -107,7 +108,6 @@ router.post("/openCashdraw", ensureAuthenticated, async (req, res) => {
     return res.status(500).json({ msg: "Unexpected server error.", error: error.message });
   }
 });
-
 
 router.get("/list", ensureAuthenticated, async (req, res) => {
   try {
@@ -312,7 +312,7 @@ router.post("/food", async (req, res) => {
     let existingFoodcheck = 0;
     const tableId = req.body.tableId;
     const { foodId, fastClick, discount, discountType } = req.body;
-    console.log("fastfood", fastClick)
+    // console.log("fastfood", fastClick)
     const table = await Table.findById(tableId);
     if (!table) {
       return res.status(404).json({ error: "Table not found" });
@@ -381,7 +381,7 @@ router.post("/food", async (req, res) => {
       };
       food.quantety = food.quantety - (Number(fastClick) || 1);
       await food.save();
-      console.log(newFood)
+      // console.log(newFood)
       invoice.food.push(newFood);
     }
 
@@ -531,6 +531,7 @@ router.post("/dummyfood", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
 router.post("/changeDummyFoodQuantity", async (req, res) => {
   try {
     const tableId = req.body.tableId;
@@ -663,7 +664,7 @@ router.post("/finishDummyFood", async (req, res) => {
     if (invoices.length === 0) {
       return res.status(200).json({ message: 'No dummyFood items to move.' });
     }
-
+    console.log("invoice", invoices)
     // Counter for tracking total moved items
     let totalMovedInvoices = 0;
     let totalMovedItems = 0;
@@ -683,13 +684,6 @@ router.post("/finishDummyFood", async (req, res) => {
         // If the food item exists, sum the quantities
         const existingFood = foodMap.get(foodIdStr);
         existingFood.quantity += dummyItem.quantity;
-
-        // Optionally, update other fields if necessary
-        // For example:
-        // existingFood.foodCost += dummyItem.foodCost;
-        // existingFood.foodPrice += dummyItem.foodPrice;
-        // existingFood.discount += dummyItem.discount;
-        // existingFood.discountType = dummyItem.discountType; // or handle accordingly
       } else {
         // If the food item does not exist, add it to the food array
         invoices.food.push(dummyItem);
@@ -721,12 +715,6 @@ router.post("/finishDummyFood", async (req, res) => {
   }
 
 });
-
-
-
-
-
-
 
 router.post("/barcodefood", async (req, res) => {
   try {
@@ -1208,7 +1196,7 @@ router.post("/printinvoice", async (req, res) => {
   try {
     const htmlContent = req.body.htmbody;
     const printincount = req.body.printingcount;
-
+    const setting = await Setting.findOne()
     const generateImage = async () => {
       const browser = await browserPromise; // Reuse the same browser instance
       const page = await browser.newPage();
@@ -1228,8 +1216,9 @@ router.post("/printinvoice", async (req, res) => {
 
     await generateImage(); // Generate the image asynchronously
     await printForRole("./image.png", "كاشير")
-
-    await printImageAsync("./image.png", printincount);
+    if (setting.printerActive) {
+      await printImageAsync("./image.png", printincount);
+    }
     res.status(200).json({ msg: "done" });
   } catch (err) {
     console.error(err);
@@ -1261,44 +1250,66 @@ router.post("/printDeleveryInvoice", async (req, res) => {
 
     await generateImage(); // Generate the image asynchronously
     await printForRole("./image.png", "دلفري")
+    const setting = await Setting.findOne()
 
-    await printImageAsync("./image.png", printincount);
+    if (setting.printerActive) {
+      await printImageAsync("./image.png", printincount);
+
+    }
+
     res.status(200).json({ msg: "done" });
   } catch (err) {
     console.error(err);
     return res.json({ message: "No invoice found in the table", err });
   }
 });
-
+const imagesDir = path.join(__dirname, 'images');
+if (!fs.existsSync(imagesDir)) {
+  fs.mkdirSync(imagesDir);
+}
 
 router.post("/printdummyinvoice", async (req, res) => {
   try {
     const htmlContent = req.body.htmbody;
+    console.log(req.body.category);
 
     const generateImage = async () => {
       const browser = await browserPromise; // Reuse the same browser instance
       const page = await browser.newPage();
-      await page.setContent(htmlContent);
+      try {
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
 
-      await page.waitForSelector("main"); // Wait for the <main> element to be rendered
-      const mainElement = await page.$("main"); // Select the <main> element
+        await page.waitForSelector("main"); // Wait for the <main> element to be rendered
+        const mainElement = await page.$("main"); // Select the <main> element
 
-      await mainElement.screenshot({
-        path: "./image.png",
-        fullPage: false, // Capture only the <main> element
-        javascriptEnabled: false,
-        headless: true,
-      });
-      console.log("Image generation done");
+        const uniqueFilename = `image-${uuidv4()}.png`;
+        const filePath = path.join(__dirname, 'images', uniqueFilename); // Ensure 'images' directory exists
+        console.log(filePath)
+        await mainElement.screenshot({
+          path: filePath,
+          fullPage: false, // Capture only the <main> element
+          omitBackground: true, // Optional: omit background for transparency
+        });
+
+        console.log(`Image generated: ${filePath}`);
+        return filePath;
+      } finally {
+        await page.close(); // Ensure the page is closed after operation
+      }
     };
 
-    await generateImage(); // Generate the image asynchronously
-    await printForRole("./image.png", "مطبخ")
+    const imagePath = await generateImage(); // Generate the image asynchronously
+    console.log(imagePath)
+    await printForRole(imagePath, "مطبخ"); // Ensure printForRole handles unique paths correctly
+
+    // // Optionally delete the image after printing to save disk space
+    // await fs.unlink(imagePath);
+    console.log(`Image deleted: ${imagePath}`);
 
     res.status(200).json({ msg: "done" });
   } catch (err) {
     console.error(err);
-    return res.json({ message: "No invoice found in the table", err });
+    return res.status(500).json({ message: "No invoice found in the table", err });
   }
 });
 
@@ -1332,7 +1343,6 @@ router.post("/printalert1invoice", async (req, res) => {
     return res.json({ message: "No invoice found in the table", err });
   }
 });
-
 
 router.get("/:tableId/foodmenu", async (req, res) => {
   try {
@@ -1450,7 +1460,7 @@ router.get("/:tableId/dummychecout", async (req, res) => {
       path: "dummyFood.id",
       model: "Food",
     });
-    console.log(invoice)
+    // console.log(invoice)
     const setting = await Setting.findOne().sort({ number: -1 });
     const tableid = invoice.tableid ? invoice.tableid.number : 0;
     res.json({

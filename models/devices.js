@@ -22,16 +22,24 @@ const DevicesSchema = new mongoose.Schema(
       {
         type: String,
         enum: deviceRoles,
-        required: true,
+        // required: true,
       },
     ],
     secenderyRole: [
       {
         type: String,
         enum: deviceRoles,
-        required: true,
+        // required: true,
       },
     ],
+
+    categoryRole: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        },
+    ],
+
 
     ip: {
       type: String,
