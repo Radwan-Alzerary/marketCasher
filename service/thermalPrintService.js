@@ -43,7 +43,6 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
     }
     await printer.printImage(imagePath);
     await printer.cut();
-
     // Execute the print command multiple times based on printCount
     for (let i = 0; i < printCount; i++) {
       await printer.execute();
