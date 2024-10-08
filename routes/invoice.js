@@ -29,6 +29,7 @@ const TelegramBot = require("node-telegram-bot-api");
 const { printForRole } = require("../service/thermalPrintService");
 const path = require("path");
 const fs = require("fs");
+const Devices = require("../models/devices");
 
 
 async function printImageAsync(imagePath, printincount) {
@@ -65,15 +66,15 @@ async function printImageAsync(imagePath, printincount) {
 }
 async function openCashdraw() {
   try {
-    const setting = await Setting.findOne();
-
-    if (!setting || !setting.printerip) {
-      throw new Error('Printer IP is not configured.');
+    const device = await Devices.findOne({  openCashdraw: "Active" });
+    console.log(device)
+    if (!device || !device.ip) {
+      throw new Error('No active Cashier device found or its IP is not configured.');
     }
 
     const printer = new ThermalPrinter({
       type: PrinterTypes.EPSON,
-      interface: `tcp://${setting.printerip}:9100`,
+      interface: `tcp://${device.ip}:9100`,
       characterSet: CharacterSet.SLOVENIA,
       removeSpecialCharacters: false,
       lineCharacter: "=",
@@ -404,7 +405,6 @@ router.post("/food", async (req, res) => {
       });
     } else {
       const editOneFood = await Food.findById(foodId);
-
       res.json({
         message: "Food added to the invoice successfully",
         editOneFood: editOneFood,
@@ -677,43 +677,43 @@ router.post("/finishDummyFood", async (req, res) => {
 
     // Step 3: Iterate over each invoice and move dummyFood to food
 
-      // Create a Map for existing food items for quick lookup by 'id'
-      const foodMap = new Map();
+    // Create a Map for existing food items for quick lookup by 'id'
+    const foodMap = new Map();
 
-      // Add existing food items to the map
-      invoices.food.forEach(item => {
-        const itemIdStr = item.id.toString();
-        foodMap.set(itemIdStr, { ...item.toObject() });
-      });
+    // Add existing food items to the map
+    invoices.food.forEach(item => {
+      const itemIdStr = item.id.toString();
+      foodMap.set(itemIdStr, { ...item.toObject() });
+    });
 
-      // Iterate over each dummyFood item
-      invoices.dummyFood.forEach(dummyItem => {
-        const dummyItemIdStr = dummyItem.id.toString();
-        if (foodMap.has(dummyItemIdStr)) {
-          // If the food item exists, sum the quantities
-          const existingFood = foodMap.get(dummyItemIdStr);
-          existingFood.quantity += dummyItem.quantity;
-        } else {
-          // If the food item does not exist, add it to the map
-          foodMap.set(dummyItemIdStr, dummyItem.toObject());
-        }
+    // Iterate over each dummyFood item
+    invoices.dummyFood.forEach(dummyItem => {
+      const dummyItemIdStr = dummyItem.id.toString();
+      if (foodMap.has(dummyItemIdStr)) {
+        // If the food item exists, sum the quantities
+        const existingFood = foodMap.get(dummyItemIdStr);
+        existingFood.quantity += dummyItem.quantity;
+      } else {
+        // If the food item does not exist, add it to the map
+        foodMap.set(dummyItemIdStr, dummyItem.toObject());
+      }
 
-        // Increment total moved items
-        totalMovedItems += 1;
-      });
+      // Increment total moved items
+      totalMovedItems += 1;
+    });
 
-      // Update the invoice's food array with the merged items
-      invoices.food = Array.from(foodMap.values());
+    // Update the invoice's food array with the merged items
+    invoices.food = Array.from(foodMap.values());
 
-      // Clear the dummyFood array
-      invoices.dummyFood = [];
+    // Clear the dummyFood array
+    invoices.dummyFood = [];
 
-      // Save the updated invoice
-      await invoices.save();
+    // Save the updated invoice
+    await invoices.save();
 
-      // Increment moved invoices counter
-      totalMovedInvoices += 1;
-    
+    // Increment moved invoices counter
+    totalMovedInvoices += 1;
+
 
     // Step 4: Send success response
     res.status(200).json({

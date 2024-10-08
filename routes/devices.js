@@ -89,6 +89,7 @@ router.get("/:id/edit", async (req, res) => {
 router.post("/update", async (req, res) => {
   try {
     await Device.findByIdAndUpdate(req.body.id, req.body.device);
+    
     console.log(req.body.device)
     res.redirect(`/devices/${req.body.id}`);
   } catch (err) {
@@ -96,9 +97,7 @@ router.post("/update", async (req, res) => {
     res.send("Error updating device");
   }
 });
-
 /* DELETE */
-
 // Delete device from DB
 router.delete("/:id", async (req, res) => {
   try {

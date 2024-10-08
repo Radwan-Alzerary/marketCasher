@@ -117,6 +117,7 @@ router.post("/getfooddata", async (req, res) => {
 router.post("/editfood", upload.single("image"), async (req, res) => {
   try {
     let food = await Food.findById(req.body.foodid);
+
     console.log(req.body);
     food.name = req.body.name;
     food.barcode = req.body.barcode;
@@ -124,6 +125,7 @@ router.post("/editfood", upload.single("image"), async (req, res) => {
     food.cost = parseInt(req.body.cost.replace(/[^0-9]/g, ""));
     food.quantety = req.body.quantety;
     food.unlimit = req.body.unlimitecheck;
+    food.printable = req.body.printable;
     food.unit = req.body.unit;
     if (req.file) {
       // Delete the previous image if it exists

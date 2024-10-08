@@ -103,6 +103,30 @@
       </select>
     </div>
 
+
+    
+    <!-- print logo -->
+    <div class="mb-4">
+      <label for="status" class="block text-gray-700">print logo</label>
+      <select id="status" name="device[printLogo]"
+              class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="false" selected>false</option>
+        <option value="true">true</option>
+      </select>
+    </div>
+    <!-- print report -->
+    <div class="mb-4">
+      <label for="status" class="block text-gray-700">print report</label>
+      <select id="status" name="device[reportPrinter]"
+              class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="false" selected>false</option>
+        <option value="true">true</option>
+      </select>
+    </div>
+
+
+
+
     <!-- Location -->
     <div class="mb-4">
       <label for="location" class="block text-gray-700">Location</label>
@@ -124,5 +148,6 @@
     </button>
   </form>
 </div>
+
 
 <%- include('../footer',{currentpage:'cashier'}) %>

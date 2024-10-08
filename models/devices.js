@@ -37,9 +37,24 @@ const DevicesSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
-        },
+      },
     ],
 
+    reportPrinter: {
+      type: String,
+      enum: ["Active", "Inactive"],
+      default: "Active",
+    },
+    printLogo: {
+      type: String,
+      enum: ["Active", "Inactive"],
+      default: "Active",
+    },
+    openCashdraw: {
+      type: String,
+      enum: ["Active", "Inactive"],
+      default: "Active",
+    },
 
     ip: {
       type: String,

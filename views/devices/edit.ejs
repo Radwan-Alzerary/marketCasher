@@ -120,6 +120,44 @@
         </select>
       </div>
 
+
+      
+      <!-- reportPrinter -->
+      <div class="mb-4">
+        <label for="reportPrinter" class="block text-gray-700">report Printer</label>
+        <select id="reportPrinter" name="device[reportPrinter]"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="Active" <%=device.reportPrinter==='Active' ? 'selected' : '' %>>Active</option>
+          <option value="Inactive" <%=device.reportPrinter==='Inactive' ? 'selected' : '' %>>Inactive</option>
+        </select>
+      </div>
+
+      
+      
+      
+      <!-- printLogo -->
+      <div class="mb-4">
+        <label for="printLogo" class="block text-gray-700">print Logo</label>
+        <select id="printLogo" name="device[printLogo]"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="Active" <%=device.printLogo==='Active' ? 'selected' : '' %>>Active</option>
+          <option value="Inactive" <%=device.printLogo==='Inactive' ? 'selected' : '' %>>Inactive</option>
+        </select>
+      </div>
+
+      
+      <!-- open Cash -->
+      <div class="mb-4">
+        <label for="openCashdraw" class="block text-gray-700">open Cashdraw</label>
+        <select id="openCashdraw" name="device[openCashdraw]"
+          class="mt-1 w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="Active" <%=device.openCashdraw==='Active' ? 'selected' : '' %>>Active</option>
+          <option value="Inactive" <%=device.openCashdraw==='Inactive' ? 'selected' : '' %>>Inactive</option>
+        </select>
+      </div>
+
+
+      
       <!-- Location -->
       <div class="mb-4">
         <label for="location" class="block text-gray-700">Location</label>

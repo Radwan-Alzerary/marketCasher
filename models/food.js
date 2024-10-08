@@ -55,6 +55,10 @@ const FoodSchema = new mongoose.Schema(
     expireDate: {
       type: Date,
     },
+    printable: {
+      type: Boolean,
+      default: true
+    }
   },
   {
     timestamps: true,

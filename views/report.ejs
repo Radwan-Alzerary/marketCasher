@@ -1,0 +1,534 @@
+<%- include('header') %>
+
+<style>
+    @media print {
+        .no-print {
+            display: none;
+        }
+    }
+    @media print and (max-width: 80mm) {
+        body {
+            width: 80mm;
+            margin: 0;
+            padding: 0;
+        }
+        .thermal-print {
+            font-size: 12px;
+            line-height: 1.2;
+        }
+    }
+</style>
+
+<div class="container mx-auto p-6" style="direction: rtl;">
+    <h1 class="text-3xl font-bold mb-6 text-right">تقرير الفواتير</h1>
+    
+    <div class="mb-6 flex flex-wrap gap-4 justify-end no-print">
+        <div>
+            <input type="text" id="dateRange" class="w-[300px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right" placeholder="اختر نطاق التاريخ">
+        </div>
+        <div>
+            <select id="quickSelect" class="w-[180px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
+                <option value="">اختيار سريع</option>
+                <option value="today">اليوم</option>
+                <option value="lastWeek">الأسبوع الماضي</option>
+                <option value="thisWeek">هذا الأسبوع</option>
+                <option value="thisMonth">هذا الشهر</option>
+            </select>
+        </div>
+        <div>
+            <select id="viewType" class="w-[180px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
+                <option value="day" <%= currentViewType === 'day' ? 'selected' : '' %>>اليوم</option>
+                <option value="month" <%= currentViewType === 'month' ? 'selected' : '' %>>الشهر</option>
+                <option value="year" <%= currentViewType === 'year' ? 'selected' : '' %>>السنة</option>
+            </select>
+        </div>
+        <div>
+            <button id="resetDate" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">إعادة تعيين</button>
+        </div>
+    </div>
+
+    <% if (invoiceData.length === 0) { %>
+        <p class="text-xl text-gray-600 text-right">لا توجد بيانات متاحة للتاريخ المحدد.</p>
+    <% } else { %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-right">ملخص الفترة</h2>
+                <p class="text-right">إجمالي الفواتير: <%= invoiceData.reduce((sum, group) => sum + group.count, 0).toLocaleString('ar-IQ') %></p>
+                <p class="text-right">إجمالي المبيعات: <%= invoiceData.reduce((sum, group) => sum + group.totalPrice, 0).toLocaleString('ar-IQ') %> د.ع</p>
+                <p class="text-right">إجمالي التكاليف: <%= invoiceData.reduce((sum, group) => sum + group.totalCost, 0).toLocaleString('ar-IQ') %> د.ع</p>
+                <p class="text-right">إجمالي الأرباح: <%= invoiceData.reduce((sum, group) => sum + group.totalProfit, 0).toLocaleString('ar-IQ') %> د.ع</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+
+        <% invoiceData.forEach(function(groupData) { %>
+            <div class="bg-white shadow-md rounded-lg mb-4" data-date="<%= groupData.date %>">
+                <div class="px-6 py-4 cursor-pointer" onclick="toggleGroup('<%= groupData.date %>')">
+                    <div class="flex justify-between items-center">
+                        <svg class="h-6 w-6 transform transition-transform duration-200 chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                        <div class="flex items-center gap-4">
+                            <button class="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 no-print" onclick="event.stopPropagation(); exportGroupAsPDF('<%= JSON.stringify(groupData) %>')">
+                                تصدير PDF
+                            </button>
+                            <button class="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 no-print" onclick="event.stopPropagation(); printGroup('<%= JSON.stringify(groupData) %>')">
+                                طباعة عادية
+                            </button>
+                            <button class="px-3 py-1 text-sm bg-purple-500 text-white rounded hover:bg-purple-600 no-print" onclick="event.stopPropagation(); printThermal('<%= JSON.stringify(groupData) %>')">
+                                طباعة حرارية
+                            </button>
+                            <h2 class="text-xl font-semibold"><%= groupData.date %></h2>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mt-2 text-right">
+                        عدد الفواتير: <%= groupData.count.toLocaleString('ar-IQ') %> | 
+                        إجمالي السعر: <%= groupData.totalPrice.toLocaleString('ar-IQ') %> د.ع | 
+                        إجمالي التكلفة: <%= groupData.totalCost.toLocaleString('ar-IQ') %> د.ع | 
+                        إجمالي الربح: <%= groupData.totalProfit.toLocaleString('ar-IQ') %> د.ع
+                    </p>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-200 hidden invoice-details">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الفاتورة</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">السعر</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التكلفة</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الربح</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">هامش الربح</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">وقت الفاتورة</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% groupData.invoices.forEach(function(invoice) { %>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right"><%= invoice.number %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= invoice.price.toLocaleString('ar-IQ') %> د.ع</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= invoice.cost.toLocaleString('ar-IQ') %> د.ع</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= (invoice.price - invoice.cost).toLocaleString('ar-IQ') %> د.ع</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= (((invoice.price - invoice.cost) / invoice.price) * 100).toFixed(2) %>%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= new Date(invoice.progressdata).toLocaleTimeString('ar-IQ') %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% }); %>
+    <% } %>
+</div>
+
+<script>
+    const allDates = <%- JSON.stringify(allDates) %>;
+    const currentViewType = '<%= currentViewType %>';
+    const currentStartDate = '<%= currentStartDate %>';
+    const currentEndDate = '<%= currentEndDate %>';
+    const invoiceData = <%- JSON.stringify(invoiceData) %>;
+    
+    flatpickr("#dateRange", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        defaultDate: [currentStartDate, currentEndDate],
+        onChange: function(selectedDates, dateStr, instance) {
+            if (selectedDates.length === 2) {
+                updateReport(selectedDates[0], selectedDates[1]);
+            }
+        }
+    });
+
+    document.getElementById('quickSelect').addEventListener('change', function() {
+        const today = new Date();
+        let startDate, endDate;
+
+        switch (this.value) {
+            case 'today':
+                startDate = endDate = today;
+                break;
+            case 'lastWeek':
+                endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() - 1);
+                startDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() - 6);
+                break;
+            case 'thisWeek':
+                startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+                endDate = new Date(today.getFullYear(), today.getMonth(), startDate.getDate() + 6);
+                break;
+            case 'thisMonth':
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                break;
+        }
+
+        if (startDate && endDate) {
+            updateReport(startDate, endDate);
+        }
+    });
+
+    document.getElementById('viewType').addEventListener('change', function() {
+        updateReport(currentStartDate, currentEndDate);
+    });
+
+    document.getElementById('resetDate').addEventListener('click', function() {
+        updateReport('', '');
+    });
+
+    function updateReport(startDate, endDate) {
+        const viewType = document.getElementById('viewType').value;
+        window.location.href = `/report?startDate=${formatDate(startDate)}&endDate=${formatDate(endDate)}&viewType=${viewType}`;
+    }
+
+    function formatDate(date) {
+        if (!date) return '';
+        const d = new Date(date);
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
+        const year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+    function toggleGroup(date) {
+        const groupElement = document.querySelector(`[data-date="${date}"]`);
+        const detailsElement = groupElement.querySelector('.invoice-details');
+        const chevronIcon = groupElement.querySelector('.chevron-icon');
+        
+        detailsElement.classList.toggle('hidden');
+        chevronIcon.classList.toggle('rotate-180');
+    }
+
+    function printGroup(groupDataString) {
+        const groupData = JSON.parse(groupDataString);
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(`
+                <html lang="ar" dir="rtl">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>تقرير الفواتير - ${groupData.date}</title>
+                        <style>
+                            @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+                            body {
+                                font-family: 'Tajawal', Arial, sans-serif;
+                                line-height: 1.6;
+                                color: #333;
+                                max-width: 800px;
+                                margin: 0 auto;
+                                padding: 20px;
+                            }
+                            h1 {
+                                color: #2c3e50;
+                                border-bottom: 2px solid #3498db;
+                                padding-bottom: 10px;
+                                margin-bottom: 20px;
+                            }
+                            .summary {
+                                background-color: #f8f9fa;
+                                border-radius: 8px;
+                                padding: 20px;
+                                margin-bottom: 30px;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                            }
+                            .summary h2 {
+                                color: #2980b9;
+                                margin-bottom: 15px;
+                            }
+                            .summary p {
+                                margin: 10px 0;
+                            }
+                            table {
+                                width: 100%;
+                                border-collapse: separate;
+                                border-spacing:  0;
+                                margin-top: 20px;
+                                border-radius: 8px;
+                                overflow: hidden;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                            }
+                            th, td {
+                                padding: 12px 15px;
+                                text-align: right;
+                            }
+                            thead {
+                                background-color: #3498db;
+                                color: white;
+                            }
+                            tbody tr:nth-child(even) {
+                                background-color: #f2f2f2;
+                            }
+                            tbody tr:hover {
+                                background-color: #e8e8e8;
+                            }
+                            tfoot {
+                                font-weight: bold;
+                                background-color: #ecf0f1;
+                            }
+                            @media print {
+                                body {
+                                    print-color-adjust: exact;
+                                    -webkit-print-color-adjust: exact;
+                                }
+                                .summary {
+                                    break-inside: avoid;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>تقرير الفواتير - ${groupData.date}</h1>
+                        <div class="summary">
+                            <h2>ملخص</h2>
+                            <p><strong>عدد الفواتير:</strong> ${groupData.count.toLocaleString('ar-IQ')}</p>
+                            <p><strong>إجمالي المبيعات:</strong> ${groupData.totalPrice.toLocaleString('ar-IQ')} د.ع</p>
+                            <p><strong>إجمالي التكاليف:</strong> ${groupData.totalCost.toLocaleString('ar-IQ')} د.ع</p>
+                            <p><strong>إجمالي الأرباح:</strong> ${groupData.totalProfit.toLocaleString('ar-IQ')} د.ع</p>
+                            <p><strong>متوسط قيمة الفاتورة:</strong> ${(groupData.totalPrice / groupData.count).toLocaleString('ar-IQ')} د.ع</p>
+                            <p><strong>هامش الربح الإجمالي:</strong> ${((groupData.totalProfit / groupData.totalPrice) * 100).toFixed(2)}%</p>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>رقم الفاتورة</th>
+                                    <th>السعر</th>
+                                    <th>التكلفة</th>
+                                    <th>الربح</th>
+                                    <th>هامش الربح</th>
+                                    <th>وقت الفاتورة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${groupData.invoices.map(invoice => `
+                                    <tr>
+                                        <td>${invoice.number}</td>
+                                        <td>${invoice.price.toLocaleString('ar-IQ')} د.ع</td>
+                                        <td>${invoice.cost.toLocaleString('ar-IQ')} د.ع</td>
+                                        <td>${(invoice.price - invoice.cost).toLocaleString('ar-IQ')} د.ع</td>
+                                        <td>${(((invoice.price - invoice.cost) / invoice.price) * 100).toFixed(2)}%</td>
+                                        <td>${new Date(invoice.progressdata).toLocaleTimeString('ar-IQ')}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>الإجمالي</td>
+                                    <td>${groupData.totalPrice.toLocaleString('ar-IQ')} د.ع</td>
+                                    <td>${groupData.totalCost.toLocaleString('ar-IQ')} د.ع</td>
+                                    <td>${groupData.totalProfit.toLocaleString('ar-IQ')} د.ع</td>
+                                    <td>${((groupData.totalProfit / groupData.totalPrice) * 100).toFixed(2)}%</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+        }
+    }
+
+    function printThermal(groupDataString) {
+        const groupData = JSON.parse(groupDataString);
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(`
+                <html lang="ar" dir="rtl">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>تقرير الفواتير - ${groupData.date}</title>
+                        <style>
+                            @media print {
+                                @page {
+                                    size: 80mm auto;
+                                    margin: 0;
+                                }
+                                body {
+                                    width: 80mm;
+                                    font-family: 'Arial', sans-serif;
+                                    font-size: 12px;
+                                    line-height: 1.2;
+                                    margin: 0;
+                                    padding: 5mm;
+                                }
+                                h1 {
+                                    font-size: 14px;
+                                    text-align: center;
+                                    margin-bottom: 5mm;
+                                }
+                                .summary {
+                                    margin-bottom: 5mm;
+                                }
+                                .summary p {
+                                    margin: 2mm 0;
+                                }
+                                table {
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                }
+                                th, td {
+                                    border-top: 1px solid #000;
+                                    border-bottom: 1px solid #000;
+                                    padding: 2mm 1mm;
+                                    text-align: right;
+                                    font-size: 10px;
+                                }
+                                th {
+                                    font-weight: bold;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>تقرير الفواتير - ${groupData.date}</h1>
+                        <div class="summary">
+                            <p>عدد الفواتير: ${groupData.count.toLocaleString('ar-IQ')}</p>
+                            <p>إجمالي المبيعات: ${groupData.totalPrice.toLocaleString('ar-IQ')} د.ع</p>
+                            <p>إجمالي التكاليف: ${groupData.totalCost.toLocaleString('ar-IQ')} د.ع</p>
+                            <p>إجمالي الأرباح: ${groupData.totalProfit.toLocaleString('ar-IQ')} د.ع</p>
+                            <p>متوسط قيمة الفاتورة: ${(groupData.totalPrice / groupData.count).toLocaleString('ar-IQ')} د.ع</p>
+                            <p>هامش الربح الإجمالي: ${((groupData.totalProfit / groupData.totalPrice) * 100).toFixed(2)}%</p>
+                        </div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>رقم الفاتورة</th>
+                                    <th>السعر</th>
+                                    <th>التكلفة</th>
+                                    <th>الربح</th>
+                                    <th>الوقت</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${groupData.invoices.map(invoice => `
+                                    <tr>
+                                        <td>${invoice.number}</td>
+                                        <td>${invoice.price.toLocaleString('ar-IQ')}</td>
+                                        <td>${invoice.cost.toLocaleString('ar-IQ')}</td>
+                                        <td>${(invoice.price - invoice.cost).toLocaleString('ar-IQ')}</td>
+                                        <td>${new Date(invoice.progressdata).toLocaleTimeString('ar-IQ')}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>الإجمالي</td>
+                                    <td>${groupData.totalPrice.toLocaleString('ar-IQ')}</td>
+                                    <td>${groupData.totalCost.toLocaleString('ar-IQ')}</td>
+                                    <td>${groupData.totalProfit.toLocaleString('ar-IQ')}</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
+        }
+    }
+
+    function exportGroupAsPDF(groupDataString) {
+        const groupData = JSON.parse(groupDataString);
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFont("Arial", "normal");
+        doc.setR2L(true);
+        doc.setFontSize(18);
+        doc.text(`تقرير الفواتير - ${groupData.date}`, 200, 15, { align: "right" });
+        
+        doc.setFontSize(12);
+        doc.text(`عدد الفواتير: ${groupData.count.toLocaleString('ar-IQ')}`, 200, 25, { align: "right" });
+        doc.text(`إجمالي المبيعات: ${groupData.totalPrice.toLocaleString('ar-IQ')} د.ع`, 200, 32, { align: "right" });
+        doc.text(`إجمالي التكاليف: ${groupData.totalCost.toLocaleString('ar-IQ')} د.ع`, 200, 39, { align: "right" });
+        doc.text(`إجمالي الأرباح: ${groupData.totalProfit.toLocaleString('ar-IQ')} د.ع`, 200, 46, { align: "right" });
+        doc.text(`متوسط قيمة الفاتورة: ${(groupData.totalPrice / groupData.count).toLocaleString('ar-IQ')} د.ع`, 200, 53, { align: "right" });
+        doc.text(`هامش الربح الإجمالي: ${((groupData.totalProfit / groupData.totalPrice) * 100).toFixed(2)}%`, 200, 60, { align: "right" });
+
+        const tableData = groupData.invoices.map(invoice => [
+            invoice.number,
+            `${invoice.price.toLocaleString('ar-IQ')} د.ع`,
+            `${invoice.cost.toLocaleString('ar-IQ')} د.ع`,
+            `${(invoice.price - invoice.cost).toLocaleString('ar-IQ')} د.ع`,
+            `${(((invoice.price - invoice.cost) / invoice.price) * 100).toFixed(2)}%`,
+            new Date(invoice.createdAt).toLocaleTimeString('ar-IQ')
+        ]);
+
+        doc.autoTable({
+            startY: 70,
+            head: [['رقم الفاتورة', 'السعر', 'التكلفة', 'الربح', 'هامش الربح', 'وقت الفاتورة']],
+            body: tableData,
+            foot: [['الإجمالي', `${groupData.totalPrice.toLocaleString('ar-IQ')} د.ع`, `${groupData.totalCost.toLocaleString('ar-IQ')} د.ع`, `${groupData.totalProfit.toLocaleString('ar-IQ')} د.ع`, `${((groupData.totalProfit / groupData.totalPrice) * 100).toFixed(2)}%`, '']],
+            styles: { font: "Arial", halign: "right" },
+            headStyles: { halign: "right", fillColor: [200, 200, 200] },
+            footStyles: { halign: "right", fillColor: [200, 200, 200] }
+        });
+
+        doc.save(`تقرير_الفواتير_${groupData.date}.pdf`);
+    }
+
+    // Create the sales chart
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: invoiceData.map(group => group.date),
+            datasets: [{
+                label: 'المبيعات',
+                data: invoiceData.map(group => group.totalPrice),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }, {
+                label: 'التكاليف',
+                data: invoiceData.map(group => group.totalCost),
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return value.toLocaleString('ar-IQ') + ' د.ع';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y.toLocaleString('ar-IQ') + ' د.ع';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+<%- include('footer',{currentpage:'report'}); %>
