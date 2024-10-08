@@ -26,6 +26,8 @@ const Food = require("./models/food");
 const Category = require("./models/category");
 const User = require("./models/user");
 const socketIo = require('socket.io');
+const Table = require("./models/table");
+const Invoice = require("./models/invoice");
 
 // const Visitor = require('./models/visitor');
 app.use(express.static(path.join(__dirname, "public")));
@@ -51,9 +53,6 @@ const checkTokenExpiry = async (req, res, next) => {
       console.log("Checking token expiry...");
 
       const user = await User.findById(req.user._id); // Fetch user from DB
-      console.log(user);
-      console.log(req.user);
-      console.log(user.expireDate);
 
       if (user && user.expireDate && user.expireDate < Date.now()) {
         return res.status(403).send("Your token has expired. Please request a new token to continue.");
@@ -88,7 +87,6 @@ async function updateFoodCategories() {
 
     // Get all food items that do not have a category
     const foodsWithoutCategory = await Food.find({ category: { $exists: false } });
-    console.log(foodsWithoutCategory);
     if (foodsWithoutCategory.length === 0) {
       console.log("No foods without a category found.");
       return;
@@ -201,6 +199,122 @@ const io = socketIo(server);
 io.on('connection', (socket) => {
   console.log('New customer connected:', socket.id);
 
+  socket.on("addFoodToInvoice", async ({ tableId, foodId, invoiceId }) => {
+    try {
+      console.log("zzaa")
+      let existingFoodcheck = 0;
+      const table = await Table.findById(tableId);
+
+      if (!table) {
+        return socket.emit("error", { error: "Table not found" });
+      }
+
+      let invoice;
+      if (!invoiceId) {
+        // If no invoiceId is provided, check if the table has an invoice
+        const lastInvoice = await Invoice.findOne().sort({ number: -1 });
+        let invoiceNumber = lastInvoice ? lastInvoice.number + 1 : 1;
+
+        if (table.invoice.length === 0) {
+          const newPaymentType = await paymentType.findOne({ name: "نقدي" });
+
+          // If the table does not have an invoice, create a new one
+          invoice = new Invoice({
+            number: invoiceNumber,
+            paymentType: newPaymentType.id,
+            type: "قيد المعالجة", // Set invoice type
+            active: true,
+          });
+          await invoice.save();
+          table.invoice.push(invoice._id);
+          await table.save();
+        } else {
+          // Use existing invoice
+          invoice = await Invoice.findById(table.invoice[0]);
+          if (!invoice) {
+            return socket.emit("error", { error: "Invoice not found" });
+          }
+        }
+      } else {
+        invoice = await Invoice.findById(invoiceId);
+        if (!invoice) {
+          return socket.emit("error", { error: "Invoice not found" });
+        }
+      }
+
+      let updatedfoodid = "";
+      // Check if food already exists in the invoice
+      const existingFood = invoice.dummyFood.find(
+        (item) => item.id.toString() === foodId
+      );
+      if (existingFood) {
+        const foodData = await Food.findById(existingFood.id);
+        updatedfoodid = foodData.id;
+        existingFoodcheck = 1;
+        // Increment quantity if food exists
+        existingFood.quantity += 1;
+        await Food.findByIdAndUpdate(existingFood.id, {
+          quantety: foodData.quantety - 1,
+        });
+      } else {
+        // If food doesn't exist, add it to the invoice
+        const food = await Food.findById(foodId);
+        if (!food) {
+          return socket.emit("error", { error: "Food not found" });
+        }
+        await Food.findByIdAndUpdate(foodId, { quantety: food.quantety - 1 });
+
+        const newFood = {
+          id: food._id,
+          quantity: 1,
+          discount: 0,
+          foodCost: food.cost,
+          foodPrice: food.price,
+        };
+        food.quantety -= 1;
+        await food.save();
+
+        invoice.dummyFood.push(newFood);
+      }
+
+      await invoice.save();
+
+      // Get the last added food from the invoice
+      const lastAddedFood = invoice.dummyFood[invoice.dummyFood.length - 1].id;
+      const populatedFood = await Food.findById(lastAddedFood);
+      const editOneFood = await Food.findById(foodId);
+
+      if (existingFoodcheck) {
+        socket.emit("foodUpdated", {
+          message: "alredyadd",
+          food: populatedFood,
+          editOneFood,
+          newquantity: existingFood.quantity,
+          invoiceId: invoice.id,
+          foodPrice: existingFood.foodPrice,
+          updatedfoodid: updatedfoodid,
+        });
+      } else {
+        socket.emit("foodAdded", {
+          message: "Food added to the invoice successfully",
+          food: populatedFood,
+          editOneFood,
+          invoiceId: invoice.id,
+          newquantity: 1,
+          foodPrice: populatedFood.price,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      socket.emit("error", { error: "Server error" });
+    }
+  });
+
+
+
+
+
+
   // Listen for messages from a customer
   socket.on('message', (message) => {
     console.log('Received message:', message);
@@ -218,5 +332,5 @@ io.on('connection', (socket) => {
 // Start the server
 const PORT = 3000;
 server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

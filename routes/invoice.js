@@ -655,57 +655,71 @@ router.delete("/:tableId/:invoiceId/dummyFood/:foodId", async (req, res) => {
 
 router.post("/finishDummyFood", async (req, res) => {
   try {
-    // Step 1: Find all invoices with non-empty dummyFood arrays
-    const table = await Table.findById(req.body.tableId);
+    const { tableId } = req.body;
+
+    // Step 1: Verify the table exists
+    const table = await Table.findById(tableId);
     if (!table) {
       return res.status(404).json({ error: "Table not found" });
     }
-    const invoices = await Invoice.findOne().sort({ number: -1 });
+    console.log(table)
+    const invoiceId = table.invoice[0]
+    // Step 2: Find all invoices for the table with non-empty dummyFood arrays
+    const invoices = await Invoice.findById(invoiceId);
+    console.log(invoices)
     if (invoices.length === 0) {
       return res.status(200).json({ message: 'No dummyFood items to move.' });
     }
-    console.log("invoice", invoices)
-    // Counter for tracking total moved items
+
+    // Counters for tracking total moved items and invoices
     let totalMovedInvoices = 0;
     let totalMovedItems = 0;
 
-    // Step 2: Iterate over each invoice and move dummyFood to food
+    // Step 3: Iterate over each invoice and move dummyFood to food
 
-    // Create a Map for existing food items for quick lookup by 'id'
-    const foodMap = new Map();
-    invoices.food.forEach(item => {
-      foodMap.set(item.id.toString(), item);
-    });
+      // Create a Map for existing food items for quick lookup by 'id'
+      const foodMap = new Map();
 
-    // Iterate over each dummyFood item
-    invoices.dummyFood.forEach(dummyItem => {
-      const foodIdStr = dummyItem.id.toString();
-      if (foodMap.has(foodIdStr)) {
-        // If the food item exists, sum the quantities
-        const existingFood = foodMap.get(foodIdStr);
-        existingFood.quantity += dummyItem.quantity;
-      } else {
-        // If the food item does not exist, add it to the food array
-        invoices.food.push(dummyItem);
-      }
+      // Add existing food items to the map
+      invoices.food.forEach(item => {
+        const itemIdStr = item.id.toString();
+        foodMap.set(itemIdStr, { ...item.toObject() });
+      });
 
-      // Increment total moved items
-      totalMovedItems += 1;
-    });
+      // Iterate over each dummyFood item
+      invoices.dummyFood.forEach(dummyItem => {
+        const dummyItemIdStr = dummyItem.id.toString();
+        if (foodMap.has(dummyItemIdStr)) {
+          // If the food item exists, sum the quantities
+          const existingFood = foodMap.get(dummyItemIdStr);
+          existingFood.quantity += dummyItem.quantity;
+        } else {
+          // If the food item does not exist, add it to the map
+          foodMap.set(dummyItemIdStr, dummyItem.toObject());
+        }
 
-    // Clear the dummyFood array
-    invoices.dummyFood = [];
+        // Increment total moved items
+        totalMovedItems += 1;
+      });
 
-    // Save the updated invoice
-    await invoices.save();
+      // Update the invoice's food array with the merged items
+      invoices.food = Array.from(foodMap.values());
 
-    // Increment moved invoices counter
-    totalMovedInvoices += 1;
+      // Clear the dummyFood array
+      invoices.dummyFood = [];
 
-    // Step 3: Send success response
+      // Save the updated invoice
+      await invoices.save();
+
+      // Increment moved invoices counter
+      totalMovedInvoices += 1;
+    
+
+    // Step 4: Send success response
     res.status(200).json({
       message: `Successfully moved dummyFood items to food for ${totalMovedInvoices} invoices, totaling ${totalMovedItems} items.`,
     });
+
   } catch (error) {
     console.error('Error moving dummyFood to food:', error);
     res.status(500).json({
@@ -713,8 +727,8 @@ router.post("/finishDummyFood", async (req, res) => {
       details: error.message,
     });
   }
-
 });
+
 
 router.post("/barcodefood", async (req, res) => {
   try {
@@ -1200,7 +1214,7 @@ router.post("/printinvoice", async (req, res) => {
     const generateImage = async () => {
       const browser = await browserPromise; // Reuse the same browser instance
       const page = await browser.newPage();
-      
+
       try {
         await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
 
@@ -1305,13 +1319,13 @@ router.post("/printdummyinvoice", async (req, res) => {
     };
 
     const imagePath = await generateImage(); // Generate the image asynchronously
-    console.log("printer",req.body.category)
+    console.log("printer", req.body.category)
     if (req.body.category !== "Unassigned") {
       await printForRole(imagePath, req.body.category, "category"); // Ensure printForRole handles unique paths correctly
     } else {
       await printForRole(imagePath, "مطبخ"); // Ensure printForRole handles unique paths correctly
     }
-    
+
     // // Optionally delete the image after printing to save disk space
     // await fs.unlink(imagePath);
     console.log(`Image deleted: ${imagePath}`);

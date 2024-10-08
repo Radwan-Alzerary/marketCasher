@@ -52,7 +52,6 @@ function printA4invoice(invoiceId,
         .then(async (data) => {
 
             const settingVal = await getSetting()
-            console.log(settingVal)
             console.log(await getSetting())
             const isoDate = data.invoicedate;
             const date = new Date(isoDate);

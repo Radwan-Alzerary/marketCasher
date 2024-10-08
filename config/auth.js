@@ -16,7 +16,6 @@ exports.userlogin = (req, res, next) => {
             } else {
 
                 req.user = decoded.id;
-                console.log(req.user)
 
                 return next(); // JWT is valid, continue to the next middleware
             }
@@ -35,7 +34,6 @@ exports.userlogin = (req, res, next) => {
 exports.isfulladmin = async (req, res, next) => {
     try {
         user = await User.findById(req.user.id)
-        console.log(user.id)
         if (user.role == "full" || user.role == "onlyPOS") {
             return next();
         }
@@ -51,7 +49,6 @@ exports.isfulladmin = async (req, res, next) => {
 exports.isCashire = async (req, res, next) => {
     try {
         user = await User.findById(req.user.id)
-        console.log(user.id)
         if (user.role == "cashire") {
             return next();
         }
@@ -66,7 +63,6 @@ exports.isCashire = async (req, res, next) => {
 exports.isBuyer = async (req, res, next) => {
     try {
         user = await User.findById(req.user.id)
-        console.log(user.id)
         if (user.role == "isBuyer") {
             return next();
         }

@@ -143,6 +143,27 @@ router.post("/convertable", async (req, res) => {
           toInvoice.food.push(newFood);
         }
       }
+      for (const foodItem of fromInvoice.dummyFood) {
+        const existingFood = toInvoice.dummyFood.find(
+          (item) => item.id.toString() === foodItem.id.toString()
+        );
+        // console.log(existingFood)
+        if (existingFood) {
+          // Food already exists in the "to" invoice, update the quantity
+          existingFood.dummyFood += foodItem.dummyFood;
+        } else {
+          // Food doesn't exist in the "to" invoice, add it
+          const newFood = {
+            id: foodItem.id,
+            quantity: foodItem.quantity,
+            discount: foodItem.discount,
+            discountType: "cash",
+          };
+          toInvoice.dummyFood.push(newFood);
+        }
+      }
+
+
       await toInvoice.save();
       fromInvoice.type = "تحويل";
       fromInvoice.active = false;

@@ -2,8 +2,6 @@
 
 
 function newitem(food, invoiceid, newquantity,newPrice) {
-    console.log(newquantity)
-    console.log(newPrice)
     // Create the main invoice div
     const invoiceFoodDiv = document.getElementById('invoicefood');
     const invoiceDiv = document.createElement('div');
@@ -267,7 +265,6 @@ function getprices(invoiceId) {
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             $("#finalcost").text(data.finalprice);
             $("#totalprice").text(data.total);
             $("#totaldiscount").text(data.totaldiscount);

@@ -74,7 +74,6 @@ function generateMonthRange(startDate, endDate) {
 
 function getDailyDataForDate(date, data) {
     const result = { invoiceCount: 0, foodCount: 0, foodCost: 0, sellprice: 0, profit: 0 };
-    console.log(date)
     for (const year of data.year) {
 
         // Iterate through the months in the year

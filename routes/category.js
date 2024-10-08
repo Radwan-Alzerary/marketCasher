@@ -138,6 +138,8 @@ router.get("/:deviceId/groupFoods", async (req, res) => {
 router.post('/getCategoryComments', async (req, res) => {
     try {
         const { foodIds } = req.body;
+        console.log(foodIds)
+
         const ids = foodIds.map(item => item.id._id)
         console.log(ids)
         // Validate the input
