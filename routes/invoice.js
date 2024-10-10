@@ -1566,12 +1566,14 @@ router.delete("/:tableId/:invoiceId/food/:foodId", async (req, res) => {
 router.delete("/:tableId/dummyFood/:foodId", async (req, res) => {
   try {
     const { foodId, tableId } = req.params;
+    console.log(foodId, tableId);
     const table = await Table.findById(tableId);
     if (!table) {
       return res.status(404).json({ error: "Table not found" });
     }
     const invoice = await Invoice.findOne().sort({ number: -1 });
     if (invoice.length === 0) {
+      console.log("No dummyFood items to move.");
       return res.status(200).json({ message: 'No dummyFood items to move.' });
     }
     const updatedInvoice = await Invoice.findByIdAndUpdate(
