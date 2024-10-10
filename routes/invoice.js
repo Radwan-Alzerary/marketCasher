@@ -619,34 +619,55 @@ router.post("/dummyfoodPrice", async (req, res) => {
 router.delete("/:tableId/:invoiceId/dummyFood/:foodId", async (req, res) => {
   try {
     const { invoiceId, foodId, tableId } = req.params;
+
+    // Find the invoice
     let invoice = await Invoice.findById(invoiceId);
+    if (!invoice) {
+      return res.status(404).json({ message: "Invoice not found" });
+    }
+
+    // Find the food item in dummyFood
     const foodItem = invoice.dummyFood.find((item) => item.id.toString() === foodId);
+    if (!foodItem) {
+      return res.status(404).json({ message: "Food item not found in invoice" });
+    }
+
+    // Find the food details in the Food collection
     const foodDetails = await Food.findById(foodId);
+    if (!foodDetails) {
+      return res.status(404).json({ message: "Food item not found" });
+    }
+
+    // Update the food quantity
     await Food.findByIdAndUpdate(foodId, {
       quantety: foodDetails.quantety + foodItem.quantity,
     });
+
+    // Pull the food item from the dummyFood array in the invoice
     const updatedInvoice = await Invoice.findByIdAndUpdate(
       invoiceId,
-      { $pull: { food: { id: foodId } } },
+      { $pull: { dummyFood: { id: foodId } } },
       { new: true }
     );
-
+    
     if (!updatedInvoice) {
-      return res
-        .status(404)
-        .json({ message: "Invoice or food item not found" });
+      return res.status(404).json({ message: "Invoice or food item not found" });
     }
-    const checkempty = await Invoice.findById(invoiceId);
-    if (checkempty.dummyFood.length < 1) {
+
+    // Check if dummyFood array is empty
+    if (updatedInvoice.dummyFood.length < 1) {
+      // If empty, remove the invoice from the table
       await Table.findByIdAndUpdate(
         tableId,
         { $pull: { invoice: invoiceId } },
         { new: true }
       );
     }
-    const editOneFood = await Food.findById(foodId);
 
+    // Return the updated invoice and food details
+    const editOneFood = await Food.findById(foodId);
     return res.json({ updatedInvoice, editOneFood });
+    
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });

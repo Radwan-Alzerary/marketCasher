@@ -13,7 +13,7 @@ async function groupFoodsByCategory(foodIds) {
     try {
         // Validate and sanitize foodIds
         const validFoodIds = foodIds.map(food => food._id);
-        console.log(validFoodIds)
+        console.log(validFoodIds);
         // const validFoodIds = foodIds.filter((id) => mongoose.Types.ObjectId.isValid(id));
 
         if (validFoodIds.length === 0) {
@@ -69,8 +69,13 @@ async function groupFoodsByCategory(foodIds) {
             foods: [],
         };
 
-        // Assign foods to devices based on category
+        // Assign foods to devices based on category, considering 'printable' property
         foods.forEach((food) => {
+            // Check if 'printable' is true or if 'printable' field doesn't exist
+            if (food.printable === false) {
+                return; // Skip this food if 'printable' is explicitly false
+            }
+
             const categoryId = food.category._id.toString();
             const devicesHandlingCategory = categoryToDeviceMap[categoryId];
 
@@ -94,7 +99,8 @@ async function groupFoodsByCategory(foodIds) {
         if (groupedFoods["Unassigned"].foods.length === 0) {
             delete groupedFoods["Unassigned"];
         }
-        console.log(groupedFoods)
+
+        console.log(groupedFoods);
         return groupedFoods;
     } catch (error) {
         console.error("Error grouping foods by category:", error.message);
