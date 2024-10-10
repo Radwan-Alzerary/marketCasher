@@ -1588,7 +1588,7 @@ router.delete("/:tableId/dummyFood/:foodId", async (req, res) => {
         .json({ message: "Invoice or food item not found" });
     }
     const checkempty = await Invoice.findById(invoice.id);
-    if (checkempty.food.length < 1) {
+    if (checkempty.food.length < 1&& checkempty.dummyFood.length < 1) {
       await Table.findByIdAndUpdate(
         tableId,
         { $pull: { invoice: invoice.id } },
