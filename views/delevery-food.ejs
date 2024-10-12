@@ -495,6 +495,17 @@
                     });
             }
 
+            async function getSetting() {
+              try {
+                const response = await fetch(`/setting/getsetting`);
+                const setting = await response.json();
+                return setting;  // Return the setting data from the function
+              } catch (error) {
+                console.error(error);
+                return null; // Return a default value in case of an error
+              }
+            }
+
 
             async function finish() {
               const currentUrl = window.location.href;
