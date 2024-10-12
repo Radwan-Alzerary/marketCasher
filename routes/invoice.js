@@ -1607,6 +1607,8 @@ router.delete("/:tableId/dummyFood/:foodId", async (req, res) => {
     // Check if the dummyFood item exists in the invoice
     const dummyFoodExists = invoice.dummyFood.some(item => item.id.toString() === foodId);
     if (!dummyFoodExists) {
+      console.log("DummyFood item not found in Invoice")
+
       return res.status(404).json({ message: "DummyFood item not found in Invoice" });
     }
 
@@ -1620,6 +1622,8 @@ router.delete("/:tableId/dummyFood/:foodId", async (req, res) => {
     );
 
     if (!updatedInvoice) {
+      console.log("Invoice not found after update")
+
       return res.status(404).json({ message: "Invoice not found after update" });
     }
 
