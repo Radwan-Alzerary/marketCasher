@@ -1574,40 +1574,77 @@ router.delete("/:tableId/:invoiceId/food/:foodId", async (req, res) => {
 router.delete("/:tableId/dummyFood/:foodId", async (req, res) => {
   try {
     const { foodId, tableId } = req.params;
-    console.log(foodId, tableId);
+
+    // Validate ObjectIds
+    if (!mongoose.Types.ObjectId.isValid(tableId)) {
+      return res.status(400).json({ message: "Invalid tableId" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(foodId)) {
+      return res.status(400).json({ message: "Invalid foodId" });
+    }
+
+    console.log(`Attempting to delete foodId: ${foodId} from tableId: ${tableId}`);
+
+    // Verify the table exists
     const table = await Table.findById(tableId);
     if (!table) {
       return res.status(404).json({ error: "Table not found" });
     }
-    const invoice = await Invoice.findOne().sort({ number: -1 });
-    if (invoice.length === 0) {
-      console.log("No dummyFood items to move.");
+
+    // Fetch the latest invoice related to the specific table
+    const invoice = await Invoice.findOne({ tableid: tableId }).sort({ number: -1 });
+
+    if (!invoice) {
+      console.log("No invoice found for the specified table.");
       return res.status(200).json({ message: 'No dummyFood items to move.' });
     }
+
+    // Check if the dummyFood item exists in the invoice
+    const dummyFoodExists = invoice.dummyFood.some(item => item.id.toString() === foodId);
+    if (!dummyFoodExists) {
+      return res.status(404).json({ message: "DummyFood item not found in Invoice" });
+    }
+
+    console.log("Before $pull, dummyFood:", invoice.dummyFood);
+
+    // Pull the dummyFood item using the correct identifier
     const updatedInvoice = await Invoice.findByIdAndUpdate(
-      invoice.id,
-      { $pull: { dummyFood: { id: foodId } } },
+      invoice._id,
+      { $pull: { dummyFood: { id: mongoose.Types.ObjectId(foodId) } } },
       { new: true }
     );
 
     if (!updatedInvoice) {
-      return res
-        .status(404)
-        .json({ message: "Invoice or food item not found" });
+      return res.status(404).json({ message: "Invoice not found after update" });
     }
-    const checkempty = await Invoice.findById(invoice.id);
-    if (checkempty.food.length < 1&& checkempty.dummyFood.length < 1) {
+
+    console.log("After $pull, updatedInvoice.dummyFood:", updatedInvoice.dummyFood);
+
+    // Check if both 'food' and 'dummyFood' arrays are empty
+    const checkempty = await Invoice.findById(invoice._id);
+    const isFoodEmpty = (checkempty.food?.length || 0) < 1;
+    const isDummyFoodEmpty = (checkempty.dummyFood?.length || 0) < 1;
+
+    if (isFoodEmpty && isDummyFoodEmpty) {
       await Table.findByIdAndUpdate(
         tableId,
-        { $pull: { invoice: invoice.id } },
+        { $pull: { invoice: invoice._id } },
         { new: true }
       );
+      console.log(`Invoice ${invoice._id} removed from Table ${tableId} as both food arrays are empty.`);
     }
+
+    // Fetch the Food document if needed
     const editOneFood = await Food.findById(foodId);
+    if (!editOneFood) {
+      console.log(`Food with id ${foodId} not found.`);
+      // Depending on your application logic, decide how to handle this
+    }
 
     return res.json({ updatedInvoice, editOneFood });
   } catch (error) {
-    console.error(error);
+    console.error("Error deleting dummyFood:", error);
     res.status(500).json({ message: "Server Error" });
   }
 });
