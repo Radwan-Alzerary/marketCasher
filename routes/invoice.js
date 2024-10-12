@@ -30,6 +30,7 @@ const { printForRole } = require("../service/thermalPrintService");
 const path = require("path");
 const fs = require("fs");
 const Devices = require("../models/devices");
+const { default: mongoose } = require("mongoose");
 
 
 async function printImageAsync(imagePath, printincount) {
