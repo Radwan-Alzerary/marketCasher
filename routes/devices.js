@@ -27,11 +27,13 @@ router.post("/", async (req, res) => {
   try {
     const newDevice = new Device(req.body.device);
     console.log(req.body)
+    const category = await Category.find()
+
     await newDevice.save();
     res.redirect("/devices");
   } catch (err) {
     console.error(err);
-    res.render("devices/new", { error: err.message, deviceTypes, deviceRoles, connectionTypes });
+    res.render("devices/new", { error: err.message, deviceTypes, deviceRoles, connectionTypes,category });
   }
 });
 

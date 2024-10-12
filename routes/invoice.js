@@ -750,7 +750,6 @@ router.post("/finishDummyFood", async (req, res) => {
   }
 });
 
-
 router.post("/barcodefood", async (req, res) => {
   try {
     let existingFoodcheck = 0;
@@ -1306,6 +1305,7 @@ router.post("/printDeleveryInvoice", async (req, res) => {
     return res.json({ message: "No invoice found in the table", err });
   }
 });
+
 const imagesDir = path.join(__dirname, 'images');
 if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir);
