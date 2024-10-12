@@ -1161,7 +1161,6 @@ router.post("/cancele", async (req, res) => {
 router.post("/finish", async (req, res) => {
   try {
     let invoice = await Invoice.findById(req.body.invoiceId);
-
     invoice.active = false;
     invoice.type = "مكتمل";
     invoice.progressdata = Date.now();

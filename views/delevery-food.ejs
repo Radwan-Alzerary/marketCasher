@@ -79,7 +79,7 @@
             <div id="invoicefood" class="bg-white relative overflow-auto h-40">
 
             </div>
-            <div class="mt-5 w-full flex items-center justify-center h-36 z-20">
+            <div class="mb-6 w-full relative">
                 <div class=" w-full">
                     <div class="flex justify-center items-center w-full">
                         <input id="autoComplete" class="rounded-full" />
@@ -96,6 +96,7 @@
                     <input type="text" placeholder="الملاحضات" name="name" id="comments"
                         class="bg-gray-50  text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                 </div>
+                <div id="autocomplete-container" class="absolute text-right flex flex-col gap-4 w-full bg-white"></div>
 
             </div>
             <div class="mt-5 w-full flex items-center justify-center h-12">
@@ -166,7 +167,85 @@
     </div>
 </div>
 
+
         <a id="invoiceidelement" class="hidden"></a>
+        <a id="totalcost" class="hidden"></a>
+
+
+        <script>
+            $(document).ready(function () {
+              $("#resivename").on("input", function () {
+                let searchName = $(this).val();
+
+                if (searchName.length > 1) {
+                  $.ajax({
+                    url: `/custemer/getbyname/${encodeURIComponent(searchName)}`,
+                    type: "GET",
+                    success: function (response) {
+                      console.log(response);
+
+                      // Assuming the response is an array of customer names
+                      let customerNames = response.map((customer) => customer.name);
+
+                      // Clear any previous suggestions
+                      $("#autocomplete-list").remove();
+
+                      // Create a new suggestions list
+                      let suggestionList = $(
+                        '<ul id="autocomplete-list" class="autocomplete-list" style="cursor: pointer;"></ul>'
+                      );
+                      customerNames.forEach(function (name) {
+                        suggestionList.append(
+                          `<li class="autocomplete-item hover:bg-green-200 p-3" style="display: flex;height: 40px;flex-direction: row-reverse;justify-content: flex-start;align-items: center; " >${name}</li>`
+                        );
+                      });
+
+                      // Attach the list to the container
+                      $("#autocomplete-container").append(suggestionList);
+
+                      // Handle click on suggestion
+                      $(".autocomplete-item").on("click", function () {
+                        console.log($(this))
+
+                        $("#resivename").val($(this).text());
+                        fetch(`/custemer/getbyname/${$(this).text()}`)
+                          .then((response) => response.json())
+                          .then((costemerInfo) => {
+                            console.log(costemerInfo)
+                            $("#deloveryname").val(costemerInfo[0].addresses);
+                            $("#deloveryphone").val(costemerInfo[0].phoneNumber);
+
+
+
+                          })
+                          .catch((error) => {
+                            console.error("Error fetching settings:", error);
+                          });
+
+
+                        $("#autocomplete-list").remove(); // Remove suggestions after selection
+                      });
+                    },
+                    error: function (xhr, status, error) {
+                      console.error("Error fetching customer names:", error);
+                    },
+                  });
+                } else {
+                  $("#autocomplete-list").remove(); // Clear the list if input is too short
+                }
+              });
+
+              // Remove the suggestions list if the user clicks outside of it
+              $(document).on("click", function (e) {
+                if (
+                  !$(e.target).closest("#resivename, #autocomplete-container").length
+                ) {
+                  $("#autocomplete-list").remove();
+                }
+              });
+            });
+          </script>
+
         <script>
             document
                 .querySelector("#autoComplete")
@@ -415,54 +494,107 @@
                         // Handle errors
                     });
             }
-            function finish() {
-                const currentUrl = window.location.href;
-                console.log("Current URL:", currentUrl);
-                const url = new URL(currentUrl);
-                const searchParams = new URLSearchParams(url.search);
-                const tableId = searchParams.get("tableid");
-                const finalcost = $("#finalcost").text();
-                const totalcost = $("#totalprice").text();
-                const totaldicont = $("#totaldiscount").text();
-                const invoiceId = $('#invoiceidelement').text();
-                const deloveryname = $('#deloveryname').val();
-                const resivename = $('#resivename').val();
-                const deleveryid = $('#deleveryid').val();
-                const deloveryphone = $('#deloveryphone').val();
-                if ((deloveryname.length > 0 & deloveryphone.length > 0) || indordelevery) {
-                    fetch("/delevery/finish/", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ tableId, resivename, invoiceId, finalcost, totalcost, totaldicont, deloveryname, deloveryphone, deleveryid })
+
+
+            async function finish() {
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+              const finalcost = $("#finalcost").text();
+              const totalcost = $("#totalprice").text();
+              const resivename = $("#resivename").val();
+              const deloveryname = $("#deloveryname").val();
+              const deloveryphone = $("#deloveryphone").val();
+              const totaldicont = $("#totaldiscount").text();
+              const foodcost = $("#totalcost").text();
+              const invoiceId = $("#invoiceidelement").text();
+              if ((deloveryname.length > 0 & deloveryphone.length > 0) || indordelevery) {
+                fetch("/invoice/finish/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  tableId,
+                  foodcost,
+                  resivename,
+                  deloveryname,
+                  deloveryphone,
+                  invoiceId,
+                  finalcost,
+                  totalcost,
+                  totaldicont,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  const ReceivedAmount = $("#Received-amount").text();
+                  const RemainingAmount = $("#Remaining-amount").text();
+                  const deloveryphone = $('#deloveryphone').val();
+                  const deloveryname = $('#deloveryname').val();
+
+                  console.log(data);
+                  $("#finalcost").text(0);
+                  $("#totalprice").text(0);
+                  $("#totaldiscount").text(0);
+                  $("#invoiceidelement").text(" ");
+
+                  $("#Received-amount").text(0);
+                  $("#Remaining-amount").text(0);
+                  $("#ReceivedAmountInput").val(0);
+
+                  $("#paymentTypeChange").removeClass("bg-red-200 hover:bg-red-200");
+                  $("#paymentTypeChange").addClass("bg-gray-100 hover:bg-gray-200");
+
+                  $("#totalcost").text(data.totalcost);
+
+                  const invoiceFoodDiv = document.getElementById("invoicefood");
+                  invoiceFoodDiv.innerHTML = "";
+
+                  const printingcountvalue = $("#printingcount").val();
+                  const Comments = $("#comments").val();
+
+                  const settingOption = getSetting()
+                  fetch(`/setting/getsetting`)
+                    .then((response) => response.json())
+                    .then((settingOption) => {
+                      if (settingOption.printerType == "A4") {
+                        printA4invoice(
+                          invoiceId,
+                          resivename,
+                          deloveryname,
+                          deloveryphone,
+                          ReceivedAmount,
+                          RemainingAmount,
+                          printingcountvalue,
+                          Comments,
+                          "",
+                          "delevery"
+                        );
+                      } else {
+
+                        printinvoice(invoiceId, resivename, deloveryname, deloveryphone, "", "", printingcountvalue, Comments, deleveryCost, "delevery")
+                      }
                     })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(data)
-                            $("#finalcost").text(0);
-                            $("#totalprice").text(0);
-                            $("#totaldiscount").text(0)
-                            $("#invoiceidelement").text(" ");
-                            const Comments = $("#comments").val();
-                            const deleveryCost = $("#deleveryCost").val();
+                    .catch((error) => {
+                      console.error("Error fetching settings:", error);
+                    });
 
-                            refrash()
-                            const printingcountvalue = $('#printingcount').val()
 
-                            printinvoice(invoiceId, resivename, deloveryname, deloveryphone, "", "", printingcountvalue, Comments, deleveryCost, "delevery")
 
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            // Handle errors
-                        });
-                } else {
-                    $("#err-msg").css('display', 'flex')
-                }
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
+
+} else {
+    $("#err-msg").css('display', 'flex')
+}
+
             }
-
-
         </script>
         <script>
             // Initialize variables to store barcode data
@@ -749,6 +881,7 @@
                         $("#totalprice").text(data.total);
                         $("#totaldiscount").text(data.totaldiscount);
                         $("#deleveryCostView").text(data.deleveryCost);
+                        $("#totalcost").text(data.totalcost);
                     })
                     .catch(error => {
                         console.error('Error:', error);

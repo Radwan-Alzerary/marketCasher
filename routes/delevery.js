@@ -7,6 +7,7 @@ const Setting = require("../models/pagesetting");
 const Invoice = require("../models/invoice");
 const User = require("../models/user");
 const SystemSetting = require("../models/systemSetting");
+const Customer = require("../models/costemer");
 
 const isfulladmin = require("../config/auth").isfulladmin;
 const isCashire = require("../config/auth").isCashire;
@@ -79,35 +80,48 @@ router.post("/addelavery", async (req, res) => {
 router.post("/finish", async (req, res) => {
   try {
     let invoice = await Invoice.findById(req.body.invoiceId);
-    // console.log(req.body);
-
     invoice.active = false;
     invoice.type = "توصيل";
     invoice.progressdata = Date.now();
     invoice.fullcost = req.body.totalcost;
     invoice.fulldiscont = req.body.totaldicont;
+    invoice.resivename = req.body.resivename;
     invoice.finalcost = req.body.finalcost;
+    invoice.foodcost = req.body.foodcost;
     invoice.tableid = req.body.tableId;
-    invoice.deleveryCost = req.body.deleveryCost;
+    invoice.deloveryname = req.body.deloveryname;
+    invoice.deloveryphone = req.body.deloveryphone;
+    if (!invoice.resivename) {
+      invoice.resivename = "زبون عام";
+    }
+console.log(req.body)
+    let custemer = await Customer.findOne({ name: invoice.resivename });
+    if (!custemer) {
+
+
+      custemer = new Customer({ name: invoice.resivename, phoneNumber: invoice.deloveryphone, addresses: invoice.deloveryname });
+    } else {
+      custemer.phoneNumber = invoice.deloveryphone
+      custemer.addresses = invoice.deloveryname
+      await custemer.save()
+    }
+
+    // Check if the invoiceId already exists in the customer's invoice array
+    const invoiceExists = custemer.invoice.some(
+      (inv) => inv.invoiceId.toString() === invoice._id.toString()
+    );
+
+    // If not, push the invoiceId to the customer's invoice array
+    if (!invoiceExists) {
+      custemer.invoice.push({ invoiceId: invoice._id });
+      await custemer.save();
+    }
 
     const currentable = await Table.findById(invoice.tableid);
-
     currentable.lastinvoice = req.body.invoiceId;
 
-    const newinvoice = await invoice.save();
+    await invoice.save();
     await currentable.save();
-
-    const delevery = await Delevery.findById(req.body.deleveryid);
-    console.log(delevery);
-    const newdeleveryinvoice = {
-      id: newinvoice.id,
-      customername: req.body.resivename,
-      location: req.body.deloveryname,
-      phoneNumber: req.body.deloveryname,
-      prgress: "قيد التوصيل",
-    };
-    delevery.invoice.push(newdeleveryinvoice);
-    await delevery.save();
 
     const updatedInvoice = await Table.findByIdAndUpdate(
       req.body.tableId,
@@ -122,12 +136,16 @@ router.post("/finish", async (req, res) => {
     }
 
     res.json({
-      message: "finished to the invoice successfully",
+      message: "Finished the invoice successfully",
     });
   } catch (err) {
     console.error(err);
     return res.json({ message: "No invoice found in the table", err });
   }
+
 });
+
+
+
 
 module.exports = router;
