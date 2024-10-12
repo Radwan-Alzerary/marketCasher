@@ -110,8 +110,17 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= invoice.cost.toLocaleString('ar-IQ') %> د.ع</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= (invoice.price - invoice.cost).toLocaleString('ar-IQ') %> د.ع</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= (((invoice.price - invoice.cost) / invoice.price) * 100).toFixed(2) %>%</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= new Date(invoice.progressdata).toLocaleTimeString('ar-IQ') %></td>
-                                </tr>
+                                    <% 
+                                    // Step 1: Create a Date object from invoice.progressdata
+                                    let date = new Date(invoice.progressdata); 
+                                    
+                                    // Step 2: Subtract 3 hours
+                                    date.setHours(date.getHours() - 3); 
+                                  %>
+                                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                    <%= date.toLocaleTimeString('ar-IQ') %>
+                                  </td>
+                                                                  </tr>
                             <% }); %>
                         </tbody>
                     </table>

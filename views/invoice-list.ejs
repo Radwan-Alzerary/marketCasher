@@ -225,12 +225,33 @@
                   </div>
                 </td>
                 <td class="text-center px-3 py-4">
-                  <% const formatter=new Intl.DateTimeFormat('en-US', { year: 'numeric' , month: 'numeric' ,
-                    day: 'numeric' , hour: 'numeric' , minute: 'numeric' , second: 'numeric' , hour12: true }); const
-                    formattedDate=formatter.format(invoices.progressdata); console.log(formattedDate); %>
-                    <%=formattedDate%>
+                  <% 
+                    // Step 1: Initialize the formatter
+                    const formatter = new Intl.DateTimeFormat('en-US', { 
+                      year: 'numeric', 
+                      month: 'numeric',
+                      day: 'numeric',
+                      hour: 'numeric',
+                      minute: 'numeric',
+                      second: 'numeric',
+                      hour12: true 
+                    });
+                
+                    // Step 2: Create a Date object from invoices.progressdata
+                    let date = new Date(invoices.progressdata);
+                
+                    // Step 3: Subtract 3 hours
+                    date.setHours(date.getHours() - 3);
+                
+                    // Step 4: Format the adjusted date
+                    const formattedDate = formatter.format(date); 
+                
+                    // Optional: Log the formatted date for debugging
+                    console.log(formattedDate);
+                  %>
+                  <%= formattedDate %>
                 </td>
-
+                
                 <td onclick='printinvoice("<%=invoices.id%>","","","","","",1,"","")'
                   class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-blue-200 hover:bg-blue-300">
                   <div class="font-medium dark:text-blue-500 hover:underline">

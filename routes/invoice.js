@@ -1276,22 +1276,31 @@ router.post("/printDeleveryInvoice", async (req, res) => {
     const generateImage = async () => {
       const browser = await browserPromise; // Reuse the same browser instance
       const page = await browser.newPage();
-      await page.setContent(htmlContent);
 
-      await page.waitForSelector("main"); // Wait for the <main> element to be rendered
-      const mainElement = await page.$("main"); // Select the <main> element
+      try {
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
 
-      await mainElement.screenshot({
-        path: "./image.png",
-        fullPage: false, // Capture only the <main> element
-        javascriptEnabled: false,
-        headless: true,
-      });
-      console.log("Image generation done");
+        await page.waitForSelector("main"); // Wait for the <main> element to be rendered
+        const mainElement = await page.$("main"); // Select the <main> element
+
+        const uniqueFilename = `image-${uuidv4()}.png`;
+        const filePath = path.join(__dirname, 'images', uniqueFilename); // Ensure 'images' directory exists
+        await mainElement.screenshot({
+          path: filePath,
+          fullPage: false, // Capture only the <main> element
+          omitBackground: true, // Optional: omit background for transparency
+        });
+
+        console.log(`Image generated: ${filePath}`);
+        return filePath;
+      } finally {
+        await page.close(); // Ensure the page is closed after operation
+      }
     };
+    const imagePath = await generateImage(); // Generate the image asynchronously
 
     await generateImage(); // Generate the image asynchronously
-    await printForRole("./image.png", "دلفري")
+    await printForRole(imagePath, "دلفري")
     const setting = await Setting.findOne()
 
     if (setting.printerActive) {
