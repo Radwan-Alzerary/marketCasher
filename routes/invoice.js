@@ -1589,7 +1589,8 @@ router.delete("/:tableId/dummyFood/:foodId", async (req, res) => {
 
     // Verify the table exists
     const table = await Table.findById(tableId);
-    if (!table) {
+    if (!table) { 
+      console.log("Table not found")
       return res.status(404).json({ error: "Table not found" });
     }
 
@@ -1597,6 +1598,8 @@ router.delete("/:tableId/dummyFood/:foodId", async (req, res) => {
     const invoice = await Invoice.findOne({ tableid: tableId }).sort({ number: -1 });
 
     if (!invoice) {
+      console.log("No invoice found for the specified table")
+
       console.log("No invoice found for the specified table.");
       return res.status(200).json({ message: 'No dummyFood items to move.' });
     }
