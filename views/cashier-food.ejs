@@ -8,12 +8,12 @@
       <%-include('./product/moneyBack')%>
         <%-include('./product/printCount')%>
 
-            <div class="flex w-full h-full justify-center">
-              <%-include('./product/productInvoiceOverView')%>
-                <%-include('./product/productSelectCompont')%>
-                  <a id="invoiceidelement" class="hidden"></a>
-                  <a id="totalcost" class="hidden"></a>
-            </div>
+          <div class="flex w-full h-full justify-center">
+            <%-include('./product/productInvoiceOverView')%>
+              <%-include('./product/productSelectCompont')%>
+                <a id="invoiceidelement" class="hidden"></a>
+                <a id="totalcost" class="hidden"></a>
+          </div>
 
 
           <script>
@@ -647,7 +647,18 @@
             }
 
 
-            
+            async function printResturent() {
+              const tableId = searchParams.get("tableid");
+              const finalcost = $("#finalcost").text();
+              const totalcost = $("#totalprice").text();
+              const resivename = $("#resivename").val();
+              const deloveryname = $("#deloveryname").val();
+              const deloveryphone = $("#deloveryphone").val();
+              const totaldicont = $("#totaldiscount").text();
+              const foodcost = $("#totalcost").text();
+              const invoiceId = $("#invoiceidelement").text();
+              printResturentInvoice(tableId)
+            }
           </script>
 
           <script>
@@ -882,6 +893,7 @@
           <script src="/js/casher.js"></script>
           <script src="/js/printinvoice.js"></script>
           <script src="/js/printA4.js"></script>
+          <script src="/js/printResturent.js"></script>
 
           <script>
             // Connect to the Socket.IO server

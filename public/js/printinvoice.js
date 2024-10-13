@@ -114,31 +114,31 @@ function printinvoice(
       // console.log(items)
       const invoicedateString = data.invoicedate;
       const invoicedate = new Date(invoicedateString);
-      
+
       // Get the hours, then adjust for the 3-hour difference
       let hours = invoicedate.getHours() - 3;
-      
+
       // Handle wrapping around when the result is negative
       if (hours < 0) {
         hours += 24; // Wrap around to the previous day
-      
+
         // Subtract one day from the date
         invoicedate.setDate(invoicedate.getDate() - 1);
       }
-      
+
       const day = invoicedate.getDate();
       const month = invoicedate.getMonth() + 1; // Adding 1 to get the actual month
       const year = invoicedate.getFullYear();
       const minutes = invoicedate.getMinutes();
       const seconds = invoicedate.getSeconds();
-      
+
       // Create a formatted string
       const formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
       const dateyear = `${day}/${month}/${year}`;
       const dateclock = `${hours}:${minutes}:${seconds}`;
-            console.log("tableNum", data.tableNumber);
-      console.log("systemType",data.systemSetting.type !== "casher")
-      
+      console.log("tableNum", data.tableNumber);
+      console.log("systemType", data.systemSetting.type !== "casher")
+
       if (data.systemSetting.type !== "casher") {
         if (data.tableNumber < 100) {
           tablenum = `
@@ -153,7 +153,7 @@ function printinvoice(
       </div>
       `;
         }
-      }else{
+      } else {
         if (data.tableNumber < 100) {
           tablenum = `
       <div style="margin-left: 27px;">
@@ -315,7 +315,7 @@ ${deleveyCostView}
             `;
       // console.log(htmltoprint)
 
-      if (type !== "delevery") {
+      if (type === "casher") {
         fetch("/invoice/printinvoice/", {
           method: "POST",
           headers: {
@@ -335,7 +335,28 @@ ${deleveyCostView}
             // Handle errors
           });
 
-      } else {
+      } else if (type === "resturent") {
+        fetch("/invoice/printresturentinvoice/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            htmbody: htmltoprint2,
+            printingcount: printingcount,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // console.log(data)
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            // Handle errors
+          });
+
+
+      } else if (type === "delevery") {
         fetch("/invoice/printdeleveryinvoice/", {
           method: "POST",
           headers: {

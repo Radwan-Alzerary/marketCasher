@@ -24,6 +24,7 @@ const InvoiceSchema = new mongoose.Schema(
         foodPrice: { type: Number },
         discount: { type: Number },
         discountType: { type: String },
+        resturentPrint: { type: Boolean,default:false }
       },
     ],
     dummyFood: [{

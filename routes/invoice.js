@@ -66,7 +66,7 @@ async function printImageAsync(imagePath, printincount) {
 }
 async function openCashdraw() {
   try {
-    const device = await Devices.findOne({  openCashdraw: "Active" });
+    const device = await Devices.findOne({ openCashdraw: "Active" });
     console.log(device)
     if (!device || !device.ip) {
       throw new Error('No active Cashier device found or its IP is not configured.');
@@ -649,7 +649,7 @@ router.delete("/:tableId/:invoiceId/dummyFood/:foodId", async (req, res) => {
       { $pull: { dummyFood: { id: foodId } } },
       { new: true }
     );
-    
+
     if (!updatedInvoice) {
       return res.status(404).json({ message: "Invoice or food item not found" });
     }
@@ -667,7 +667,7 @@ router.delete("/:tableId/:invoiceId/dummyFood/:foodId", async (req, res) => {
     // Return the updated invoice and food details
     const editOneFood = await Food.findById(foodId);
     return res.json({ updatedInvoice, editOneFood });
-    
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server Error" });
@@ -1084,7 +1084,6 @@ router.post("/price", async (req, res) => {
     if (finalprice < 0) {
       finalprice = 0;
     }
-
     res.json({
       total,
       totalcost,
@@ -1314,6 +1313,54 @@ router.post("/printDeleveryInvoice", async (req, res) => {
   }
 });
 
+router.post("/printresturentinvoice", async (req, res) => {
+  try {
+    const htmlContent = req.body.htmbody;
+
+    const generateImage = async () => {
+      const browser = await browserPromise; // Reuse the same browser instance
+      const page = await browser.newPage();
+      try {
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        await page.waitForSelector("main"); // Wait for the <main> element to be rendered
+        const mainElement = await page.$("main"); // Select the <main> element
+        const uniqueFilename = `image-${uuidv4()}.png`;
+        const filePath = path.join(__dirname, 'images', uniqueFilename); // Ensure 'images' directory exists
+        await mainElement.screenshot({
+          path: filePath,
+          fullPage: false, // Capture only the <main> element
+          omitBackground: true, // Optional: omit background for transparency
+        });
+        console.log(`Image generated: ${filePath}`);
+        return filePath;
+      } finally {
+        await page.close(); // Ensure the page is closed after operation
+      }
+    };
+
+    const imagePath = await generateImage(); // Generate the image asynchronously
+    console.log("printer", req.body.category)
+    if (req.body.category !== "Unassigned") {
+      await printForRole(imagePath, req.body.category, "category"); // Ensure printForRole handles unique paths correctly
+    } else {
+      await printForRole(imagePath, "مطبخ"); // Ensure printForRole handles unique paths correctly
+    }
+
+    // // Optionally delete the image after printing to save disk space
+    // await fs.unlink(imagePath);
+    console.log(`Image deleted: ${imagePath}`);
+
+    res.status(200).json({ msg: "done" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "No invoice found in the table", err });
+  }
+
+
+
+});
+
+
 const imagesDir = path.join(__dirname, 'images');
 if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir);
@@ -1534,6 +1581,41 @@ router.get("/:tableId/dummychecout", async (req, res) => {
   }
 });
 
+
+
+router.get("/:tableId/foodToResturentChecout", async (req, res) => {
+  try {
+    const tableId = req.params.tableId;
+    const table = await Table.findById(tableId);
+    if (!table) {
+      console.log("Table not found");
+      return res.status(404).json({ error: "Table not found" });
+    }
+    let invoice = await Invoice.findById(table.invoice[0]).populate({
+      path: "food.id",
+      model: "Food",
+    });
+    // console.log(invoice)
+    const setting = await Setting.findOne().sort({ number: -1 });
+    const tableid = invoice.tableid ? invoice.tableid.number : 0;
+    res.json({
+      message: "Food items retrieved successfully",
+      tableNumber: table.number,
+      invoicedate: invoice.progressdata,
+      food: invoice.food,
+      invoiceid: invoice.id,
+      setting: setting,
+      finalcost: invoice.finalcost,
+      fullcost: invoice.fullcost,
+      invoicenumber: invoice.number,
+      fulldiscont: invoice.fulldiscont,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 router.delete("/:tableId/:invoiceId/food/:foodId", async (req, res) => {
   try {
     const { invoiceId, foodId, tableId } = req.params;
@@ -1596,7 +1678,7 @@ router.delete("/:tableId/dummyFood/:foodId", async (req, res) => {
         .json({ message: "Invoice or food item not found" });
     }
     const checkempty = await Invoice.findById(invoice.id);
-    if (checkempty.food.length < 1&& checkempty.dummyFood.length < 1) {
+    if (checkempty.food.length < 1 && checkempty.dummyFood.length < 1) {
       await Table.findByIdAndUpdate(
         tableId,
         { $pull: { invoice: invoice.id } },
