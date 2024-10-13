@@ -172,6 +172,7 @@ function generateHTML(shopName, data, foods, Comments, foodData) {
         },
         body: JSON.stringify({ foodIds }),
       });
+      
       const groupedFoods = await groupResponse.json();
   
       // Step 4: Iterate through each group and generate/send HTML
