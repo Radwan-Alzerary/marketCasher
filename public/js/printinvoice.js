@@ -137,9 +137,9 @@ function printinvoice(
       const dateyear = `${day}/${month}/${year}`;
       const dateclock = `${hours}:${minutes}:${seconds}`;
       console.log("tableNum", data.tableNumber);
-      console.log("systemType", data.systemSetting.type !== "casher")
+      console.log("systemType", data.systemSetting.type !== "cashire")
 
-      if (data.systemSetting.type !== "casher") {
+      if (data.systemSetting.type !== "cashire") {
         if (data.tableNumber < 100) {
           tablenum = `
       <div style="margin-left: 27px;">
@@ -315,7 +315,7 @@ ${deleveyCostView}
             `;
       // console.log(htmltoprint)
 
-      if (type === "casher") {
+      if (type === "cashire") {
         fetch("/invoice/printinvoice/", {
           method: "POST",
           headers: {

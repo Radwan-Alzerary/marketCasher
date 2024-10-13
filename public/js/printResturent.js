@@ -155,7 +155,7 @@ function generateHTML(shopName, data, foods, Comments, foodData) {
    */
   async function printResturentInvoice(tableId, Comments, deviceId) {
     try {
-      const baseURL = 'http://localhost:3000';
+      const baseURL = '';
   
       // Step 1: Fetch the invoice data from the server
       const response = await fetch(`${baseURL}/invoice/${tableId}/foodToResturentChecout`);
