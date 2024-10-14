@@ -35,11 +35,13 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
       await printer.printImage(`./public${shopLogo}`); // Print PNG image
       await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
     }
+    await printer.printImage(imagePath);
+    await printer.cut();
+    console.log(printCount)
     // Execute the print command multiple times based on printCount
     for (let i = 0; i < printCount; i++) {
-      await printer.printImage(imagePath);
-      await printer.cut();
-
+      console.log("here")
+      await printer.execute();
     }
 
     console.log("Image printed successfully.");
