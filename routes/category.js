@@ -77,7 +77,7 @@ router.delete('/:id/comments/:commentId', async (req, res) => {
 // POST /devices/groupFoods
 router.post("/groupFoods", async (req, res) => {
     const { foodIds } = req.body; // Expecting an array of food IDs in the request body
-
+    console.log(foodIds)
     if (!Array.isArray(foodIds)) {
         return res.status(400).json({ error: "foodIds must be an array" });
     }
