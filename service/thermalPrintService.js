@@ -28,14 +28,14 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
   }
 
   try {
-    // Execute the print command multiple times based on printCount
+    // Loop to print multiple copies
     for (let i = 0; i < printCount; i++) {
       // Build the print content
       printer.alignCenter();
       console.log(shopLogo);
       if (printRole === "كاشير" || printRole === "توصيل") {
         await printer.printImage(`./public${shopLogo}`); // Print PNG image
-        await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
+        // Removed await printer.raw(...) from here
       }
       await printer.printImage(imagePath);
       await printer.cut();
@@ -43,6 +43,13 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
       // Execute the print command
       console.log(`Printing copy number: ${i + 1}`);
       await printer.execute();
+    }
+
+    // Execute the raw command after printing is complete for specific roles
+    if (printRole === "كاشير" || printRole === "توصيل") {
+      console.log("Executing raw command after printing is complete.");
+      await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
+      await printer.execute(); // Ensure the raw command is sent to the printer
     }
 
     console.log("Image printed successfully.");
