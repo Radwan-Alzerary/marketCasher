@@ -422,7 +422,11 @@ router.post("/food", async (req, res) => {
 
 router.post("/dummyfood", async (req, res) => {
   try {
+    console.log(req.body)
     let existingFoodcheck = 0;
+    const {
+      fastClick
+    } = req.body
     const tableId = req.body.tableId;
     const { foodId } = req.body;
     const table = await Table.findById(tableId);
@@ -471,22 +475,22 @@ router.post("/dummyfood", async (req, res) => {
       updatedfoodid = foodData.id;
       existingFoodcheck = 1;
       // If the food item already exists, increment the quantity by 1
-      existingFood.quantity += 1;
+      existingFood.quantity += (Number(fastClick) || 1);
       await Food.findByIdAndUpdate(existingFood.id, {
-        quantety: foodData.quantety - 1,
+        quantety: foodData.quantety -  (Number(fastClick) || 1),
       });
     } else {
       // If the food item doesn't exist, add it to the invoice
 
       const food = await Food.findById(req.body.foodId);
-      await Food.findByIdAndUpdate(foodId, { quantety: food.quantety - 1 });
+      await Food.findByIdAndUpdate(foodId, { quantety: food.quantety -  (Number(fastClick) || 1) });
 
       if (!food) {
         return res.status(404).json({ error: "Food not found" });
       }
       const newFood = {
         id: food._id,
-        quantity: 1,
+        quantity:  (Number(fastClick) || 1),
         discount: 0,
         foodCost: food.cost,
         foodPrice: food.price,
@@ -522,7 +526,7 @@ router.post("/dummyfood", async (req, res) => {
         editOneFood: editOneFood,
         food: populatedFood,
         invoiceId: invoice.id,
-        newquantity: 1,
+        newquantity:  (Number(fastClick) || 1),
         foodPrice: populatedFood.price,
       });
     }
@@ -1233,7 +1237,7 @@ router.post("/printinvoice", async (req, res) => {
       console.time('Total Time');
       const browser = await browserPromise; // Reuse the same browser instance
       let page;
-    
+
       try {
         // Reuse the same page if possible
         if (!global.pageInstance) {
@@ -1242,28 +1246,28 @@ router.post("/printinvoice", async (req, res) => {
         } else {
           page = global.pageInstance;
         }
-    
+
         // Disable JavaScript to speed up rendering
         await page.setJavaScriptEnabled(false);
-    
+
         // Set minimal viewport size
         await page.setViewport({ width: 560, height: 800 }); // Adjust height as necessary
-    
+
         // Set content without waiting
         await page.setContent(htmlContent);
-    
+
         // Optionally, skip waiting for selector if content is static
         const mainElement = await page.$('main');
         if (!mainElement) throw new Error('Main element not found');
-    
+
         const uniqueFilename = `image-${uuidv4()}.png`;
         const filePath = path.join(__dirname, 'images', uniqueFilename);
-    
+
         await mainElement.screenshot({
           path: filePath,
           omitBackground: true,
         });
-    
+
         console.log(`Image generated: ${filePath}`);
         return filePath;
       } catch (error) {
@@ -1275,7 +1279,7 @@ router.post("/printinvoice", async (req, res) => {
         // await page.close();
       }
     };
-            const imagePath = await generateImage(); // Generate the image asynchronously
+    const imagePath = await generateImage(); // Generate the image asynchronously
 
     await printForRole(imagePath, "كاشير")
     if (setting.printerActive) {
@@ -1299,7 +1303,7 @@ router.post("/printDeleveryInvoice", async (req, res) => {
       console.time('Total Time');
       const browser = await browserPromise; // Reuse the same browser instance
       let page;
-    
+
       try {
         // Reuse the same page if possible
         if (!global.pageInstance) {
@@ -1308,28 +1312,28 @@ router.post("/printDeleveryInvoice", async (req, res) => {
         } else {
           page = global.pageInstance;
         }
-    
+
         // Disable JavaScript to speed up rendering
         await page.setJavaScriptEnabled(false);
-    
+
         // Set minimal viewport size
         await page.setViewport({ width: 560, height: 800 }); // Adjust height as necessary
-    
+
         // Set content without waiting
         await page.setContent(htmlContent);
-    
+
         // Optionally, skip waiting for selector if content is static
         const mainElement = await page.$('main');
         if (!mainElement) throw new Error('Main element not found');
-    
+
         const uniqueFilename = `image-${uuidv4()}.png`;
         const filePath = path.join(__dirname, 'images', uniqueFilename);
-    
+
         await mainElement.screenshot({
           path: filePath,
           omitBackground: true,
         });
-    
+
         console.log(`Image generated: ${filePath}`);
         return filePath;
       } catch (error) {
@@ -1366,7 +1370,7 @@ router.post("/printresturentinvoice", async (req, res) => {
       console.time('Total Time');
       const browser = await browserPromise; // Reuse the same browser instance
       let page;
-    
+
       try {
         // Reuse the same page if possible
         if (!global.pageInstance) {
@@ -1375,28 +1379,28 @@ router.post("/printresturentinvoice", async (req, res) => {
         } else {
           page = global.pageInstance;
         }
-    
+
         // Disable JavaScript to speed up rendering
         await page.setJavaScriptEnabled(false);
-    
+
         // Set minimal viewport size
         await page.setViewport({ width: 560, height: 800 }); // Adjust height as necessary
-    
+
         // Set content without waiting
         await page.setContent(htmlContent);
-    
+
         // Optionally, skip waiting for selector if content is static
         const mainElement = await page.$('main');
         if (!mainElement) throw new Error('Main element not found');
-    
+
         const uniqueFilename = `image-${uuidv4()}.png`;
         const filePath = path.join(__dirname, 'images', uniqueFilename);
-    
+
         await mainElement.screenshot({
           path: filePath,
           omitBackground: true,
         });
-    
+
         console.log(`Image generated: ${filePath}`);
         return filePath;
       } catch (error) {
@@ -1445,7 +1449,7 @@ router.post("/printdummyinvoice", async (req, res) => {
       console.time('Total Time');
       const browser = await browserPromise; // Reuse the same browser instance
       let page;
-    
+
       try {
         // Reuse the same page if possible
         if (!global.pageInstance) {
@@ -1454,28 +1458,28 @@ router.post("/printdummyinvoice", async (req, res) => {
         } else {
           page = global.pageInstance;
         }
-    
+
         // Disable JavaScript to speed up rendering
         await page.setJavaScriptEnabled(false);
-    
+
         // Set minimal viewport size
         await page.setViewport({ width: 560, height: 800 }); // Adjust height as necessary
-    
+
         // Set content without waiting
         await page.setContent(htmlContent);
-    
+
         // Optionally, skip waiting for selector if content is static
         const mainElement = await page.$('main');
         if (!mainElement) throw new Error('Main element not found');
-    
+
         const uniqueFilename = `image-${uuidv4()}.png`;
         const filePath = path.join(__dirname, 'images', uniqueFilename);
-    
+
         await mainElement.screenshot({
           path: filePath,
           omitBackground: true,
         });
-    
+
         console.log(`Image generated: ${filePath}`);
         return filePath;
       } catch (error) {
@@ -1515,7 +1519,7 @@ router.post("/printalert1invoice", async (req, res) => {
       console.time('Total Time');
       const browser = await browserPromise; // Reuse the same browser instance
       let page;
-    
+
       try {
         // Reuse the same page if possible
         if (!global.pageInstance) {
@@ -1524,28 +1528,28 @@ router.post("/printalert1invoice", async (req, res) => {
         } else {
           page = global.pageInstance;
         }
-    
+
         // Disable JavaScript to speed up rendering
         await page.setJavaScriptEnabled(false);
-    
+
         // Set minimal viewport size
         await page.setViewport({ width: 560, height: 800 }); // Adjust height as necessary
-    
+
         // Set content without waiting
         await page.setContent(htmlContent);
-    
+
         // Optionally, skip waiting for selector if content is static
         const mainElement = await page.$('main');
         if (!mainElement) throw new Error('Main element not found');
-    
+
         const uniqueFilename = `image-${uuidv4()}.png`;
         const filePath = path.join(__dirname, 'images', uniqueFilename);
-    
+
         await mainElement.screenshot({
           path: filePath,
           omitBackground: true,
         });
-    
+
         console.log(`Image generated: ${filePath}`);
         return filePath;
       } catch (error) {
@@ -1727,7 +1731,7 @@ router.get("/:tableId/foodToResturentChecout", async (req, res) => {
       item.printCount = item.quantity
       console.log("xx", item.id.id);
     });
-    
+
     // console.log(invoice)
     const setting = await Setting.findOne().sort({ number: -1 });
     const tableid = invoice.tableid ? invoice.tableid.number : 0;

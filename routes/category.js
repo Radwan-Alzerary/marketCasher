@@ -138,10 +138,8 @@ router.get("/:deviceId/groupFoods", async (req, res) => {
 router.post('/getCategoryComments', async (req, res) => {
     try {
         const { foodIds } = req.body;
-        console.log(foodIds)
 
         const ids = foodIds.map(item => item.id._id)
-        console.log(ids)
         // Validate the input
         if (!ids || !Array.isArray(ids) || ids.length === 0) {
             return res.status(200).json({ message: 'Invalid or missing foodIds in request body.' });
@@ -193,7 +191,6 @@ router.post('/getCategoryComments', async (req, res) => {
 
         // Respond with the collected comments
         const finalComment = transformComments(comments)
-        console.log(finalComment)
           
         // console.log(allTexts)
         return res.status(200).json({ finalComment });
