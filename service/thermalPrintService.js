@@ -49,7 +49,6 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
     if (printRole === "كاشير" || printRole === "توصيل") {
       console.log("Executing raw command after printing is complete.");
       await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
-      await printer.execute(); // Ensure the raw command is sent to the printer
     }
 
     console.log("Image printed successfully.");
