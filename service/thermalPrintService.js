@@ -28,27 +28,21 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
   }
 
   try {
-    // Loop to print multiple copies
+    console.log("printCount", printCount);
+    // Execute the print command multiple times based on printCount
     for (let i = 0; i < printCount; i++) {
-      // Build the print content
+      // Build up the print data inside the loop
       printer.alignCenter();
-      console.log(shopLogo);
+      console.log("Printing copy number:", i + 1);
       if (printRole === "كاشير" || printRole === "توصيل") {
         await printer.printImage(`./public${shopLogo}`); // Print PNG image
-        // Removed await printer.raw(...) from here
+        await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
       }
       await printer.printImage(imagePath);
       await printer.cut();
 
-      // Execute the print command
-      console.log(`Printing copy number: ${i + 1}`);
+      // Now execute the print job
       await printer.execute();
-    }
-
-    // Execute the raw command after printing is complete for specific roles
-    if (printRole === "كاشير" || printRole === "توصيل") {
-      console.log("Executing raw command after printing is complete.");
-      await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
     }
 
     console.log("Image printed successfully.");
@@ -87,8 +81,6 @@ async function printForRole(imagePath, role, type) {
   } else {
     // Fetch devices with the given role
     const devices = await Devices.find({ role, status: "Active" });
-    console.log(devices);
-    console.log(devices.length);
 
     if (!devices.length) {
       console.log(`No active devices found for role: ${role}`);
@@ -177,3 +169,4 @@ async function printForRole(imagePath, role, type) {
 module.exports = {
   printForRole,
 };
+ 

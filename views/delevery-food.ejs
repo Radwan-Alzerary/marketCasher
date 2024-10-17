@@ -521,6 +521,8 @@
               const totaldicont = $("#totaldiscount").text();
               const foodcost = $("#totalcost").text();
               const invoiceId = $("#invoiceidelement").text();
+              const deleveryCost = $("#deleveryCost").val()
+
               if ((deloveryname.length > 0 & deloveryphone.length > 0) || indordelevery) {
                 fetch("/invoice/finish/", {
                 method: "POST",
@@ -587,6 +589,9 @@
                       } else {
 
                         printinvoice(invoiceId, resivename, deloveryname, deloveryphone, "", "", printingcountvalue, Comments, deleveryCost, "delevery")
+                        $("#deleveryCost").val(0)
+                        $("#discontinput").val(0)
+
                       }
                     })
                     .catch((error) => {
