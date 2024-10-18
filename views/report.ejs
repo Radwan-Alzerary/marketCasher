@@ -42,6 +42,15 @@
                 <option value="year" <%= currentViewType === 'year' ? 'selected' : '' %>>السنة</option>
             </select>
         </div>
+            <!-- New: Invoice type dropdown (توصيل or مكتمل) -->
+    <div>
+        <select id="invoiceType" class="w-[180px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
+            <option value="">كل الأنواع</option>
+            <option value="توصيل" <%= currentType === 'توصيل' ? 'selected' : '' %>>توصيل</option>
+            <option value="مكتمل" <%= currentType === 'مكتمل' ? 'selected' : '' %>>مكتمل</option>
+        </select>
+    </div>
+
         <div>
             <button id="resetDate" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">إعادة تعيين</button>
         </div>
@@ -183,11 +192,15 @@
         updateReport('', '');
     });
 
-    function updateReport(startDate, endDate) {
-        const viewType = document.getElementById('viewType').value;
-        window.location.href = `/report?startDate=${formatDate(startDate)}&endDate=${formatDate(endDate)}&viewType=${viewType}`;
-    }
+    document.getElementById('invoiceType').addEventListener('change', function() {
+    updateReport(currentStartDate, currentEndDate);
+});
 
+function updateReport(startDate, endDate) {
+    const viewType = document.getElementById('viewType').value;
+    const invoiceType = document.getElementById('invoiceType').value;  // Get selected invoice type
+    window.location.href = `/report?startDate=${formatDate(startDate)}&endDate=${formatDate(endDate)}&viewType=${viewType}&type=${invoiceType}`;
+}
     function formatDate(date) {
         if (!date) return '';
         const d = new Date(date);
@@ -344,29 +357,24 @@
         }
     }
 
-    function printThermal(groupDataString) {
+   async function printThermal(groupDataString) {
         const groupData = JSON.parse(groupDataString);
-        const printWindow = window.open('', '_blank');
-        if (printWindow) {
-            printWindow.document.write(`
-                <html lang="ar" dir="rtl">
+    
+            const htmlToPrint = ` 
+                           <html lang="ar" dir="rtl">
                     <head>
                         <meta charset="UTF-8">
                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                         <title>تقرير الفواتير - ${groupData.date}</title>
                         <style>
-                            @media print {
-                                @page {
-                                    size: 80mm auto;
-                                    margin: 0;
+                                * {
+                                font-size: 1.4rem;
+                                margin: 0px;
+                                font-family: 'Arial';
                                 }
-                                body {
-                                    width: 80mm;
-                                    font-family: 'Arial', sans-serif;
-                                    font-size: 12px;
-                                    line-height: 1.2;
-                                    margin: 0;
-                                    padding: 5mm;
+                                main {
+                                padding: 6px;
+                                width: 560px;
                                 }
                                 h1 {
                                     font-size: 14px;
@@ -379,24 +387,26 @@
                                 .summary p {
                                     margin: 2mm 0;
                                 }
-                                table {
-                                    width: 100%;
+                                table,
+                                th,
+                                td {
+                                    border: 1px solid black;
                                     border-collapse: collapse;
                                 }
-                                th, td {
-                                    border-top: 1px solid #000;
-                                    border-bottom: 1px solid #000;
-                                    padding: 2mm 1mm;
-                                    text-align: right;
-                                    font-size: 10px;
+
+                                table {
+                                    width: 100%;
                                 }
-                                th {
-                                    font-weight: bold;
+
+                                th,
+                                td {
+                                    text-align: center;
                                 }
-                            }
                         </style>
                     </head>
-                    <body>
+                     <body>
+                                  <main>
+
                         <h1>تقرير الفواتير - ${groupData.date}</h1>
                         <div class="summary">
                             <p>عدد الفواتير: ${groupData.count.toLocaleString('ar-IQ')}</p>
@@ -406,48 +416,33 @@
                             <p>متوسط قيمة الفاتورة: ${(groupData.totalPrice / groupData.count).toLocaleString('ar-IQ')} د.ع</p>
                             <p>هامش الربح الإجمالي: ${((groupData.totalProfit / groupData.totalPrice) * 100).toFixed(2)}%</p>
                         </div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>رقم الفاتورة</th>
-                                    <th>السعر</th>
-                                    <th>التكلفة</th>
-                                    <th>الربح</th>
-                                    <th>الوقت</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${groupData.invoices.map(invoice => `
-                                    <tr>
-                                        <td>${invoice.number}</td>
-                                        <td>${invoice.price.toLocaleString('ar-IQ')}</td>
-                                        <td>${invoice.cost.toLocaleString('ar-IQ')}</td>
-                                        <td>${(invoice.price - invoice.cost).toLocaleString('ar-IQ')}</td>
-                                        <td>${new Date(invoice.progressdata).toLocaleTimeString('ar-IQ')}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td>الإجمالي</td>
-                                    <td>${groupData.totalPrice.toLocaleString('ar-IQ')}</td>
-                                    <td>${groupData.totalCost.toLocaleString('ar-IQ')}</td>
-                                    <td>${groupData.totalProfit.toLocaleString('ar-IQ')}</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                          </main>
+
                     </body>
                 </html>
-            `);
-            printWindow.document.close();
-            setTimeout(() => {
-                printWindow.print();
-                printWindow.close();
-            }, 250);
-        }
-    }
+`
+            const baseURL = ``
 
+            
+            await fetch(`${baseURL}/invoice/printReportInvoice/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    htmbody: htmlToPrint,
+                    groupData:groupData
+                }),
+            });
+        }
+
+
+
+
+
+
+
+        
     function exportGroupAsPDF(groupDataString) {
         const groupData = JSON.parse(groupDataString);
         const { jsPDF } = window.jspdf;

@@ -8,7 +8,6 @@ const Category = require("../models/category");
 async function printImageAsync(imagePath, printCount, printerIp, printerType, shopLogo, printRole) {
   let printer;
 
-  // Configure printer settings based on printer type
   if (printerType === "Thermal Printer") {
     printer = new ThermalPrinter({
       type: PrinterTypes.EPSON,
@@ -22,33 +21,38 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
       },
     });
   } else {
-    // Implement logic for A4 Printer if needed
     console.log("A4 Printer logic not implemented");
     return;
   }
 
   try {
     console.log("printCount", printCount);
-    // Execute the print command multiple times based on printCount
+
     for (let i = 0; i < printCount; i++) {
-      // Build up the print data inside the loop
-      printer.alignCenter();
       console.log("Printing copy number:", i + 1);
+
+      // Build up the print data
+      printer.alignCenter();
       if (printRole === "كاشير" || printRole === "توصيل") {
-        await printer.printImage(`./public${shopLogo}`); // Print PNG image
+        await printer.printImage(`./public${shopLogo}`);
         await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
       }
       await printer.printImage(imagePath);
-      await printer.cut();
+      printer.cut();
 
-      // Now execute the print job
-      await printer.execute();
+      // Execute the print job
+      let execute = await printer.execute();
+      console.log(execute)
+      let isConnected = await printer.isPrinterConnected();
+      console.log(isConnected)
+      // Clear the printer buffer
+      printer.clear();
     }
 
-    console.log("Image printed successfully.");
+    console.log("All copies printed successfully.");
   } catch (error) {
     console.error("Error printing image:", error);
-    throw error; // Re-throw the error to be caught in the calling function
+    throw error;
   }
 }
 

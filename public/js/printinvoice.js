@@ -324,6 +324,7 @@ ${deleveyCostView}
           body: JSON.stringify({
             htmbody: htmltoprint2,
             printingcount: printingcount,
+            tableNumber:data.tableNumber
           }),
         })
           .then((response) => response.json())

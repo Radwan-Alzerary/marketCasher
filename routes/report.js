@@ -4,8 +4,6 @@ const Invoice = require("../models/invoice");
 const SystemSetting = require("../models/systemSetting");
 const User = require("../models/user");
 
-
-
 // Helper function to group data by view type
 function groupDataByViewType(data, viewType) {
     const groupedData = {};
@@ -33,12 +31,14 @@ function groupDataByViewType(data, viewType) {
                 count: 0
             };
         }
+
         groupedData[key].invoices.push({
             number: invoice.number,
             price: Number(invoice.fullcost),
             cost: Number(invoice.foodcost),
             progressdata: Number(invoice.progressdata)
         });
+
         groupedData[key].totalPrice += Number(invoice.fullcost) || 0;
         groupedData[key].totalCost += Number(invoice.foodcost) || 0;
         groupedData[key].totalProfit += (Number(invoice.fullcost) - Number(invoice.foodcost)) || 0;
@@ -47,13 +47,24 @@ function groupDataByViewType(data, viewType) {
 
     return Object.values(groupedData);
 }
+
 router.get('/', async (req, res) => {
     try {
-        const { startDate, endDate, viewType = 'day' } = req.query;
+        const { startDate, endDate, viewType = 'day', type } = req.query;
+
+        // Base query: deleted false and filter for the type(s)
         let query = {
-            deleted: false, type: { $in: ["مكتمل", "توصيل"] }
+            deleted: false
         };
 
+        // If a specific type is provided, update the query
+        if (type) {
+            query.type = type;  // Use the provided type ("توصيل" or "مكتمل")
+        } else {
+            query.type = { $in: ["مكتمل", "توصيل"] };  // Default to both types
+        }
+
+        // Filter by date range if provided
         if (startDate && endDate) {
             query.progressdata = {
                 $gte: new Date(startDate),
@@ -61,26 +72,32 @@ router.get('/', async (req, res) => {
             };
         }
 
-        const invoices = await Invoice.find(query).sort('-progressdata',);
+        // Fetch invoices
+        const invoices = await Invoice.find(query).sort('-progressdata');
         const groupedData = groupDataByViewType(invoices, viewType);
 
+        // Get all distinct progress dates
         const allDates = await Invoice.distinct('progressdata', { deleted: false });
 
+        // Get user and system setting data
         const user = await User.findById(req.user);
         const systemSetting = await SystemSetting.findOne();
 
-
+        // Render the report view, passing current type and other data
         res.render('report', {
             invoiceData: groupedData,
             allDates: allDates.map(date => date.toISOString().split('T')[0]),
             currentViewType: viewType,
+            currentType: type || '',  // Pass the selected type
             currentStartDate: startDate || '',
             currentEndDate: endDate || '',
-            role: user.role, systemSetting
+            role: user.role,
+            systemSetting
         });
     } catch (error) {
         console.error('Error fetching invoice data:', error);
         res.status(500).send('Error fetching invoice data');
     }
 });
+
 module.exports = router;

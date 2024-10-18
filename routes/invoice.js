@@ -64,6 +64,94 @@ async function printImageAsync(imagePath, printincount) {
     console.error("Error printing image:", error);
   }
 }
+
+async function printReportAsync(imagePath, printincount, data) {
+  const setting = await Setting.findOne();
+
+  const printer = new ThermalPrinter({
+    type: PrinterTypes.EPSON,
+    interface: `tcp://${setting.printerip}:9100`,
+    characterSet: CharacterSet.SLOVENIA,
+    removeSpecialCharacters: false,
+    lineCharacter: "=",
+    breakLine: BreakLine.WORD,
+    options: {
+      timeout: 2000,
+    },
+  });
+
+  try {
+    printer.alignCenter();
+    await printer.printImage(`./public${setting.shoplogo}`); // Print PNG image
+    await printer.printImage(imagePath); // Print PNG image
+
+
+    // Header of the table
+    printer.bold(true);
+    printer.println('---------------------------------------------');
+    printer.tableCustom([
+      { text: 'Time', align: 'LEFT', width: 0.2 },
+      { text: 'Profit', align: 'CENTER', width: 0.2 },
+      { text: 'Cost', align: 'CENTER', width: 0.2 },
+      { text: 'Price', align: 'CENTER', width: 0.2 },
+      { text: 'Number', align: 'RIGHT', width: 0.2 },
+    ]);
+
+    data.invoices.forEach((invoice) => {
+      printer.bold(false);
+      printer.println('---------------------------------------------');
+
+      // Table rows
+      printer.tableCustom([
+        {
+          text: new Date(invoice.progressdata).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          align: 'CENTER',
+          width: 0.2,
+        },
+        {
+          text: (invoice.price - invoice.cost),
+          align: 'CENTER',
+          width: 0.2,
+        },
+        {
+          text: invoice.cost,
+          align: 'CENTER',
+          width: 0.2,
+        },
+        {
+          text: invoice.price,
+          align: 'CENTER',
+          width: 0.2,
+        },
+        {
+          text: invoice.number,
+          align: 'CENTER',
+          width: 0.2,
+        },
+      ]);
+
+    });
+
+
+
+    await printer.cut();
+
+    await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
+
+    for (i = 0; i < printincount; i++) {
+      await printer.execute();
+    }
+
+    console.log("Image printed successfully.");
+  } catch (error) {
+    console.error("Error printing image:", error);
+  }
+}
+
+
 async function openCashdraw() {
   try {
     const device = await Devices.findOne({ openCashdraw: "Active" });
@@ -477,20 +565,20 @@ router.post("/dummyfood", async (req, res) => {
       // If the food item already exists, increment the quantity by 1
       existingFood.quantity += (Number(fastClick) || 1);
       await Food.findByIdAndUpdate(existingFood.id, {
-        quantety: foodData.quantety -  (Number(fastClick) || 1),
+        quantety: foodData.quantety - (Number(fastClick) || 1),
       });
     } else {
       // If the food item doesn't exist, add it to the invoice
 
       const food = await Food.findById(req.body.foodId);
-      await Food.findByIdAndUpdate(foodId, { quantety: food.quantety -  (Number(fastClick) || 1) });
+      await Food.findByIdAndUpdate(foodId, { quantety: food.quantety - (Number(fastClick) || 1) });
 
       if (!food) {
         return res.status(404).json({ error: "Food not found" });
       }
       const newFood = {
         id: food._id,
-        quantity:  (Number(fastClick) || 1),
+        quantity: (Number(fastClick) || 1),
         discount: 0,
         foodCost: food.cost,
         foodPrice: food.price,
@@ -526,7 +614,7 @@ router.post("/dummyfood", async (req, res) => {
         editOneFood: editOneFood,
         food: populatedFood,
         invoiceId: invoice.id,
-        newquantity:  (Number(fastClick) || 1),
+        newquantity: (Number(fastClick) || 1),
         foodPrice: populatedFood.price,
       });
     }
@@ -1122,6 +1210,9 @@ router.post("/previesinvoice", async (req, res) => {
   }
 });
 
+
+
+
 router.post("/cancele", async (req, res) => {
   try {
     let invoice = await Invoice.findById(req.body.invoiceId);
@@ -1163,15 +1254,20 @@ router.post("/cancele", async (req, res) => {
 
 router.post("/finish", async (req, res) => {
   try {
+    const table = await Table.findById(req.body.tableId)
     let invoice = await Invoice.findById(req.body.invoiceId);
     invoice.active = false;
-    invoice.type = "مكتمل";
     invoice.progressdata = Date.now();
     invoice.fullcost = req.body.totalcost;
     invoice.fulldiscont = req.body.totaldicont;
     invoice.resivename = req.body.resivename;
     invoice.finalcost = req.body.finalcost;
     invoice.foodcost = req.body.foodcost;
+    if (table.number > 500) {
+      invoice.type = "توصيل";
+    } else {
+      invoice.type = "مكتمل";
+    }
     invoice.tableid = req.body.tableId;
     invoice.deloveryname = req.body.deloveryname;
     invoice.deloveryphone = req.body.deloveryphone;
@@ -1232,9 +1328,11 @@ router.post("/printinvoice", async (req, res) => {
   try {
     const htmlContent = req.body.htmbody;
     const printincount = req.body.printingcount;
+    const tableNumber = req.body.tableNumber
     const setting = await Setting.findOne()
+
     const generateImage = async () => {
-      console.time('Total Time');
+      // console.time('Total Time');
       const browser = await browserPromise; // Reuse the same browser instance
       let page;
 
@@ -1274,13 +1372,21 @@ router.post("/printinvoice", async (req, res) => {
         console.error('Error generating image:', error);
         throw error;
       } finally {
-        console.timeEnd('Total Time');
+        // console.timeEnd('Total Time');
         // Do not close the page if reusing
         // await page.close();
       }
     };
     const imagePath = await generateImage(); // Generate the image asynchronously
+    const table = await Table.findOne({ number: tableNumber })
+    console.log(table)
+    if (table.Families) {
+      await printForRole(imagePath, "عوائل")
 
+    } else {
+      await printForRole(imagePath, "شباب")
+
+    }
     await printForRole(imagePath, "كاشير")
     if (setting.printerActive) {
       await printImageAsync("./image.png", printincount);
@@ -1293,14 +1399,14 @@ router.post("/printinvoice", async (req, res) => {
 });
 
 
-
-router.post("/printDeleveryInvoice", async (req, res) => {
+router.post("/printReportInvoice", async (req, res) => {
   try {
     const htmlContent = req.body.htmbody;
     const printincount = req.body.printingcount;
-
+    const groupData = req.body.groupData;
+    const setting = await Setting.findOne()
     const generateImage = async () => {
-      console.time('Total Time');
+      // console.time('Total Time');
       const browser = await browserPromise; // Reuse the same browser instance
       let page;
 
@@ -1340,7 +1446,74 @@ router.post("/printDeleveryInvoice", async (req, res) => {
         console.error('Error generating image:', error);
         throw error;
       } finally {
-        console.timeEnd('Total Time');
+        // console.timeEnd('Total Time');
+        // Do not close the page if reusing
+        // await page.close();
+      }
+    };
+    const imagePath = await generateImage(); // Generate the image asynchronously
+
+    await printReportAsync(imagePath, 1, groupData);
+
+
+
+    res.status(200).json({ msg: "done" });
+  } catch (err) {
+    console.error(err);
+    return res.json({ message: "No invoice found in the table", err });
+  }
+});
+
+
+
+
+router.post("/printDeleveryInvoice", async (req, res) => {
+  try {
+    const htmlContent = req.body.htmbody;
+    const printincount = req.body.printingcount;
+
+    const generateImage = async () => {
+      // console.time('Total Time');
+      const browser = await browserPromise; // Reuse the same browser instance
+      let page;
+
+      try {
+        // Reuse the same page if possible
+        if (!global.pageInstance) {
+          page = await browser.newPage();
+          global.pageInstance = page;
+        } else {
+          page = global.pageInstance;
+        }
+
+        // Disable JavaScript to speed up rendering
+        await page.setJavaScriptEnabled(false);
+
+        // Set minimal viewport size
+        await page.setViewport({ width: 560, height: 800 }); // Adjust height as necessary
+
+        // Set content without waiting
+        await page.setContent(htmlContent);
+
+        // Optionally, skip waiting for selector if content is static
+        const mainElement = await page.$('main');
+        if (!mainElement) throw new Error('Main element not found');
+
+        const uniqueFilename = `image-${uuidv4()}.png`;
+        const filePath = path.join(__dirname, 'images', uniqueFilename);
+
+        await mainElement.screenshot({
+          path: filePath,
+          omitBackground: true,
+        });
+
+        console.log(`Image generated: ${filePath}`);
+        return filePath;
+      } catch (error) {
+        console.error('Error generating image:', error);
+        throw error;
+      } finally {
+        // console.timeEnd('Total Time');
         // Do not close the page if reusing
         // await page.close();
       }
@@ -1367,7 +1540,7 @@ router.post("/printresturentinvoice", async (req, res) => {
     const htmlContent = req.body.htmbody;
 
     const generateImage = async () => {
-      console.time('Total Time');
+      // console.time('Total Time');
       const browser = await browserPromise; // Reuse the same browser instance
       let page;
 
@@ -1407,7 +1580,7 @@ router.post("/printresturentinvoice", async (req, res) => {
         console.error('Error generating image:', error);
         throw error;
       } finally {
-        console.timeEnd('Total Time');
+        // console.timeEnd('Total Time');
         // Do not close the page if reusing
         // await page.close();
       }
@@ -1435,7 +1608,6 @@ router.post("/printresturentinvoice", async (req, res) => {
 
 });
 
-
 const imagesDir = path.join(__dirname, 'images');
 if (!fs.existsSync(imagesDir)) {
   fs.mkdirSync(imagesDir);
@@ -1446,7 +1618,7 @@ router.post("/printdummyinvoice", async (req, res) => {
     const htmlContent = req.body.htmbody;
 
     const generateImage = async () => {
-      console.time('Total Time');
+      // console.time('Total Time');
       const browser = await browserPromise; // Reuse the same browser instance
       let page;
 
@@ -1486,7 +1658,7 @@ router.post("/printdummyinvoice", async (req, res) => {
         console.error('Error generating image:', error);
         throw error;
       } finally {
-        console.timeEnd('Total Time');
+        // console.timeEnd('Total Time');
         // Do not close the page if reusing
         // await page.close();
       }
@@ -1516,7 +1688,7 @@ router.post("/printalert1invoice", async (req, res) => {
     const htmlContent = req.body.htmbody;
 
     const generateImage = async () => {
-      console.time('Total Time');
+      // console.time('Total Time');
       const browser = await browserPromise; // Reuse the same browser instance
       let page;
 
@@ -1556,7 +1728,7 @@ router.post("/printalert1invoice", async (req, res) => {
         console.error('Error generating image:', error);
         throw error;
       } finally {
-        console.timeEnd('Total Time');
+        // console.timeEnd('Total Time');
         // Do not close the page if reusing
         // await page.close();
       }
