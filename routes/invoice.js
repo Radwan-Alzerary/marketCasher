@@ -276,7 +276,6 @@ router.get("/list", ensureAuthenticated, async (req, res) => {
       .populate("storge")
       .populate("PaymentType")
       .sort({ createdAt: -1 });
-    const user = await User.findById(req.user);
     const systemSetting = await SystemSetting.findOne();
 
     const invoiceCount = await Invoice.countDocuments();
@@ -426,6 +425,7 @@ router.post("/food", async (req, res) => {
         paymentType: newPaymentType.id,
         type: "قيد المعالجة", // Replace with the appropriate type
         active: true,
+        user:req.user
       });
       await invoice.save();
       table.invoice.push(invoice._id);
@@ -541,6 +541,8 @@ router.post("/dummyfood", async (req, res) => {
         paymentType: newPaymentType.id,
         type: "قيد المعالجة", // Replace with the appropriate type
         active: true,
+        user:req.user
+
       });
       await invoice.save();
       table.invoice.push(invoice._id);
@@ -1259,7 +1261,6 @@ router.post("/finish", async (req, res) => {
     invoice.active = false;
     invoice.progressdata = Date.now();
     invoice.fullcost = req.body.totalcost;
-    invoice.user = req.user;
     invoice.fulldiscont = req.body.totaldicont;
     invoice.resivename = req.body.resivename;
     invoice.finalcost = req.body.finalcost;

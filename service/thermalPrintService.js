@@ -5,7 +5,7 @@ const Category = require("../models/category");
 
 // Removed the sleep function
 
-async function printImageAsync(imagePath, printCount, printerIp, printerType, shopLogo, printRole, printLogo) {
+async function printImageAsync(imagePath, printCount, printerIp, printerType, shopLogo, printRole, printLogo,openCashdraw) {
   let printer;
 
   if (printerType === "Thermal Printer") {
@@ -81,7 +81,7 @@ async function printForRole(imagePath, role, type) {
         setting.shoplogo,
         role,
         device.printLogo,
-
+        device.openCashdraw,
       );
       console.log(`Printing completed for device: ${device.name}`);
     } catch (error) {
@@ -106,7 +106,10 @@ async function printForRole(imagePath, role, type) {
           device.ip,
           device.type,
           setting.shoplogo,
-          role
+          role,
+          device.printLogo,
+          device.openCashdraw,
+  
         );
         console.log(`Printing completed for device: ${device.name}`);
       } catch (error) {
@@ -148,7 +151,10 @@ async function printForRole(imagePath, role, type) {
                     secondaryDevice.ip,
                     secondaryDevice.type,
                     setting.shoplogo,
-                    role
+                    role,
+                    secondaryDevice.printLogo,
+                    secondaryDevice.openCashdraw,
+            
                   );
                   console.log(
                     `Printing completed for secondary device: ${secondaryDevice.name}`
