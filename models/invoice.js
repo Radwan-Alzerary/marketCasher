@@ -59,16 +59,19 @@ const InvoiceSchema = new mongoose.Schema(
 // Middleware to set the dailyNumber only when creating a new invoice
 InvoiceSchema.pre("save", async function (next) {
   // Check if the document is new (i.e., it is being created for the first time)
+  const currentDate = new Date();
+
+  currentDate.setHours(currentDate.getHours() + 3); // Adjust to UTC+03:00
+
+  // Set the progressdata field to the current date and time in UTC+03:00
+  this.progressdata = currentDate;
+
   if (!this.isNew) {
     return next(); // If not new, do not update dailyNumber
   }
 
-  const currentDate = new Date();
-  currentDate.setHours(currentDate.getHours() + 3); // Adjust to UTC+03:00
   const formattedDate = currentDate.toISOString().split("T")[0]; // 'YYYY-MM-DD'
 
-  // Set the progressdata field to the current date and time in UTC+03:00
-  this.progressdata = currentDate;
 
   try {
     // Check for an existing counter document for today's date
