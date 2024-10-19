@@ -51,8 +51,7 @@ router.post('/:id/comments', async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
-
-// // Delete a Comment
+// Delete a Comment
 router.delete('/:id/comments/:commentId', async (req, res) => {
     try {
         const { id, commentId } = req.params;
@@ -61,13 +60,15 @@ router.delete('/:id/comments/:commentId', async (req, res) => {
             return res.status(404).json({ message: 'Category not found' });
         }
 
-        // If using subdocuments
-        // category.comments.id(commentId).remove();
+        // Remove the comment by its ID using Mongoose's subdocument functionality
+        const comment = category.comments.id(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
 
-        // If using array of strings, use:
-        category.comments = category.comments.filter(comment => comment !== req.params.comment);
-
+        comment.remove();
         await category.save();
+
         res.status(200).json({ message: 'Comment deleted', comments: category.comments });
     } catch (err) {
         res.status(500).json({ message: err.message });
