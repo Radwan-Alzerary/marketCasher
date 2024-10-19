@@ -1820,13 +1820,20 @@ router.get("/:invoiceId/checout", async (req, res) => {
     const { invoiceId } = req.params;
     const setting = await Setting.findOne().sort({ number: -1 });
     const systemSetting = await SystemSetting.findOne();
-
+    let invoiceNumber = null
     const invoice = await Invoice.findById(invoiceId)
       .populate({
         path: "food.id",
         model: "Food",
       })
       .populate({ path: "tableid", model: "Table" });
+      if(!setting.useInvoiceNumber ){
+         invoiceNumber = invoice.dailyNumber
+      }else{
+        invoiceNumber = invoice.number
+
+      }
+      
     const tableid = invoice.tableid ? invoice.tableid.number : 0;
     res.json({
       message: "Food items retrieved successfully",
@@ -1838,7 +1845,7 @@ router.get("/:invoiceId/checout", async (req, res) => {
       setting: setting,
       finalcost: invoice.finalcost,
       fullcost: invoice.fullcost,
-      invoicenumber: invoice.number,
+      invoicenumber: invoiceNumber,
       fulldiscont: invoice.fulldiscont,
       systemSetting: systemSetting,
     });

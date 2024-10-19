@@ -149,11 +149,14 @@
                     انهاء
                 </button>
             </div>
-            <div class="w-1/2">
-                <button onclick="printResturent()" class="bg-yellow-200 hover:bg-yellow-400 w-full h-12 rounded-md">
-                    طباعة مطبخ
-                </button>
-            </div>
+            <% if(systemSetting.type==="restaurant" ){%>
+                <div class="w-1/2">
+                    <button onclick="printResturent()" class="bg-yellow-200 hover:bg-yellow-400 w-full h-12 rounded-md">
+                        طباعة مطبخ
+                    </button>
+                </div>
+    
+<%}%>
 
             <div class="w-1/2">
                 <button onclick="cancele()" class="bg-red-300 hover:bg-red-400 w-full h-12 rounded-md">

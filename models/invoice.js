@@ -1,10 +1,16 @@
 const mongoose = require("mongoose");
+const Counter = require("./CounterSchema"); // Import the Counter model
+
 const InvoiceSchema = new mongoose.Schema(
   {
     number: {
       type: Number,
       required: true,
     },
+    dailyNumber: {
+      type: Number,
+    },
+
     type: { type: String },
     active: { type: Boolean },
     deleted: { type: Boolean, default: false },
@@ -50,15 +56,40 @@ const InvoiceSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-InvoiceSchema.pre("save", function (next) {
-  // Get the current date and time
+// Middleware to set the dailyNumber only when creating a new invoice
+InvoiceSchema.pre("save", async function (next) {
+  // Check if the document is new (i.e., it is being created for the first time)
+  if (!this.isNew) {
+    return next(); // If not new, do not update dailyNumber
+  }
+
   const currentDate = new Date();
+  currentDate.setHours(currentDate.getHours() + 3); // Adjust to UTC+03:00
+  const formattedDate = currentDate.toISOString().split("T")[0]; // 'YYYY-MM-DD'
 
   // Set the progressdata field to the current date and time in UTC+03:00
-  currentDate.setHours(currentDate.getHours() + 3);
   this.progressdata = currentDate;
 
-  next();
+  try {
+    // Check for an existing counter document for today's date
+    let counter = await Counter.findOne({ date: formattedDate });
+
+    if (!counter) {
+      // If not found, create a new counter for today and set count to 1
+      counter = new Counter({ date: formattedDate, count: 1 });
+      await counter.save();
+      this.dailyNumber = 1;
+    } else {
+      // If found, increment the count by 1
+      counter.count += 1;
+      await counter.save();
+      this.dailyNumber = counter.count;
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 const invoice = mongoose.model("Invoice", InvoiceSchema);

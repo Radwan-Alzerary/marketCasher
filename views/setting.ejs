@@ -106,7 +106,8 @@
                                 <a class="group text-cente <%if(!(tables.active)){%> opacity-40 <%}%>">
                                     <div
                                         class="relative hover:bg-slate-200<%if(tables.invoice[0]){%> bg-green-200 <%}else{%> bg-white<%}%> aspect-h-1  aspect-w-1 w-full  overflow-hidden rounded-lg  xl:aspect-h-5 xl:aspect-w-5">
-                                        <div onclick="handleFamiliesClick('<%=tables.id%>')" class="absolute cursor:pointer bg-black hover:bg-pink-500 <%if(tables.Families){%> bg-pink-200 <%}else{%> bg-black<%}%> z-[500]"
+                                        <div onclick="handleFamiliesClick('<%=tables.id%>')"
+                                            class="absolute cursor:pointer bg-black hover:bg-pink-500 <%if(tables.Families){%> bg-pink-200 <%}else{%> bg-black<%}%> z-[500]"
                                             style="width: 24px;height: 24px;"></div>
 
                                         <div class="text-center flex flex-col justify-center items-center">
@@ -225,6 +226,18 @@
                             رئيسية</span>
                     </label>
                 </label>
+                <label class="inline-flex items-center cursor-pointer">
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="useInvoiceNumber" name="useInvoiceNumber" class="sr-only peer"
+                            <%=setting[0].useInvoiceNumber ? 'checked' : '' %> value="true">
+                        <div
+                            class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                        </div>
+                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >
+عدم تصفير رقم الوصل يوميا                            </span>
+                    </label>
+                </label>
 
                 <div class="mb-6 w-full">
                     <label for="default-input"
@@ -277,6 +290,30 @@
                     </select>
                 </div>
                 <div class="mb-6 w-full">
+                    <label for="default-select"
+                        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        وقت انتهاء الدوام </label>
+                    <select name="closedTimeOffset" id="default-select"
+                        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        required>
+                        <option value="0" <%=setting[0].closedTimeOffset=='0' ? 'selected' : '' %>>انتهاء اليوم</option>
+                        <option value="1" <%=setting[0].closedTimeOffset=='1' ? 'selected' : '' %>>1 صباحا
+                        </option>
+                        <option value="2" <%=setting[0].closedTimeOffset=='2' ? 'selected' : '' %>>2 صباحا
+                        </option>
+                        <option value="3" <%=setting[0].closedTimeOffset=='3' ? 'selected' : '' %>>3 صباحا
+                        </option>
+                        <option value="4" <%=setting[0].closedTimeOffset=='4' ? 'selected' : '' %>>4 صباحا
+                        </option>
+                        <option value="5" <%=setting[0].closedTimeOffset=='5' ? 'selected' : '' %>>5 صباحا
+                        </option>
+                        <option value="6" <%=setting[0].closedTimeOffset=='6' ? 'selected' : '' %>>6 صباحا
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="mb-6 w-full">
                     <label for="default-input"
                         class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         وحدة الكمية</label>
@@ -328,40 +365,40 @@
 
     <script>
         const handleFamiliesClick = (id) => {
-          // Define the payload you want to send with the request
-          const payload = {
-            id: id,
-          };
-      
-          // Make the POST request using fetch
-          fetch("/table/Families", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
-          })
-            .then((response) => {
-              if (!response.ok) {
-                // Handle HTTP errors
-                throw new Error("Network response was not ok " + response.statusText);
-              }
-              return response.json();
+            // Define the payload you want to send with the request
+            const payload = {
+                id: id,
+            };
+
+            // Make the POST request using fetch
+            fetch("/table/Families", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
             })
-            .then((data) => {
-              // Handle success
-              console.log("Booking successful:", data);
-              // You can update the UI or state here based on the response
-            })
-            .catch((error) => {
-              // Handle error
-              console.error("Error booking the table:", error);
-              // You can show an error message to the user here
-            });
+                .then((response) => {
+                    if (!response.ok) {
+                        // Handle HTTP errors
+                        throw new Error("Network response was not ok " + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    // Handle success
+                    console.log("Booking successful:", data);
+                    // You can update the UI or state here based on the response
+                })
+                .catch((error) => {
+                    // Handle error
+                    console.error("Error booking the table:", error);
+                    // You can show an error message to the user here
+                });
         };
-      </script>
-      
-    
+    </script>
+
+
     <script>
         function showWorkerSetting() {
             $(`#StorgeSetting`).addClass('hidden');

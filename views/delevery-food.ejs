@@ -71,9 +71,17 @@
 
                 </div>
                 <div id="insidelevery" class="w-24 h-10 rounded-lg bg-green-100">
-                    <div class="flex justify-center items-center  h-full">
-                        داخل صالة
-                    </div>
+                    <% if(systemSetting.type==="restaurant" ){%>
+                        <div class="flex justify-center items-center  h-full">
+                            داخل صالة
+                        </div>
+    
+                        <%}else{%>
+                            <div class="flex justify-center items-center  h-full">
+بدون تفاصيل                            </div>
+        
+                            <%}%>
+
                 </div>
             </div>
             <div id="invoicefood" class="bg-white relative overflow-auto h-40">

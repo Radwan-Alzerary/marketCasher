@@ -1,19 +1,22 @@
 <%- include('header'); %>
 
   <div class="bg-gray-100 w-full">
-    <div class="w-full h-12  p-1  flex">
-      <div onclick="getTableByType('Families')"
-        class="w-1/2 h-full   bg-pink-200 hover:bg-pink-400  cursor-pointer rounded-l-full flex justify-center items-center">
-        صالة العوائل</div>
-      <div onclick="getTableByType('male')"
-        class="w-1/2 h-full bg-green-200 hover:bg-green-400 cursor-pointer rounded-r-full flex justify-center items-center">
-        صالة الشباب</div>
-    </div>
-    <div id="tablesContainer"
-      class="grid h-3 grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-x-8 overflow-y-scroll"
-      style="height: 90vh">
-      <!-- Tables will be dynamically inserted here -->
-    </div>
+    <% if(systemSetting.type==="restaurant" ){%>
+      <div class="w-full h-12  p-1  flex">
+        <div onclick="getTableByType('Families')"
+          class="w-1/2 h-full   bg-pink-200 hover:bg-pink-400  cursor-pointer rounded-l-full flex justify-center items-center">
+          صالة العوائل</div>
+        <div onclick="getTableByType('male')"
+          class="w-1/2 h-full bg-green-200 hover:bg-green-400 cursor-pointer rounded-r-full flex justify-center items-center">
+          صالة الشباب</div>
+      </div>
+
+      <%}%>
+        <div id="tablesContainer"
+          class="grid h-3 grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 xl:gap-x-8 overflow-y-scroll"
+          style="height: 90vh">
+          <!-- Tables will be dynamically inserted here -->
+        </div>
   </div>
 
 

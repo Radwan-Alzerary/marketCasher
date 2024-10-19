@@ -3,22 +3,27 @@ const router = require("express").Router();
 const Invoice = require("../models/invoice");
 const SystemSetting = require("../models/systemSetting");
 const User = require("../models/user");
+const Setting = require("../models/pagesetting");
 
-// Helper function to group data by view type
-function groupDataByViewType(data, viewType) {
+function groupDataByViewType(data, viewType,offset = 0) {
     const groupedData = {};
 
     data.forEach(invoice => {
         let key;
+        // Create a new Date instance for progressdata
+        const progressDate = new Date(invoice.progressdata);
+        // Subtract 2 hours
+        progressDate.setHours(progressDate.getHours() - offset);
+
         switch (viewType) {
             case 'year':
-                key = invoice.progressdata.getFullYear().toString();
+                key = progressDate.getFullYear().toString();
                 break;
             case 'month':
-                key = `${invoice.progressdata.getFullYear()}-${(invoice.progressdata.getMonth() + 1).toString().padStart(2, '0')}`;
+                key = `${progressDate.getFullYear()}-${(progressDate.getMonth() + 1).toString().padStart(2, '0')}`;
                 break;
             default:
-                key = invoice.progressdata.toISOString().split('T')[0];
+                key = progressDate.toISOString().split('T')[0];
         }
 
         if (!groupedData[key]) {
@@ -48,6 +53,7 @@ function groupDataByViewType(data, viewType) {
     return Object.values(groupedData);
 }
 
+
 router.get('/', async (req, res) => {
     try {
         const { startDate, endDate, viewType = 'day', type } = req.query;
@@ -74,7 +80,9 @@ router.get('/', async (req, res) => {
 
         // Fetch invoices
         const invoices = await Invoice.find(query).sort('-progressdata');
-        const groupedData = groupDataByViewType(invoices, viewType);
+        const setting = await Setting.findOne()
+
+        const groupedData = groupDataByViewType(invoices, viewType, setting.closedTimeOffset);
 
         // Get all distinct progress dates
         const allDates = await Invoice.distinct('progressdata', { deleted: false });

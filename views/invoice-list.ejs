@@ -191,7 +191,11 @@
               <th scope="col" class="text-center px-6 py-3">رقم الوصل</th>
               <th scope="col" class="text-center px-6 py-3">السعر الكلي</th>
               <th scope="col" class="text-center px-6 py-3">مجموع الخصومات</th>
-              <th scope="col" class="text-center px-6 py-3">مجموع الاطعمة</th>
+              <% if(systemSetting.type==="restaurant" ){%>
+                <th scope="col" class="text-center px-6 py-3">مجموع الاطعمة</th>
+              <%}else{%>
+                <th scope="col" class="text-center px-6 py-3">مجموع المنتجات</th>
+                <%}%>
               <th scope="col" class="text-center px-6 py-3">الحالة</th>
               <th scope="col" class="text-center px-6 py-3">التاريخ</th>
               <th scope="col" class="text-center px-6 py-3">طباعة</th>

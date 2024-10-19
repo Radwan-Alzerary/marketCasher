@@ -4,7 +4,7 @@ const SettingSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-    
+
     shoplogo: {
         type: String,
         default: ""
@@ -12,7 +12,7 @@ const SettingSchema = new mongoose.Schema({
     },
 
     printerActive: {
-        type:Boolean,
+        type: Boolean,
         default: true
     },
 
@@ -42,7 +42,14 @@ const SettingSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
-
+    closedTimeOffset: {
+        type: Number,
+        default: 0
+    },
+    useInvoiceNumber: {
+        type: Boolean,
+        default: true
+    },
     barcodeXsize: { type: Number, default: 0 },
     barcodeYsize: { type: Number, default: 0 },
 

@@ -29,6 +29,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 router.post("/update", upload.single("image"), async (req, res) => {
   try {
+    console.log(req.body.closedTimeOffset)
     const setting = await Setting.findOne().sort({ number: -1 });
     setting.shopname = req.body.name;
     setting.printerip = req.body.printerip;
@@ -39,7 +40,9 @@ router.post("/update", upload.single("image"), async (req, res) => {
     setting.barcodeYsize = req.body.barcodeYsize;
     setting.printerType = req.body.printerType;
     setting.amountUnit = req.body.amountUnit;
+    setting.closedTimeOffset = req.body.closedTimeOffset;
     setting.printerActive = req.body.printerActive || false;
+    setting.useInvoiceNumber = req.body.useInvoiceNumber || false;
     console.log(req.body)
     if (req.file) {
       // Delete the previous image if it exists
