@@ -5,7 +5,7 @@ const Category = require("../models/category");
 
 // Removed the sleep function
 
-async function printImageAsync(imagePath, printCount, printerIp, printerType, shopLogo, printRole) {
+async function printImageAsync(imagePath, printCount, printerIp, printerType, shopLogo, printRole, printLogo) {
   let printer;
 
   if (printerType === "Thermal Printer") {
@@ -33,10 +33,13 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
 
       // Build up the print data
       printer.alignCenter();
-      if (printRole === "كاشير" || printRole === "توصيل") {
+      if ((printRole === "كاشير" || printRole === "توصيل") || printLogo == "Active") {
         await printer.printImage(`./public${shopLogo}`);
+      }
+      if ((printRole === "كاشير" || printRole === "توصيل") || openCashdraw == "Active") {
         await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
       }
+
       await printer.printImage(imagePath);
       printer.cut();
 
@@ -76,7 +79,9 @@ async function printForRole(imagePath, role, type) {
         device.ip,
         device.type,
         setting.shoplogo,
-        role
+        role,
+        device.printLogo,
+
       );
       console.log(`Printing completed for device: ${device.name}`);
     } catch (error) {
@@ -173,4 +178,3 @@ async function printForRole(imagePath, role, type) {
 module.exports = {
   printForRole,
 };
- 

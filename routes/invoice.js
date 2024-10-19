@@ -1259,6 +1259,7 @@ router.post("/finish", async (req, res) => {
     invoice.active = false;
     invoice.progressdata = Date.now();
     invoice.fullcost = req.body.totalcost;
+    invoice.user = req.user;
     invoice.fulldiscont = req.body.totaldicont;
     invoice.resivename = req.body.resivename;
     invoice.finalcost = req.body.finalcost;
@@ -1825,13 +1826,13 @@ router.get("/:invoiceId/checout", async (req, res) => {
       .populate({
         path: "food.id",
         model: "Food",
-      })
+      }).populate("user")
+
       .populate({ path: "tableid", model: "Table" });
     if (!setting.useInvoiceNumber) {
       invoiceNumber = invoice.dailyNumber
     } else {
       invoiceNumber = invoice.number
-
     }
 
     const tableid = invoice.tableid ? invoice.tableid.number : 0;
@@ -1924,12 +1925,12 @@ router.get("/:tableId/foodToResturentChecout", async (req, res) => {
     const setting = await Setting.findOne().sort({ number: -1 });
     const tableid = invoice.tableid ? invoice.tableid.number : 0;
     let invoiceNumber = null
-      if(!setting.useInvoiceNumber ){
-         invoiceNumber = invoice.dailyNumber
-      }else{
-        invoiceNumber = invoice.number
+    if (!setting.useInvoiceNumber) {
+      invoiceNumber = invoice.dailyNumber
+    } else {
+      invoiceNumber = invoice.number
 
-      }
+    }
 
     res.json({
       message: "Food items retrieved successfully",

@@ -12,6 +12,7 @@ const InvoiceSchema = new mongoose.Schema(
     },
 
     type: { type: String },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     active: { type: Boolean },
     deleted: { type: Boolean, default: false },
     foodcost: { type: Number },
