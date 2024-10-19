@@ -1827,13 +1827,13 @@ router.get("/:invoiceId/checout", async (req, res) => {
         model: "Food",
       })
       .populate({ path: "tableid", model: "Table" });
-      if(!setting.useInvoiceNumber ){
-         invoiceNumber = invoice.dailyNumber
-      }else{
-        invoiceNumber = invoice.number
+    if (!setting.useInvoiceNumber) {
+      invoiceNumber = invoice.dailyNumber
+    } else {
+      invoiceNumber = invoice.number
 
-      }
-      
+    }
+
     const tableid = invoice.tableid ? invoice.tableid.number : 0;
     res.json({
       message: "Food items retrieved successfully",
@@ -1867,8 +1867,17 @@ router.get("/:tableId/dummychecout", async (req, res) => {
       path: "dummyFood.id",
       model: "Food",
     });
+
     // console.log(invoice)
     const setting = await Setting.findOne().sort({ number: -1 });
+    let invoiceNumber = null
+    if (!setting.useInvoiceNumber) {
+      invoiceNumber = invoice.dailyNumber
+    } else {
+      invoiceNumber = invoice.number
+
+    }
+
     const tableid = invoice.tableid ? invoice.tableid.number : 0;
     res.json({
       message: "Food items retrieved successfully",
@@ -1879,7 +1888,7 @@ router.get("/:tableId/dummychecout", async (req, res) => {
       setting: setting,
       finalcost: invoice.finalcost,
       fullcost: invoice.fullcost,
-      invoicenumber: invoice.number,
+      invoicenumber: invoiceNumber,
       fulldiscont: invoice.fulldiscont,
     });
   } catch (err) {
@@ -1914,6 +1923,14 @@ router.get("/:tableId/foodToResturentChecout", async (req, res) => {
     // console.log(invoice)
     const setting = await Setting.findOne().sort({ number: -1 });
     const tableid = invoice.tableid ? invoice.tableid.number : 0;
+    let invoiceNumber = null
+      if(!setting.useInvoiceNumber ){
+         invoiceNumber = invoice.dailyNumber
+      }else{
+        invoiceNumber = invoice.number
+
+      }
+
     res.json({
       message: "Food items retrieved successfully",
       tableNumber: table.number,
@@ -1923,7 +1940,7 @@ router.get("/:tableId/foodToResturentChecout", async (req, res) => {
       setting: setting,
       finalcost: invoice.finalcost,
       fullcost: invoice.fullcost,
-      invoicenumber: invoice.number,
+      invoicenumber: invoiceNumber,
       fulldiscont: invoice.fulldiscont,
     });
   } catch (err) {
