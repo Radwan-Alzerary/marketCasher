@@ -202,7 +202,7 @@ router.get("/list", ensureAuthenticated, async (req, res) => {
   try {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    const user = User.findById(req.user)
+    const user = await User.findById(req.user)
     const lastDay = new Date();
     lastDay.setDate(lastDay.getDate() - 1);
 
