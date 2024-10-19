@@ -443,46 +443,125 @@ function updateReport(startDate, endDate) {
 
 
         
-    function exportGroupAsPDF(groupDataString) {
-        const groupData = JSON.parse(groupDataString);
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        doc.setFont("Arial", "normal");
-        doc.setR2L(true);
-        doc.setFontSize(18);
-        doc.text(`تقرير الفواتير - ${groupData.date}`, 200, 15, { align: "right" });
-        
-        doc.setFontSize(12);
-        doc.text(`عدد الفواتير: ${groupData.count.toLocaleString('ar-IQ')}`, 200, 25, { align: "right" });
-        doc.text(`إجمالي المبيعات: ${groupData.totalPrice.toLocaleString('ar-IQ')} د.ع`, 200, 32, { align: "right" });
-        doc.text(`إجمالي التكاليف: ${groupData.totalCost.toLocaleString('ar-IQ')} د.ع`, 200, 39, { align: "right" });
-        doc.text(`إجمالي الأرباح: ${groupData.totalProfit.toLocaleString('ar-IQ')} د.ع`, 200, 46, { align: "right" });
-        doc.text(`متوسط قيمة الفاتورة: ${(groupData.totalPrice / groupData.count).toLocaleString('ar-IQ')} د.ع`, 200, 53, { align: "right" });
-        doc.text(`هامش الربح الإجمالي: ${((groupData.totalProfit / groupData.totalPrice) * 100).toFixed(2)}%`, 200, 60, { align: "right" });
+        function exportGroupAsPDF(groupDataString) {
+    const groupData = JSON.parse(groupDataString);
 
-        const tableData = groupData.invoices.map(invoice => [
-            invoice.number,
-            `${invoice.price.toLocaleString('ar-IQ')} د.ع`,
-            `${invoice.cost.toLocaleString('ar-IQ')} د.ع`,
-            `${(invoice.price - invoice.cost).toLocaleString('ar-IQ')} د.ع`,
-            `${(((invoice.price - invoice.cost) / invoice.price) * 100).toFixed(2)}%`,
-            new Date(invoice.createdAt).toLocaleTimeString('ar-IQ')
-        ]);
+    const printContent = `
+    <html lang="ar" dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <title>تقرير الفواتير - ${groupData.date}</title>
+            <style>
+                body {
+                    font-family: 'Tajawal', sans-serif;
+                    line-height: 1.6;
+                    color: #333;
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }
+                h1 {
+                    color: #2c3e50;
+                    border-bottom: 2px solid #3498db;
+                    padding-bottom: 10px;
+                    margin-bottom: 20px;
+                }
+                .summary {
+                    background-color: #f8f9fa;
+                    border-radius: 8px;
+                    padding: 20px;
+                    margin-bottom: 30px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+                .summary h2 {
+                    color: #2980b9;
+                    margin-bottom: 15px;
+                }
+                .summary p {
+                    margin: 10px 0;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                }
+                th, td {
+                    padding: 12px 15px;
+                    text-align: right;
+                    border: 1px solid #ddd;
+                }
+                thead {
+                    background-color: #3498db;
+                    color: white;
+                }
+                tbody tr:nth-child(even) {
+                    background-color: #f2f2f2;
+                }
+                tfoot {
+                    font-weight: bold;
+                    background-color: #ecf0f1;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>تقرير الفواتير - ${groupData.date}</h1>
+            <div class="summary">
+                <h2>ملخص</h2>
+                <p><strong>عدد الفواتير:</strong> ${groupData.count.toLocaleString('ar-IQ')}</p>
+                <p><strong>إجمالي المبيعات:</strong> ${groupData.totalPrice.toLocaleString('ar-IQ')} د.ع</p>
+                <p><strong>إجمالي التكاليف:</strong> ${groupData.totalCost.toLocaleString('ar-IQ')} د.ع</p>
+                <p><strong>إجمالي الأرباح:</strong> ${groupData.totalProfit.toLocaleString('ar-IQ')} د.ع</p>
+                <p><strong>متوسط قيمة الفاتورة:</strong> ${(groupData.totalPrice / groupData.count).toLocaleString('ar-IQ')} د.ع</p>
+                <p><strong>هامش الربح الإجمالي:</strong> ${((groupData.totalProfit / groupData.totalPrice) * 100).toFixed(2)}%</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم الفاتورة</th>
+                        <th>السعر</th>
+                        <th>التكلفة</th>
+                        <th>الربح</th>
+                        <th>هامش الربح</th>
+                        <th>وقت الفاتورة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${groupData.invoices.map(invoice => `
+                        <tr>
+                            <td>${invoice.number}</td>
+                            <td>${invoice.price.toLocaleString('ar-IQ')} د.ع</td>
+                            <td>${invoice.cost.toLocaleString('ar-IQ')} د.ع</td>
+                            <td>${(invoice.price - invoice.cost).toLocaleString('ar-IQ')} د.ع</td>
+                            <td>${(((invoice.price - invoice.cost) / invoice.price) * 100).toFixed(2)}%</td>
+                            <td>${new Date(invoice.progressdata).toLocaleTimeString('ar-IQ')}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>الإجمالي</td>
+                        <td>${groupData.totalPrice.toLocaleString('ar-IQ')} د.ع</td>
+                        <td>${groupData.totalCost.toLocaleString('ar-IQ')} د.ع</td>
+                        <td>${groupData.totalProfit.toLocaleString('ar-IQ')} د.ع</td>
+                        <td>${((groupData.totalProfit / groupData.totalPrice) * 100).toFixed(2)}%</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </body>
+    </html>
+    `;
 
-        doc.autoTable({
-            startY: 70,
-            head: [['رقم الفاتورة', 'السعر', 'التكلفة', 'الربح', 'هامش الربح', 'وقت الفاتورة']],
-            body: tableData,
-            foot: [['الإجمالي', `${groupData.totalPrice.toLocaleString('ar-IQ')} د.ع`, `${groupData.totalCost.toLocaleString('ar-IQ')} د.ع`, `${groupData.totalProfit.toLocaleString('ar-IQ')} د.ع`, `${((groupData.totalProfit / groupData.totalPrice) * 100).toFixed(2)}%`, '']],
-            styles: { font: "Arial", halign: "right" },
-            headStyles: { halign: "right", fillColor: [200, 200, 200] },
-            footStyles: { halign: "right", fillColor: [200, 200, 200] }
-        });
+    const opt = {
+        margin:       0.5,
+        filename:     `تقرير_الفواتير_${groupData.date}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
 
-        doc.save(`تقرير_الفواتير_${groupData.date}.pdf`);
-    }
-
+    html2pdf().from(printContent).set(opt).save();
+}
     // Create the sales chart
     const ctx = document.getElementById('salesChart').getContext('2d');
     new Chart(ctx, {
