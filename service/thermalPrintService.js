@@ -36,15 +36,16 @@ async function printImageAsync(imagePath, printCount, printerIp, printerType, sh
       if ((printRole === "كاشير" || printRole === "توصيل") || printLogo == "Active") {
         await printer.printImage(`./public${shopLogo}`);
       }
-      if ((printRole === "كاشير" || printRole === "توصيل") || openCashdraw == "Active") {
-        await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
-      }
-
       await printer.printImage(imagePath);
       printer.cut();
 
       // Execute the print job
       let execute = await printer.execute();
+      if ((printRole === "كاشير" || printRole === "توصيل") || openCashdraw == "Active") {
+        await printer.raw(Buffer.from([0x1B, 0x70, 0x00, 0x19, 0xFA]));
+      }
+
+
       console.log(execute)
       let isConnected = await printer.isPrinterConnected();
       console.log(isConnected)
