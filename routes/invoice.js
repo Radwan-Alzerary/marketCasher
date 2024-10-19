@@ -202,7 +202,7 @@ router.get("/list", ensureAuthenticated, async (req, res) => {
   try {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
+    const user = User.findById(req.user)
     const lastDay = new Date();
     lastDay.setDate(lastDay.getDate() - 1);
 
@@ -425,7 +425,7 @@ router.post("/food", async (req, res) => {
         paymentType: newPaymentType.id,
         type: "قيد المعالجة", // Replace with the appropriate type
         active: true,
-        user:req.user
+        user: req.user
       });
       await invoice.save();
       table.invoice.push(invoice._id);
@@ -541,7 +541,7 @@ router.post("/dummyfood", async (req, res) => {
         paymentType: newPaymentType.id,
         type: "قيد المعالجة", // Replace with the appropriate type
         active: true,
-        user:req.user
+        user: req.user
 
       });
       await invoice.save();
