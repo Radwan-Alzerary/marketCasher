@@ -209,7 +209,7 @@ function generateHTML(shopName, data, foods, Comments, foodData) {
       return true;
     } catch (error) {
       console.error('Error:', error);
-      alert('Error: Failed to print the invoice.');
+      // alert('Error: Failed to print the invoice.');
       throw error;
     }
   }

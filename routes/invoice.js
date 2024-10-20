@@ -1735,9 +1735,10 @@ router.post("/printalert1invoice", async (req, res) => {
         // await page.close();
       }
     };
+    const imagePath = await generateImage(); // Generate the image asynchronously
 
     await generateImage(); // Generate the image asynchronously
-    await printForRole("./image.png", "نداء اول")
+    await printForRole(imagePath, "نداء اول")
 
     res.status(200).json({ msg: "done" });
   } catch (err) {
@@ -1828,8 +1829,9 @@ router.get("/:invoiceId/checout", async (req, res) => {
         path: "food.id",
         model: "Food",
       }).populate("user")
-
       .populate({ path: "tableid", model: "Table" });
+
+
     if (!setting.useInvoiceNumber) {
       invoiceNumber = invoice.dailyNumber
     } else {
@@ -1914,15 +1916,30 @@ router.get("/:tableId/foodToResturentChecout", async (req, res) => {
       path: "food.id",
       model: "Food",
     });
+
+    const invoiceCopy = JSON.parse(JSON.stringify(invoice.toObject()));
+    console.log(invoiceCopy)
+
     // const oldInvoice = [...invoice];
     invoice.food.forEach(item => {
-      console.log("vcx", item.printCount)
-      console.log("vcx", item.quantity)
+      console.log("item.printCount", item.printCount)
+      console.log("item.quantity", item.quantity)
       item.printCount = item.quantity
       console.log("xx", item.id.id);
     });
 
-    // console.log(invoice)
+    invoiceCopy.food = invoiceCopy.food.filter(item => {
+      console.log("item.printCount", item.printCount);
+      console.log("item.quantity", item.quantity);
+
+      console.log("xx", Number(item.printCount) !== Number(item.quantity));
+
+      // Keep the item in the array only if printCount is not equal to quantity
+      return Number(item.printCount) !== Number(item.quantity);
+    });
+
+
+    console.log(invoiceCopy)
     const setting = await Setting.findOne().sort({ number: -1 });
     const tableid = invoice.tableid ? invoice.tableid.number : 0;
     let invoiceNumber = null
@@ -1932,12 +1949,13 @@ router.get("/:tableId/foodToResturentChecout", async (req, res) => {
       invoiceNumber = invoice.number
 
     }
+    await invoice.save()
 
     res.json({
       message: "Food items retrieved successfully",
       tableNumber: table.number,
       invoicedate: invoice.progressdata,
-      food: invoice.food,
+      food: invoiceCopy.food,
       invoiceid: invoice.id,
       setting: setting,
       finalcost: invoice.finalcost,
@@ -1945,6 +1963,7 @@ router.get("/:tableId/foodToResturentChecout", async (req, res) => {
       invoicenumber: invoiceNumber,
       fulldiscont: invoice.fulldiscont,
     });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
