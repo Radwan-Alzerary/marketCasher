@@ -132,7 +132,7 @@ function printA4invoice(invoiceId, resivename, loction, phonenumber, ReceivedAmo
                             </div>
 
                             <!-- Footer Text (Repeat on every page) -->
-                            <div class="footer-text" style="display: flex; width: 100%; justify-content: space-between; position: absolute; bottom: 0; left: 0; right: 0; padding-top: 10px; border-top: 1px solid #ddd;">
+                            <div class="footer-text" style="display: flex; width: 100%; justify-content: space-between; padding-top: 10px; border-top: 1px solid #ddd; flex-shrink: 0;">
                                 <p style="width: 33%;">${settingVal.adress}</p>
                                 <p style="width: 33%; text-align: center;">${settingVal.invoicefooter}</p>
                                 <p style="width: 33%; text-align: right;">${settingVal.phonnumber}</p>
@@ -150,7 +150,7 @@ function printA4invoice(invoiceId, resivename, loction, phonenumber, ReceivedAmo
                 <style>
                     * { margin: 0; padding: 0; box-sizing: border-box; }
                     body { font-family: 'Cairo', sans-serif; background-color: #f4f4f4; }
-                    .invoice-container { width: 100%; max-width: 210mm; min-height: 297mm; padding: 20px; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); border: 1px solid #ddd; margin: 0 auto; position: relative; }
+                    .invoice-container { width: 100%; max-width: 210mm; min-height: 297mm; padding: 20px; background-color: #fff; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); border: 1px solid #ddd; margin: 0 auto; display: flex; flex-direction: column; justify-content: space-between; }
                     @media print { .invoice-container { width: 100%; height: auto; box-shadow: none; border: none; } .page-break { page-break-before: always; } button { display: none; } }
                     .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 3px solid #00a9b0; }
                     .invoice-title { color: #00a9b0; font-size: 30px; font-weight: bold; margin-right: 10px; }
@@ -161,7 +161,7 @@ function printA4invoice(invoiceId, resivename, loction, phonenumber, ReceivedAmo
                     .summary { display: flex; justify-content: flex-start; margin-top: 10px; }
                     .summary table td { border: none; padding: 5px 0; }
                     .grand-total { font-size: 18px; font-weight: bold; color: #00a9b0; }
-                    .footer-text { color: #00a9b0; font-weight: bold; text-align: center; border-top: 1px solid #ddd; position: absolute; bottom: 20px; left: 20px; right: 20px; }
+                    .footer-text { color: #00a9b0; font-weight: bold; text-align: center; border-top: 1px solid #ddd; padding: 10px 0; }
                     .page-break { display: none; }
                     @media print { .page-break { display: block; } }
                 </style>
