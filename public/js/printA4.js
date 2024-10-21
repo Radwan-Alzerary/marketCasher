@@ -57,7 +57,7 @@ function printA4invoice(invoiceId, resivename, loction, phonenumber, ReceivedAmo
                     const pageTotal = calculatePageTotal(pageItems);
 
                     return `
-                        <div class="invoice-container" style="position: relative; min-height: 297mm; padding-bottom: 60px;">
+                        <div class="invoice-container" style="position: relative; min-height: 290mm; padding-bottom: 60px;">
                             <!-- Header -->
                             <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
