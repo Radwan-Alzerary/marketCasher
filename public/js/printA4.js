@@ -62,21 +62,21 @@ function printA4invoice(invoiceId,
                 month: "2-digit",  // Ensures the month is always two digits
                 day: "2-digit"     // Ensures the day is always two digits
             };
-            
+
             const formattedDate = date.toLocaleDateString("en-CA", options); // "en-CA" gives the format YYYY/MM/DD
 
 
             const invoiceHTML = (invoiceData) => {
-                const itemsHTML = data.food.map(food => `
+                const itemsHTML = data.food.map((food, index) => `
                 <tr>
+                    <td class="">${index + 1}</td>
                     <td class="description">${food.id.name}</td>
                     <td>${food.foodPrice ? food.foodPrice : food.id.price}</td>
                     <td>${food.quantity} ${food.id.unit}</td>
                     <td>${Number(food.quantity) * Number(food.foodPrice ? food.foodPrice : food.id.price)}</td>
                 </tr>
             `).join('');
-
-            return `
+                return `
             <div class="invoice-container">
                 <!-- Header -->
                 <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
@@ -93,8 +93,11 @@ function printA4invoice(invoiceId,
                 <!-- Invoice Details -->
                 <div class="invoice-details">
                     <div class="bill-to">
+                        <div style="display: flex;">
                         <h3 class="blue-text">إلى العميل:</h3>
-                        <p>${resivename}<br>
+                        <h3>${resivename}</h3>
+                        </div>
+
                         <div style="display: flex;">
                             <div>عنوان العميل:</div>
                             <div>${loction}</div>
@@ -112,6 +115,7 @@ function printA4invoice(invoiceId,
                 <table>
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>الوصف</th>
                             <th>تكلفة الوحدة</th>
                             <th>الكمية ${settingVal.amountUnit}</th>
@@ -149,7 +153,7 @@ function printA4invoice(invoiceId,
                 </div>
             </div>
         `;
-                    };
+            };
 
             const printWindow = window.open('', '', 'height=650,width=900');
 
@@ -167,7 +171,7 @@ function printA4invoice(invoiceId,
                     .header .invoice-title { color: #00a9b0; font-size: 30px; font-weight: bold; margin-right: 10px; }
                     .invoice-details { display: flex; justify-content: space-between; margin-bottom: 10px; }
                     table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-                    table th, table td { border: 1px solid #ddd; padding: 8px; font-size: 12px; }
+                    table th, table td { border: 1px solid #ddd; padding: 3px; font-size: 12px; }
                     table th { background-color: #f0f0f0; color: #333; }
                     table td.description { text-align: right; }
                     .summary { display: flex; justify-content: flex-start; }
