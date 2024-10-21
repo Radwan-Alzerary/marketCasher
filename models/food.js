@@ -102,6 +102,8 @@ FoodSchema.pre("save", async function (next) {
   next();
 });
 
+
+
 const Food = mongoose.model("Food", FoodSchema);
 
 module.exports = Food;

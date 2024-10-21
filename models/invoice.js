@@ -102,6 +102,50 @@ InvoiceSchema.pre("save", async function (next) {
   }
 });
 
+
+// Method to return a specific food item
+InvoiceSchema.methods.returnFoodItem = async function (foodItemId, returnQuantity, reason) {
+  const foodItem = this.food.find((item) => item.id.toString() === foodItemId.toString());
+
+
+  if (returnQuantity > foodItem.quantity) {
+    throw new Error("Return quantity exceeds original quantity.");
+  }
+
+  foodItem.isReturned = true;
+  foodItem.returnQuantity = returnQuantity + foodItem.returnQuantity;
+  foodItem.quantity -= returnQuantity;
+  this.foodcost -= foodItem.foodCost * returnQuantity;
+  this.finalcost -= foodItem.foodPrice * returnQuantity;
+
+  // Update the return reason if provided
+  this.returnReason = reason || this.returnReason;
+
+  return this.save();
+};
+
+// Method to return the entire invoice
+InvoiceSchema.methods.returnFullInvoice = async function (reason) {
+  if (this.isReturned) {
+    throw new Error("Invoice already returned.");
+  }
+
+  this.isReturned = true;
+  this.type = "راجع";
+
+  this.food.forEach((item) => {
+    item.isReturned = true;
+    item.returnQuantity = item.quantity;
+    item.quantity = 0;
+  });
+
+  // Set all costs to zero or perform refund calculation as needed
+  this.returnReason = reason;
+
+  return this.save();
+};
+
+
 const invoice = mongoose.model("Invoice", InvoiceSchema);
 
 module.exports = invoice;

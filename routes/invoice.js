@@ -2370,8 +2370,13 @@ router.post("/:invoiceId/return-food", async (req, res) => {
     // Call the returnFoodItem method on the invoice
     await invoice.returnFoodItem(foodItemId, returnQuantity, reason);
 
+    const food = await Food.findById(foodItemId);
+    food.quantety = food.quantety + returnQuantity;
+    await food.save();
+
     return res.status(200).json({ message: "Food item returned successfully", invoice });
   } catch (error) {
+    console.log({error: error.message});
     return res.status(400).json({ error: error.message });
   }
 });
@@ -2387,10 +2392,15 @@ router.post("/:invoiceId/return-full", async (req, res) => {
     if (!invoice) {
       return res.status(404).json({ error: "Invoice not found" });
     }
-
+    invoice.food.forEach(async (item) => {
+      const foodDetails = await Food.findById(item.id);
+      await Food.findByIdAndUpdate(item.id, {
+        quantety: foodDetails.quantety + item.returnQuantity,
+      });
+    });
     // Call the returnFullInvoice method on the invoice
     await invoice.returnFullInvoice(reason);
-
+    
     return res.status(200).json({ message: "Invoice returned successfully", invoice });
   } catch (error) {
     return res.status(400).json({ error: error.message });

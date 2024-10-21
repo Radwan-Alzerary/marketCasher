@@ -2,9 +2,9 @@
   <div id="shadedbackground" onclick="hideAddForm()"
     class="hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"></div>
 
-  <form action="/food/addpurchasesfood" method="POST" enctype="multipart/form-data" id="showData"
+  <form action="/food/addpurchasesfood" method="POST" onsubmit="return false;"  enctype="multipart/form-data" id="showData"
     class="hidden  fixed flex flex-col justify-center gap-5 items-center w-1/2 bg-white p-5 rounded-xl z-50"
-    style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%)">
+    style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%)" >
     <div class="relative overflow-x-auto w-full h-full">
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
@@ -200,13 +200,16 @@
               <th scope="col" class="text-center px-6 py-3">التاريخ</th>
               <th scope="col" class="text-center px-6 py-3">طباعة</th>
               <th scope="col" class="text-center px-6 py-3">معاينة</th>
+              <th scope="col" class="text-center px-6 py-3">ترجيع</th>
               <th scope="col" class="text-center px-6 py-3">حذف</th>
             </tr>
           </thead>
           <tbody>
             <%invoice.forEach(function(invoices,index) { %>
               <tr
-                class="<%if(!invoices.deleted){%> bg-white<%}else{%>bg-red-300<%}%> border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                class="<%if(!invoices.isReturned ){%> <%}else{%>bg-red-100<%}%>    <%if(!invoices.deleted){%> bg-white<%}else{%>bg-red-300<%}%>  border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                >
+        
                 <th scope="row"
                   class="text-center px-3 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                   <%=invoices.number%>
@@ -256,7 +259,7 @@
                   <%= formattedDate %>
                 </td>
                 
-                <td onclick='printinvoice("<%=invoices.id%>","","","","","",1,"","")'
+                <td onclick='print("<%=invoices.id%>")'
                   class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-blue-200 hover:bg-blue-300">
                   <div class="font-medium dark:text-blue-500 hover:underline">
                     <svg class="mx-auto fill-blue-800" xmlns="http://www.w3.org/2000/svg" height="1em"
@@ -276,7 +279,13 @@
                     </svg>
                   </div>
                 </td>
-
+                <td class="text-center px-3 py-4">
+                  <button onclick="returnFullInvoice('<%= invoices.id %>')" 
+                    class="bg-red-400 text-white px-2 py-1 rounded hover:bg-red-700">
+                    ترجيع كامل
+                  </button>
+                </td>
+                
                 <td onclick="deleteInvoice('<%=invoices.id%>')"
                   class="text-center px-2 py-2 cursor-pointer w-5 h-5 bg-red-200 hover:bg-red-300">
                   <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
@@ -407,42 +416,121 @@
   </div>
 
   <script>
-    function showInfo(id) {
-      console.log(id);
-      let valueList = "";
-      let totalprice = 0;
-      let totalQuantity = 0;
-      $("#shadedbackground").show();
-      $("#showData").show();
+    const print = (invoiceId)=>{
+      const settingOption = getSetting()
+                  fetch(`/setting/getsetting`)
+                    .then((response) => response.json())
+                    .then((settingOption) => {
+                      if (settingOption.printerType == "A4") {
+                        printA4invoice(
+                          invoiceId,
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "cashire"
+                        );
+                      } else {
+                        printinvoice(
+                          invoiceId,
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "cashire"
+                        );
+                      }
+                    })
+                    .catch((error) => {
+                      console.error("Error fetching settings:", error);
+                    });
 
-      // Example usage:
-      const apiUrl = `/invoice/info/${id}`;
-      fetchData(apiUrl).then((data) => {
-        data.food.forEach((element) => {
-          totalQuantity += element.quantity;
-          valueList += `
-        <tr class="bg-white dark:bg-gray-800">
+
+    }
+    function showInfo(id) {
+  console.log(id);
+  let valueList = "";
+  let totalprice = 0;
+  let totalQuantity = 0;
+  $("#shadedbackground").show();
+  $("#showData").show();
+
+  const apiUrl = `/invoice/info/${id}`;
+  fetchData(apiUrl).then((data) => {
+    data.food.forEach((element) => {
+      totalQuantity += element.quantity;
+      
+      // Conditional class for returned items
+      const rowClass = element.isReturned ? 'bg-yellow-200' : 'bg-white';
+      
+      // Display returned quantity if applicable
+      const returnedQuantity = element.returnQuantity && element.isReturned ? ` (Returned: ${element.returnQuantity})` : "";
+
+      valueList += `
+        <tr class="${rowClass} dark:bg-gray-800">
           <th
             scope="row"
             class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
           >
             ${element.id.name}
           </th>
-          <td class="px-6 py-4">            ${element.quantity}
-</td>
-          <td class="px-6 py-4">${element.foodPrice
-              ? element.foodPrice
-              : element.id.price * element.quantity
-            }</td>
+          <td class="px-6 py-4">${element.quantity}${returnedQuantity}</td>
+          <td class="px-6 py-4">${
+            element.foodPrice ? element.foodPrice : element.id.price * element.quantity
+          }</td>
+          <td class="px-6 py-4">
+            <button onclick="returnFood('${data._id}', '${element.id._id}', ${element.quantity})" 
+              class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-700">
+              ترجيع
+            </button>
+          </td>
         </tr>`;
-          console.log(data);
-        });
-        $("#totalprice").text(data.finalcost);
-        $("#totaldiscount").text(data.fulldiscont);
-        $("#finalprice").text(data.fullcost);
-        $("#listViewItem").html(valueList);
+    });
+    $("#totalprice").text(data.finalcost);
+    $("#totaldiscount").text(data.fulldiscont);
+    $("#finalprice").text(data.fullcost);
+    $("#listViewItem").html(valueList);
+  });
+}
+
+function returnFood(invoiceId, foodItemId, maxQuantity) {
+  const returnQuantity = prompt(`Enter the quantity to return (max ${maxQuantity}):`);
+  
+  if (returnQuantity && returnQuantity > 0 && returnQuantity <= maxQuantity) {
+    fetch(`/invoice/${invoiceId}/return-food`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        foodItemId: foodItemId,
+        returnQuantity: parseInt(returnQuantity),
+        reason: "Returned by user",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert("تم الترجيع بنجاح!");
+        location.reload(); // Refresh the page to reflect changes
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("حدث خطا في الترجيع");
       });
-    }
+  } else {
+    alert("الرقم المدخل خاطأ");
+  }
+}
+
+
 
     function fetchData(url) {
       // Using the fetch function to make a GET request
@@ -462,6 +550,31 @@
           console.error("Error during fetch operation:", error);
         });
     }
+
+    function returnFullInvoice(invoiceId) {
+  if (confirm("Are you sure you want to return the full invoice? This action cannot be undone.")) {
+    fetch(`/invoice/${invoiceId}/return-full`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        reason: "Full return requested by user",
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        alert("تم ترجيع كامل الوصل!");
+        location.reload(); // Refresh the page to reflect changes
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        alert("حصل خطا في الترجيع");
+      });
+  }
+}
+
+
 
     function search() {
       console.log($("#searchValue").val());
@@ -580,5 +693,21 @@
     }
   </script>
   <script src="/js/printinvoice.js"></script>
+  <script src="/js/printA4.js"></script>
 
+
+<script>
+              async function getSetting() {
+              try {
+                const response = await fetch(`/setting/getsetting`);
+                const setting = await response.json();
+                return setting;  // Return the setting data from the function
+              } catch (error) {
+                console.error(error);
+                return null; // Return a default value in case of an error
+              }
+            }
+
+</script>
+  
   <%- include('footer',{currentpage:'invoicelist'}); %>

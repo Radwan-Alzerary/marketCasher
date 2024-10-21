@@ -205,7 +205,6 @@ function printinvoice(
             border: 1px solid black;
             border-collapse: collapse;
         }
-
         table {
             width: 100%;
         }
