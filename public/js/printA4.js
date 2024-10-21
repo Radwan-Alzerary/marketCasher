@@ -76,81 +76,80 @@ function printA4invoice(invoiceId,
                 </tr>
             `).join('');
 
-                return `
-                <div class="invoice-container">
-                    <!-- Header -->
-                    <div class="header">
-                        <div>
-                            <img src="${settingVal.shoplogo}" alt="شعار الشركة">
-                        </div>
-                        <div class="invoice-title">فاتورة مبيعات</div>
-                        <div class="invoice-info">
-                            <p>رقم الفاتورة: ${data.invoicenumber}</p>
-                            <p>تاريخ الإصدار: ${formattedDate}</p>
-                        </div>
+            return `
+            <div class="invoice-container">
+                <!-- Header -->
+                <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <img src="${settingVal.shoplogo}" alt="شعار الشركة" style="width: 150px; height: auto;">
                     </div>
-
-                    <!-- Invoice Details -->
-                    <div class="invoice-details">
-                        <div class="bill-to">
-                            
-                            <h3 class="blue-text">إلى العميل:</h3>
-                            <p>${resivename}<br>
-                            <div style:"display:flex">
-                            <div>عنوان العميل</div>
-                            <div>${loction}</div>
-                            </div>
-
-                            <div style="display:flex">
-                            <div>رقم الهاتف : </div>
-                            <div>${phonenumber}</div>
-                            </div>
-                            <br>
-                        </div>
-                    </div>
-        
-                    <!-- Table -->
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>الوصف</th>
-                                <th>تكلفة الوحدة</th>
-                                <th>الكمية ${settingVal.amountUnit}</th>
-                                <th>المجموع</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${itemsHTML}
-                        </tbody>
-                    </table>
-        
-                    <!-- Summary -->
-                    <div class="summary">
-                        <table>
-                            <tr>
-                                <td class="label">المجموع:</td>
-                                <td>${data.fullcost}</td>
-                            </tr>
-                            <tr>
-                                    
-                                <td class="label">الخصم:</td>
-                                <td>${data.fulldiscont}</td>
-                            </tr>
-                            <tr>
-                                <td class="label grand-total">المجموع الكلي:</td>
-                                <td class="grand-total">${data.finalcost}</td>
-                            </tr>
-                        </table>
-                    </div>
-                    <!-- Footer Text -->
-                    <div class="footer-text" style="display:flex; width: 100%;">
-                    <p style="width: 33%;" class=""></p>
-                    <p style="width: 33%;" class="">${settingVal.invoicefooter}</p>
-                    <p style="width: 33%;" class="">${settingVal.phonnumber}</p>
+                    <div class="invoice-title" style="flex-grow: 1; text-align: center;">فاتورة مبيعات</div>
+                    <div class="invoice-info" style="text-align: right;">
+                        <p>رقم الفاتورة: ${data.invoicenumber}</p>
+                        <p>تاريخ الإصدار: ${formattedDate}</p>
                     </div>
                 </div>
-            `;
-            };
+        
+                <!-- Invoice Details -->
+                <div class="invoice-details">
+                    <div class="bill-to">
+                        <h3 class="blue-text">إلى العميل:</h3>
+                        <p>${resivename}<br>
+                        <div style="display: flex;">
+                            <div>عنوان العميل:</div>
+                            <div>${loction}</div>
+                        </div>
+        
+                        <div style="display: flex;">
+                            <div>رقم الهاتف:</div>
+                            <div>${phonenumber}</div>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+        
+                <!-- Table -->
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الوصف</th>
+                            <th>تكلفة الوحدة</th>
+                            <th>الكمية ${settingVal.amountUnit}</th>
+                            <th>المجموع</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHTML}
+                    </tbody>
+                </table>
+        
+                <!-- Summary -->
+                <div class="summary">
+                    <table>
+                        <tr>
+                            <td class="label">المجموع:</td>
+                            <td>${data.fullcost}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">الخصم:</td>
+                            <td>${data.fulldiscont}</td>
+                        </tr>
+                        <tr>
+                            <td class="label grand-total">المجموع الكلي:</td>
+                            <td class="grand-total">${data.finalcost}</td>
+                        </tr>
+                    </table>
+                </div>
+        
+                <!-- Footer Text -->
+                <div class="footer-text" style="display: flex; width: 100%;">
+                    <p style="width: 33%;"></p>
+                    <p style="width: 33%;">${settingVal.invoicefooter}</p>
+                    <p style="width: 33%;">${settingVal.phonnumber}</p>
+                </div>
+            </div>
+        `;
+                    };
 
             const printWindow = window.open('', '', 'height=650,width=900');
 
