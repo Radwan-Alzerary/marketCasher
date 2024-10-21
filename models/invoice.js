@@ -32,7 +32,10 @@ const InvoiceSchema = new mongoose.Schema(
         discount: { type: Number },
         discountType: { type: String },
         resturentPrint: { type: Boolean, default: false },
-        printCount: { type: Number,default:0 }
+        printCount: { type: Number,default:0 },
+        isReturned: { type: Boolean, default: false }, // New field to track returned status of food items
+        returnQuantity: { type: Number, default: 0 }, // Quantity returned
+
       },
     ],
     dummyFood: [{
@@ -44,6 +47,9 @@ const InvoiceSchema = new mongoose.Schema(
       discountType: { type: String },
 
     }],
+    isReturned: { type: Boolean, default: false }, // New field to track full return status
+    returnReason: { type: String }, // Reason for return
+
     systemdiscounts: { type: Number },
     discount: { type: Number },
     deleveryCost: { type: Number, default: 0 },

@@ -143,7 +143,7 @@ function printA4invoice(invoiceId,
         
                 <!-- Footer Text -->
                 <div class="footer-text" style="display: flex; width: 100%;">
-                    <p style="width: 33%;"></p>
+                    <p style="width: 33%;">${settingVal.adress}</p>
                     <p style="width: 33%;">${settingVal.invoicefooter}</p>
                     <p style="width: 33%;">${settingVal.phonnumber}</p>
                 </div>

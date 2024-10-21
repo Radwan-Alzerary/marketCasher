@@ -2353,5 +2353,50 @@ router.post("/topfoodsell", async (req, res) => {
     });
 });
 
+
+
+// Route to return a single food item
+router.post("/:invoiceId/return-food", async (req, res) => {
+  const { invoiceId } = req.params;
+  const { foodItemId, returnQuantity, reason } = req.body;
+
+  try {
+    // Fetch the invoice by ID
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+
+    // Call the returnFoodItem method on the invoice
+    await invoice.returnFoodItem(foodItemId, returnQuantity, reason);
+
+    return res.status(200).json({ message: "Food item returned successfully", invoice });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+// Route to return the full invoice
+router.post("/:invoiceId/return-full", async (req, res) => {
+  const { invoiceId } = req.params;
+  const { reason } = req.body;
+
+  try {
+    // Fetch the invoice by ID
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+
+    // Call the returnFullInvoice method on the invoice
+    await invoice.returnFullInvoice(reason);
+
+    return res.status(200).json({ message: "Invoice returned successfully", invoice });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+
 // Rest of the routes...
 module.exports = router;
