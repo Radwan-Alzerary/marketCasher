@@ -81,7 +81,7 @@ function printA4invoice(invoiceId,
                 <!-- Header -->
                 <div class="header" style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
-                        <img src="${settingVal.shoplogo}" alt="شعار الشركة" style="width: 150px; height: auto;">
+                        <img id="companyLogo" src="${settingVal.shoplogo}" alt="شعار الشركة" style="width: 150px; height: auto;">
                     </div>
                     <div class="invoice-title" style="flex-grow: 1; text-align: center;">فاتورة مبيعات</div>
                     <div class="invoice-info" style="text-align: right;">
@@ -171,7 +171,7 @@ function printA4invoice(invoiceId,
                     .header .invoice-title { color: #00a9b0; font-size: 30px; font-weight: bold; margin-right: 10px; }
                     .invoice-details { display: flex; justify-content: space-between; margin-bottom: 10px; }
                     table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-                    table th, table td { border: 1px solid #ddd; padding: 3px; font-size: 12px; }
+                    table th, table td { border: 1px solid #ddd; padding: 2px; font-size: 10px; }
                     table th { background-color: #f0f0f0; color: #333; }
                     table td.description { text-align: right; }
                     .summary { display: flex; justify-content: flex-start; }
@@ -185,8 +185,17 @@ function printA4invoice(invoiceId,
             printWindow.document.write('</body></html>');
 
             printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
+            const logo = printWindow.document.getElementById('companyLogo');
+
+            if (logo) {
+                logo.onload = () => {
+                    printWindow.focus();
+                    printWindow.print();
+                };
+            } else {
+                printWindow.focus();
+                printWindow.print();
+            }
 
         })
         .catch((error) => {
