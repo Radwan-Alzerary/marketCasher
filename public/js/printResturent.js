@@ -27,7 +27,6 @@ function generateHTML(shopName, data, foods, Comments, foodData) {
     for (const item of itemRows) {
       items += `
           <tr>
-            <td class="description">${item[2]}</td>
             <td class="quantity">${item[1]}</td>
             <td class="price">${item[0]}</td>
             <td class="price">${item[3]}</td>

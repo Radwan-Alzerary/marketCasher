@@ -1595,7 +1595,6 @@ router.post("/printresturentinvoice", async (req, res) => {
     } else {
       await printForRole(imagePath, "مطبخ"); // Ensure printForRole handles unique paths correctly
     }
-
     // // Optionally delete the image after printing to save disk space
     // await fs.unlink(imagePath);
     console.log(`Image deleted: ${imagePath}`);
@@ -1928,12 +1927,22 @@ router.get("/:tableId/foodToResturentChecout", async (req, res) => {
       console.log("xx", item.id.id);
     });
 
-    invoiceCopy.food = invoiceCopy.food.filter(item => {
+    invoiceCopy.food = invoiceCopy.food.map(item => {
       console.log("item.printCount", item.printCount);
       console.log("item.quantity", item.quantity);
 
-      console.log("xx", Number(item.printCount) !== Number(item.quantity));
+      // Convert printCount and quantity to numbers for the comparison
+      const printCountNum = Number(item.printCount);
+      const quantityNum = Number(item.quantity);
 
+      // Check if printCount is not equal to quantity
+      if (printCountNum !== quantityNum) {
+        // Subtract quantity from printCount if they are not equal
+        item.quantity = quantityNum - printCountNum;
+      }
+
+      return item; // Return the modified item
+    }).filter(item => {
       // Keep the item in the array only if printCount is not equal to quantity
       return Number(item.printCount) !== Number(item.quantity);
     });
@@ -2376,7 +2385,7 @@ router.post("/:invoiceId/return-food", async (req, res) => {
 
     return res.status(200).json({ message: "Food item returned successfully", invoice });
   } catch (error) {
-    console.log({error: error.message});
+    console.log({ error: error.message });
     return res.status(400).json({ error: error.message });
   }
 });
@@ -2400,7 +2409,7 @@ router.post("/:invoiceId/return-full", async (req, res) => {
     });
     // Call the returnFullInvoice method on the invoice
     await invoice.returnFullInvoice(reason);
-    
+
     return res.status(200).json({ message: "Invoice returned successfully", invoice });
   } catch (error) {
     return res.status(400).json({ error: error.message });
