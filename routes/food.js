@@ -21,6 +21,24 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + "." + extension);
   },
 });
+// Route to make all food items printable
+router.get('/make-all-printable', async (req, res) => {
+  try {
+    // Update all food items, setting 'printable' to true
+    const result = await Food.updateMany({}, { printable: true });
+
+    res.status(200).json({
+      success: true,
+      message: `${result.nModified} food items updated to be printable.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while updating food items.',
+      error: error.message,
+    });
+  }
+});
 
 // Create multer instance for uploading image
 const upload = multer({ storage: storage });
