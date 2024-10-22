@@ -29,7 +29,6 @@ function generateHTML(shopName, data, foods, Comments, foodData) {
           <tr>
             <td class="quantity">${item[1]}</td>
             <td class="price">${item[0]}</td>
-            <td class="price">${item[3]}</td>
           </tr>
         `;
     }
@@ -130,10 +129,8 @@ function generateHTML(shopName, data, foods, Comments, foodData) {
             </div>
             <table>
               <tr>
-                <th>السعر</th>
                 <th>العدد</th>
                 <th>المنتج</th>
-                <th>الاجمالي</th>
               </tr>
               ${items}
             </table>
