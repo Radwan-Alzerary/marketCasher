@@ -250,7 +250,7 @@ function printinvoice(
             </div>
                         <div style="display: flex;justify-content: space-between;margin-top: 4px;margin-bottom: 4px;">
                 <div>
-                    المحاسب: ${data.user.name}
+                    المحاسب: ${data.user ? data.user.name : ""}
                 </div>
 
             </div>
@@ -330,7 +330,7 @@ ${deleveyCostView}
           body: JSON.stringify({
             htmbody: htmltoprint2,
             printingcount: printingcount,
-            tableNumber:data.tableNumber
+            tableNumber: data.tableNumber
           }),
         })
           .then((response) => response.json())
