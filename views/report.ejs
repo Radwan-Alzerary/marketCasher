@@ -1,277 +1,233 @@
 <%- include('header') %>
 
-    <style>
-        @media print {
-            .no-print {
-                display: none;
-            }
+<style>
+    @media print {
+        .no-print {
+            display: none;
         }
-
-        @media print and (max-width: 80mm) {
-            body {
-                width: 80mm;
-                margin: 0;
-                padding: 0;
-            }
-
-            .thermal-print {
-                font-size: 12px;
-                line-height: 1.2;
-            }
+    }
+    @media print and (max-width: 80mm) {
+        body {
+            width: 80mm;
+            margin: 0;
+            padding: 0;
         }
-    </style>
+        .thermal-print {
+            font-size: 12px;
+            line-height: 1.2;
+        }
+    }
+</style>
 
-    <div class="container mx-auto p-6" style="direction: rtl;">
-        <h1 class="text-3xl font-bold mb-6 text-right">تقرير الفواتير</h1>
-
-        <div class="mb-6 flex flex-wrap gap-4 justify-end no-print">
-            <div>
-                <input type="text" id="dateRange"
-                    class="w-[300px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right"
-                    placeholder="اختر نطاق التاريخ">
-            </div>
-            <div>
-                <select id="quickSelect"
-                    class="w-[180px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
-                    <option value="">اختيار سريع</option>
-                    <option value="today">اليوم</option>
-                    <option value="lastWeek">الأسبوع الماضي</option>
-                    <option value="thisWeek">هذا الأسبوع</option>
-                    <option value="thisMonth">هذا الشهر</option>
-                </select>
-            </div>
-            <div>
-                <select id="viewType"
-                    class="w-[180px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
-                    <option value="day" <%=currentViewType==='day' ? 'selected' : '' %>>اليوم</option>
-                    <option value="month" <%=currentViewType==='month' ? 'selected' : '' %>>الشهر</option>
-                    <option value="year" <%=currentViewType==='year' ? 'selected' : '' %>>السنة</option>
-                </select>
-            </div>
+<div class="container mx-auto p-6" style="direction: rtl;">
+    <h1 class="text-3xl font-bold mb-6 text-right">تقرير الفواتير</h1>
+    
+    <div class="mb-6 flex flex-wrap gap-4 justify-end no-print">
+        <div>
+            <input type="text" id="dateRange" class="w-[300px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right" placeholder="اختر نطاق التاريخ">
+        </div>
+        <div>
+            <select id="quickSelect" class="w-[180px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
+                <option value="">اختيار سريع</option>
+                <option value="today">اليوم</option>
+                <option value="lastWeek">الأسبوع الماضي</option>
+                <option value="thisWeek">هذا الأسبوع</option>
+                <option value="thisMonth">هذا الشهر</option>
+            </select>
+        </div>
+        <div>
+            <select id="viewType" class="w-[180px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
+                <option value="day" <%= currentViewType === 'day' ? 'selected' : '' %>>اليوم</option>
+                <option value="month" <%= currentViewType === 'month' ? 'selected' : '' %>>الشهر</option>
+                <option value="year" <%= currentViewType === 'year' ? 'selected' : '' %>>السنة</option>
+            </select>
+        </div>
             <!-- New: Invoice type dropdown (توصيل or مكتمل) -->
-            <div>
-                <select id="invoiceType"
-                    class="w-[180px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
-                    <option value="">كل الأنواع</option>
-                    <option value="توصيل" <%=currentType==='توصيل' ? 'selected' : '' %>>توصيل</option>
-                    <option value="مكتمل" <%=currentType==='مكتمل' ? 'selected' : '' %>>مكتمل</option>
-                </select>
-            </div>
+    <div>
+        <select id="invoiceType" class="w-[180px] px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-right">
+            <option value="">كل الأنواع</option>
+            <option value="توصيل" <%= currentType === 'توصيل' ? 'selected' : '' %>>توصيل</option>
+            <option value="مكتمل" <%= currentType === 'مكتمل' ? 'selected' : '' %>>مكتمل</option>
+        </select>
+    </div>
 
-            <div>
-                <button id="resetDate" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">إعادة
-                    تعيين</button>
+        <div>
+            <button id="resetDate" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">إعادة تعيين</button>
+        </div>
+    </div>
+
+    <% if (invoiceData.length === 0) { %>
+        <p class="text-xl text-gray-600 text-right">لا توجد بيانات متاحة للتاريخ المحدد.</p>
+    <% } else { %>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-right">ملخص الفترة</h2>
+                <p class="text-right">إجمالي الفواتير: <%= invoiceData.reduce((sum, group) => sum + group.count, 0).toLocaleString('ar-IQ') %></p>
+                <p class="text-right">إجمالي المبيعات: <%= invoiceData.reduce((sum, group) => sum + group.totalPrice, 0).toLocaleString('ar-IQ') %> د.ع</p>
+                <p class="text-right">إجمالي التكاليف: <%= invoiceData.reduce((sum, group) => sum + group.totalCost, 0).toLocaleString('ar-IQ') %> د.ع</p>
+                <p class="text-right">إجمالي الأرباح: <%= invoiceData.reduce((sum, group) => sum + group.totalProfit, 0).toLocaleString('ar-IQ') %> د.ع</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <canvas id="salesChart"></canvas>
             </div>
         </div>
 
-        <% if (invoiceData.length===0) { %>
-            <p class="text-xl text-gray-600 text-right">لا توجد بيانات متاحة للتاريخ المحدد.</p>
-            <% } else { %>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h2 class="text-xl font-semibold mb-4 text-right">ملخص الفترة</h2>
-                        <p class="text-right">إجمالي الفواتير: <%= invoiceData.reduce((sum, group)=> sum + group.count,
-                                0).toLocaleString('ar-IQ') %></p>
-                        <p class="text-right">إجمالي المبيعات: <%= invoiceData.reduce((sum, group)=> sum +
-                                group.totalPrice, 0).toLocaleString('ar-IQ') %> د.ع</p>
-                        <p class="text-right">إجمالي التكاليف: <%= invoiceData.reduce((sum, group)=> sum +
-                                group.totalCost, 0).toLocaleString('ar-IQ') %> د.ع</p>
-                        <p class="text-right">إجمالي الأرباح: <%= invoiceData.reduce((sum, group)=> sum +
-                                group.totalProfit, 0).toLocaleString('ar-IQ') %> د.ع</p>
+        <% invoiceData.forEach(function(groupData) { %>
+            <div class="bg-white shadow-md rounded-lg mb-4" data-date="<%= groupData.date %>">
+                <div class="px-6 py-4 cursor-pointer" onclick="toggleGroup('<%= groupData.date %>')">
+                    <div class="flex justify-between items-center">
+                        <svg class="h-6 w-6 transform transition-transform duration-200 chevron-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                        <div class="flex items-center gap-4">
+                            <button class="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 no-print" onclick="event.stopPropagation(); exportGroupAsPDF('<%= JSON.stringify(groupData) %>')">
+                                تصدير PDF
+                            </button>
+                            <button class="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 no-print" onclick="event.stopPropagation(); printGroup('<%= JSON.stringify(groupData) %>')">
+                                طباعة عادية
+                            </button>
+                            <button class="px-3 py-1 text-sm bg-purple-500 text-white rounded hover:bg-purple-600 no-print" onclick="event.stopPropagation(); printThermal('<%= JSON.stringify(groupData) %>')">
+                                طباعة حرارية
+                            </button>
+                            <h2 class="text-xl font-semibold"><%= groupData.date %></h2>
+                        </div>
                     </div>
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <canvas id="salesChart"></canvas>
-                    </div>
+                    <p class="text-gray-600 mt-2 text-right">
+                        عدد الفواتير: <%= groupData.count.toLocaleString('ar-IQ') %> | 
+                        إجمالي السعر: <%= groupData.totalPrice.toLocaleString('ar-IQ') %> د.ع | 
+                        إجمالي التكلفة: <%= groupData.totalCost.toLocaleString('ar-IQ') %> د.ع | 
+                        إجمالي الربح: <%= groupData.totalProfit.toLocaleString('ar-IQ') %> د.ع
+                    </p>
                 </div>
+                <div class="px-6 py-4 border-t border-gray-200 hidden invoice-details">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الفاتورة</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">السعر</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التكلفة</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الربح</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">هامش الربح</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">وقت الفاتورة</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% groupData.invoices.forEach(function(invoice) { %>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right"><%= invoice.number %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= invoice.price.toLocaleString('ar-IQ') %> د.ع</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= invoice.cost.toLocaleString('ar-IQ') %> د.ع</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= (invoice.price - invoice.cost).toLocaleString('ar-IQ') %> د.ع</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right"><%= (((invoice.price - invoice.cost) / invoice.price) * 100).toFixed(2) %>%</td>
+                                    <% 
+                                    // Step 1: Create a Date object from invoice.progressdata
+                                    let date = new Date(invoice.progressdata); 
+                                    
+                                    // Step 2: Subtract 3 hours
+                                    date.setHours(date.getHours() - 3); 
+                                  %>
+                                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                                    <%= date.toLocaleTimeString('ar-IQ') %>
+                                  </td>
+                                                                  </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% }); %>
+    <% } %>
+</div>
 
-                <% invoiceData.forEach(function(groupData) { %>
-                    <div class="bg-white shadow-md rounded-lg mb-4" data-date="<%= groupData.date %>">
-                        <div class="px-6 py-4 cursor-pointer" onclick="toggleGroup('<%= groupData.date %>')">
-                            <div class="flex justify-between items-center">
-                                <svg class="h-6 w-6 transform transition-transform duration-200 chevron-icon"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                                <div class="flex items-center gap-4">
-                                    <button
-                                        class="px-3 py-1 text-sm bg-green-500 text-white rounded hover:bg-green-600 no-print"
-                                        onclick="event.stopPropagation(); exportGroupAsPDF('<%= JSON.stringify(groupData) %>')">
-                                        تصدير PDF
-                                    </button>
-                                    <button
-                                        class="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 no-print"
-                                        onclick="event.stopPropagation(); printGroup('<%= JSON.stringify(groupData) %>')">
-                                        طباعة عادية
-                                    </button>
-                                    <button
-                                        class="px-3 py-1 text-sm bg-purple-500 text-white rounded hover:bg-purple-600 no-print"
-                                        onclick="event.stopPropagation(); printThermal('<%= JSON.stringify(groupData) %>')">
-                                        طباعة حرارية
-                                    </button>
-                                    <h2 class="text-xl font-semibold">
-                                        <%= groupData.date %>
-                                    </h2>
-                                </div>
-                            </div>
-                            <p class="text-gray-600 mt-2 text-right">
-                                عدد الفواتير: <%= groupData.count.toLocaleString('ar-IQ') %> |
-                                    إجمالي السعر: <%= groupData.totalPrice.toLocaleString('ar-IQ') %> د.ع |
-                                        إجمالي التكلفة: <%= groupData.totalCost.toLocaleString('ar-IQ') %> د.ع |
-                                            إجمالي الربح: <%= groupData.totalProfit.toLocaleString('ar-IQ') %> د.ع
-                            </p>
-                        </div>
-                        <div class="px-6 py-4 border-t border-gray-200 hidden invoice-details">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            رقم الفاتورة</th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            السعر</th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            التكلفة</th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            الربح</th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            هامش الربح</th>
-                                        <th scope="col"
-                                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            وقت الفاتورة</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    <% groupData.invoices.forEach(function(invoice) { %>
-                                        <tr>
-                                            <td
-                                                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
-                                                <%= invoice.number %>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                                                <%= invoice.price.toLocaleString('ar-IQ') %> د.ع
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                                                <%= invoice.cost.toLocaleString('ar-IQ') %> د.ع
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                                                <%= (invoice.price - invoice.cost).toLocaleString('ar-IQ') %> د.ع
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                                                <%= (((invoice.price - invoice.cost) / invoice.price) * 100).toFixed(2)
-                                                    %>%
-                                            </td>
-                                            <% // Step 1: Create a Date object from invoice.progressdata let date=new
-                                                Date(invoice.progressdata); // Step 2: Subtract 3 hours
-                                                date.setHours(date.getHours() - 3); %>
-                                                <td
-                                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                                                    <%= date.toLocaleTimeString('ar-IQ') %>
-                                                </td>
-                                        </tr>
-                                        <% }); %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <% }); %>
-                        <% } %>
-    </div>
-
-    <script>
-        const allDates = <% - JSON.stringify(allDates) %>;
-        const currentViewType = '<%= currentViewType %>';
-        const currentStartDate = '<%= currentStartDate %>';
-        const currentEndDate = '<%= currentEndDate %>';
-        const invoiceData = <% - JSON.stringify(invoiceData) %>;
-
-        flatpickr("#dateRange", {
-            mode: "range",
-            dateFormat: "Y-m-d",
-            defaultDate: [currentStartDate, currentEndDate],
-            onChange: function (selectedDates, dateStr, instance) {
-                if (selectedDates.length === 2) {
-                    updateReport(selectedDates[0], selectedDates[1]);
-                }
+<script>
+    const allDates = <%- JSON.stringify(allDates) %>;
+    const currentViewType = '<%= currentViewType %>';
+    const currentStartDate = '<%= currentStartDate %>';
+    const currentEndDate = '<%= currentEndDate %>';
+    const invoiceData = <%- JSON.stringify(invoiceData) %>;
+    
+    flatpickr("#dateRange", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        defaultDate: [currentStartDate, currentEndDate],
+        onChange: function(selectedDates, dateStr, instance) {
+            if (selectedDates.length === 2) {
+                updateReport(selectedDates[0], selectedDates[1]);
             }
-        });
-
-        document.getElementById('quickSelect').addEventListener('change', function () {
-            const today = new Date();
-            let startDate, endDate;
-
-            switch (this.value) {
-                case 'today':
-                    startDate = endDate = today;
-                    break;
-                case 'lastWeek':
-                    endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() - 1);
-                    startDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() - 6);
-                    break;
-                case 'thisWeek':
-                    startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
-                    endDate = new Date(today.getFullYear(), today.getMonth(), startDate.getDate() + 6);
-                    break;
-                case 'thisMonth':
-                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-                    endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                    break;
-            }
-
-            if (startDate && endDate) {
-                updateReport(startDate, endDate);
-            }
-        });
-
-        document.getElementById('viewType').addEventListener('change', function () {
-            updateReport(currentStartDate, currentEndDate);
-        });
-
-        document.getElementById('resetDate').addEventListener('click', function () {
-            updateReport('', '');
-        });
-
-        document.getElementById('invoiceType').addEventListener('change', function () {
-            updateReport(currentStartDate, currentEndDate);
-        });
-
-        function updateReport(startDate, endDate) {
-            const viewType = document.getElementById('viewType').value;
-            const invoiceType = document.getElementById('invoiceType').value;  // Get selected invoice type
-            window.location.href = `/report?startDate=${formatDate(startDate)}&endDate=${formatDate(endDate)}&viewType=${viewType}&type=${invoiceType}`;
         }
-        function formatDate(date) {
-            if (!date) return '';
-            const d = new Date(date);
-            let month = '' + (d.getMonth() + 1);
-            let day = '' + d.getDate();
-            const year = d.getFullYear();
+    });
 
-            if (month.length < 2) month = '0' + month;
-            if (day.length < 2) day = '0' + day;
+    document.getElementById('quickSelect').addEventListener('change', function() {
+        const today = new Date();
+        let startDate, endDate;
 
-            return [year, month, day].join('-');
+        switch (this.value) {
+            case 'today':
+                startDate = endDate = today;
+                break;
+            case 'lastWeek':
+                endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() - 1);
+                startDate = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() - 6);
+                break;
+            case 'thisWeek':
+                startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+                endDate = new Date(today.getFullYear(), today.getMonth(), startDate.getDate() + 6);
+                break;
+            case 'thisMonth':
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                break;
         }
 
-        function toggleGroup(date) {
-            const groupElement = document.querySelector(`[data-date="${date}"]`);
-            const detailsElement = groupElement.querySelector('.invoice-details');
-            const chevronIcon = groupElement.querySelector('.chevron-icon');
-
-            detailsElement.classList.toggle('hidden');
-            chevronIcon.classList.toggle('rotate-180');
+        if (startDate && endDate) {
+            updateReport(startDate, endDate);
         }
+    });
 
-        function printGroup(groupDataString) {
-            const groupData = JSON.parse(groupDataString);
-            const printWindow = window.open('', '_blank');
-            if (printWindow) {
-                printWindow.document.write(`
+    document.getElementById('viewType').addEventListener('change', function() {
+        updateReport(currentStartDate, currentEndDate);
+    });
+
+    document.getElementById('resetDate').addEventListener('click', function() {
+        updateReport('', '');
+    });
+
+    document.getElementById('invoiceType').addEventListener('change', function() {
+    updateReport(currentStartDate, currentEndDate);
+});
+
+function updateReport(startDate, endDate) {
+    const viewType = document.getElementById('viewType').value;
+    const invoiceType = document.getElementById('invoiceType').value;  // Get selected invoice type
+    window.location.href = `/report?startDate=${formatDate(startDate)}&endDate=${formatDate(endDate)}&viewType=${viewType}&type=${invoiceType}`;
+}
+    function formatDate(date) {
+        if (!date) return '';
+        const d = new Date(date);
+        let month = '' + (d.getMonth() + 1);
+        let day = '' + d.getDate();
+        const year = d.getFullYear();
+
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+    function toggleGroup(date) {
+        const groupElement = document.querySelector(`[data-date="${date}"]`);
+        const detailsElement = groupElement.querySelector('.invoice-details');
+        const chevronIcon = groupElement.querySelector('.chevron-icon');
+        
+        detailsElement.classList.toggle('hidden');
+        chevronIcon.classList.toggle('rotate-180');
+    }
+
+    function printGroup(groupDataString) {
+        const groupData = JSON.parse(groupDataString);
+        const printWindow = window.open('', '_blank');
+        if (printWindow) {
+            printWindow.document.write(`
                 <html lang="ar" dir="rtl">
                     <head>
                         <meta charset="UTF-8">
@@ -393,17 +349,17 @@
                     </body>
                 </html>
             `);
-                printWindow.document.close();
-                setTimeout(() => {
-                    printWindow.print();
-                    printWindow.close();
-                }, 250);
-            }
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+                printWindow.close();
+            }, 250);
         }
+    }
 
-        async function printThermal(groupDataString) {
-            const groupData = JSON.parse(groupDataString);
-
+   async function printThermal(groupDataString) {
+        const groupData = JSON.parse(groupDataString);
+    
             const htmlToPrint = ` 
                            <html lang="ar" dir="rtl">
                     <head>
@@ -467,7 +423,7 @@
 `
             const baseURL = ``
 
-
+            
             await fetch(`${baseURL}/invoice/printReportInvoice/`, {
                 method: 'POST',
                 headers: {
@@ -475,15 +431,15 @@
                 },
                 body: JSON.stringify({
                     htmbody: htmlToPrint,
-                    groupData: groupData
+                    groupData:groupData
                 }),
             });
         }
-
+        
         function exportGroupAsPDF(groupDataString) {
-            const groupData = JSON.parse(groupDataString);
+    const groupData = JSON.parse(groupDataString);
 
-            const printContent = `
+    const printContent = `
     <html lang="ar" dir="rtl">
         <head>
             <meta charset="UTF-8">
@@ -589,66 +545,66 @@
     </html>
     `;
 
-            const opt = {
-                margin: 0.5,
-                filename: `تقرير_الفواتير_${groupData.date}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
+    const opt = {
+        margin:       0.5,
+        filename:     `تقرير_الفواتير_${groupData.date}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
 
-            html2pdf().from(printContent).set(opt).save();
-        }
-        // Create the sales chart
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: invoiceData.map(group => group.date),
-                datasets: [{
-                    label: 'المبيعات',
-                    data: invoiceData.map(group => group.totalPrice),
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'التكاليف',
-                    data: invoiceData.map(group => group.totalCost),
-                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function (value, index, values) {
-                                return value.toLocaleString('ar-IQ') + ' د.ع';
-                            }
+    html2pdf().from(printContent).set(opt).save();
+}
+    // Create the sales chart
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: invoiceData.map(group => group.date),
+            datasets: [{
+                label: 'المبيعات',
+                data: invoiceData.map(group => group.totalPrice),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }, {
+                label: 'التكاليف',
+                data: invoiceData.map(group => group.totalCost),
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value, index, values) {
+                            return value.toLocaleString('ar-IQ') + ' د.ع';
                         }
                     }
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function (context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += context.parsed.y.toLocaleString('ar-IQ') + ' د.ع';
-                                }
-                                return label;
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
                             }
+                            if (context.parsed.y !== null) {
+                                label += context.parsed.y.toLocaleString('ar-IQ') + ' د.ع';
+                            }
+                            return label;
                         }
                     }
                 }
             }
-        });
-    </script>
+        }
+    });
+</script>
 
-    <%- include('footer',{currentpage:'report'}); %>
+<%- include('footer',{currentpage:'report'}); %>
