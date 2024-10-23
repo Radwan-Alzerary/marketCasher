@@ -1,0 +1,327 @@
+
+<%- include('header') %>
+<style>
+    @keyframes slideDown {
+        from { max-height: 0; opacity: 0; }
+        to { max-height: 500px; opacity: 1; }
+    }
+    @keyframes slideUp {
+        from { max-height: 500px; opacity: 1; }
+        to { max-height: 0; opacity: 0; }
+    }
+    .slide-down { animation: slideDown 0.3s ease-out forwards; }
+    .slide-up { animation: slideUp 0.3s ease-out forwards; }
+</style>
+
+<div class="container mx-auto px-4 py-8" style="direction: rtl;">
+        <h1 class="text-4xl font-bold mb-8 text-center text-gray-800">تقرير مبيعات الأطعمة</h1>
+
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div>
+                    <label for="startDate" class="block text-sm font-medium text-gray-700 mb-1">تاريخ البداية</label>
+                    <input type="date" id="startDate" name="startDate" value="<%= currentStartDate %>" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="endDate" class="block text-sm font-medium text-gray-700 mb-1">تاريخ النهاية</label>
+                    <input type="date" id="endDate" name="endDate" value="<%= currentEndDate %>" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="viewType" class="block text-sm font-medium text-gray-700 mb-1">نوع العرض</label>
+                    <select id="viewType" name="viewType" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="day" <%= currentViewType === 'day' ? 'selected' : '' %>>يومي</option>
+                        <option value="month" <%= currentViewType === 'month' ? 'selected' : '' %>>شهري</option>
+                        <option value="year" <%= currentViewType === 'year' ? 'selected' : '' %>>سنوي</option>
+                    </select>
+                </div>
+                <div class="flex items-end lg:col-span-2">
+                    <button id="updateReport" class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                        تحديث التقرير
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <% if (foodSalesData.length === 0) { %>
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-8" role="alert">
+                <p class="font-bold">تنبيه</p>
+                <p>لا توجد بيانات متاحة للفترة المحددة.</p>
+            </div>
+        <% } else { %>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-semibold mb-4">ملخص المبيعات</h2>
+                    <div class="space-y-2">
+                        <% foodItems.forEach(function(food) { %>
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium"><%= food %></span>
+                                <span class="text-gray-600"><%= foodSalesData.reduce((sum, day) => sum + (day.foodItems[food] || 0), 0).toLocaleString('ar-IQ') %></span>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-semibold mb-4">رسم بياني للمبيعات</h2>
+                    <canvas id="salesChart" height="300"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-2xl font-semibold">تفاصيل المبيعات اليومية</h2>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">إجمالي المبيعات</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% foodSalesData.forEach(function(day, index) { %>
+                                <tr class="hover:bg-gray-50" >
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        <button class="toggle-details focus:outline-none" data-index="<%= index %>"><%= day.date %></button>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <%= Object.values(day.foodItems).reduce((a, b) => a + b, 0).toLocaleString('ar-IQ') %>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 export-pdf transition duration-150 ease-in-out" data-index="<%= index %>">
+                                            تصدير PDF
+                                        </button>
+                                        <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded print-day transition duration-150 ease-in-out" data-index="<%= index %>">
+                                            طباعة
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="details-row hidden" id="details-<%= index %>">
+                                    <td colspan="3" class="px-6 py-4">
+                                        <div class="bg-gray-50 rounded-md p-4">
+                                            <h3 class="text-lg font-semibold mb-2">تفاصيل المنتجات:</h3>
+                                            <ul class="space-y-2">
+                                                <% for (const [food, quantity] of Object.entries(day.foodItems)) { %>
+                                                    <li class="flex justify-between items-center">
+                                                        <span><%= food %></span>
+                                                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">
+                                                            <%= quantity.toLocaleString('ar-IQ') %>
+                                                        </span>
+                                                    </li>
+                                                <% } %>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <script>
+        const foodSalesData = <%- JSON.stringify(foodSalesData) %>;
+        const foodItems = <%- JSON.stringify(foodItems) %>;
+        const currentViewType = '<%= currentViewType %>';
+        const currentStartDate = '<%= currentStartDate %>';
+        const currentEndDate = '<%= currentEndDate %>';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            const viewTypeSelect = document.getElementById('viewType');
+            const updateReportButton = document.getElementById('updateReport');
+
+            updateReportButton.addEventListener('click', function() {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+                const viewType = viewTypeSelect.value;
+                window.location.href = `/report/product?startDate=${startDate}&endDate=${endDate}&viewType=${viewType}`;
+            });
+
+            // Toggle details rows
+            document.querySelectorAll('.toggle-details').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    const detailsRow = document.getElementById(`details-${index}`);
+                    if (detailsRow.classList.contains('hidden')) {
+                        detailsRow.classList.remove('hidden');
+                        detailsRow.classList.add('slide-down');
+                    } else {
+                        detailsRow.classList.add('slide-up');
+                        setTimeout(() => {
+                            detailsRow.classList.add('hidden');
+                            detailsRow.classList.remove('slide-up');
+                        }, 300);
+                    }
+                });
+            });
+
+            // Export to PDF
+            document.querySelectorAll('.export-pdf').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    const day = foodSalesData[index];
+                    exportToPDF(day);
+                });
+            });
+
+            // Print day
+            document.querySelectorAll('.print-day').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = this.getAttribute('data-index');
+                    const day = foodSalesData[index];
+                    printDay(day);
+                });
+            });
+
+            // Create the sales chart
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: foodSalesData.map(day => day.date),
+                    datasets: foodItems.map((food, index) => ({
+                        label: food,
+                        data: foodSalesData.map(day => day.foodItems[food] || 0),
+                        borderColor: `hsl(${index * 360 / foodItems.length}, 70%, 50%)`,
+                        fill: false
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('ar-IQ');
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toLocaleString('ar-IQ');
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        function exportToPDF(day) {
+    const printContent = `
+    <html lang="ar" dir="rtl">
+        <head>
+            <meta charset="UTF-8">
+            <title>تقرير مبيعات الأطعمة</title>
+            <style>
+                body {
+                    font-family: 'Tajawal', sans-serif;
+                    direction: rtl;
+                    text-align: right;
+                }
+                h1 {
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin-bottom: 20px;
+                    color: #333;
+                }
+                .summary {
+                    font-size: 14px;
+                    margin-bottom: 30px;
+                    color: #555;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                }
+                th, td {
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    text-align: right;
+                }
+                th {
+                    background-color: #f0f0f0;
+                }
+                tfoot {
+                    font-weight: bold;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>تقرير مبيعات الأطعمة - ${day.date}</h1>
+            <div class="summary">
+                <p><strong>إجمالي المنتجات:</strong> ${Object.keys(day.foodItems).length}</p>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>الصنف</th>
+                        <th>الكمية</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${Object.entries(day.foodItems).map(([food, quantity]) => `
+                        <tr>
+                            <td>${food}</td>
+                            <td>${quantity.toLocaleString('ar-IQ')}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>إجمالي المبيعات</td>
+                        <td>${Object.values(day.foodItems).reduce((sum, qty) => sum + qty, 0).toLocaleString('ar-IQ')}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </body>
+    </html>
+    `;
+
+    const options = {
+        margin: 1,
+        filename: `food-sales-report-${day.date}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'cm', orientation: 'portrait' }
+    };
+
+    html2pdf().from(printContent).set(options).save();
+}
+        function printDay(day) {
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>تقرير مبيعات الأطعمة</title>');
+            printWindow.document.write('<style>body { font-family: Arial, sans-serif; direction: rtl; } table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid black; padding: 8px; text-align: right; }</style>');
+            printWindow.document.write('</head><body>');
+            
+            printWindow.document.write(`<h1>تقرير مبيعات الأطعمة - ${day.date}</h1>`);
+            printWindow.document.write('<table>');
+            printWindow.document.write('<tr><th>الصنف</th><th>الكمية</th></tr>');
+            for (const [food, quantity] of Object.entries(day.foodItems)) {
+                printWindow.document.write(`<tr><td>${food}</td><td>${quantity.toLocaleString('ar-IQ')}</td></tr>`);
+            }
+            printWindow.document.write('</table>');
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        }
+    </script>
+
+<%- include('footer',{currentpage:'productReport'}); %>
