@@ -880,6 +880,8 @@ router.post("/barcodefood", async (req, res) => {
         paymentType: newPaymentType.id,
         type: "قيد المعالجة", // Replace with the appropriate type
         active: true,
+        user: req.user
+
       });
 
       await invoice.save();
@@ -1850,6 +1852,7 @@ router.get("/:invoiceId/checout", async (req, res) => {
       fullcost: invoice.fullcost,
       invoicenumber: invoiceNumber,
       fulldiscont: invoice.fulldiscont,
+      user:invoice.user,
       systemSetting: systemSetting,
     });
   } catch (err) {

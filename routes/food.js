@@ -61,7 +61,7 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/getall", async (req, res) => {
-  const food = await Food.find({ deleted: false });
+  const food = await Food.find({ deleted: false, active: true });
   console.log(food)
   res.json(food);
 });

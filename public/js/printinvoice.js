@@ -248,6 +248,13 @@ function printinvoice(
                 </div>
 
             </div>
+                        <div style="display: flex;justify-content: space-between;margin-top: 4px;margin-bottom: 4px;">
+                <div>
+                    المحاسب: ${data.user.name}
+                </div>
+
+            </div>
+
         </div>
         <table style="width:100%">
             <tr>
