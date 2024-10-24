@@ -4,14 +4,23 @@ const Setting = require("../models/pagesetting");
 const Category = require("../models/category");
 
 // Removed the sleep function
+const connectionTypes = ["USB", "Ethernet", "Wi-Fi","interface"];
 
-async function printImageAsync(imagePath, printCount, printerIp, printerType, shopLogo, printRole, printLogo,openCashdraw) {
+async function printImageAsync(imagePath, printCount, printerIp, printerType, shopLogo, printRole, printLogo,openCashdraw,interfaceType,printerName) {
   let printer;
+  let interfaceData = ""
+  console.log(interfaceType)
+if(interfaceType === "Ethernet"  || interfaceType === "Wi-Fi" ){  
+  interfaceData = `tcp://${printerIp}:9100`
+}else if (interfaceType === "interface" || interfaceType === "USB" ){
+  interfaceData = `\\\\localhost\\${printerName}`
+}
+
 
   if (printerType === "Thermal Printer") {
     printer = new ThermalPrinter({
       type: PrinterTypes.EPSON,
-      interface: `tcp://${printerIp}:9100`,
+      interface: interfaceData,
       characterSet: CharacterSet.SLOVENIA,
       removeSpecialCharacters: false,
       lineCharacter: "=",
@@ -83,6 +92,8 @@ async function printForRole(imagePath, role, type) {
         role,
         device.printLogo,
         device.openCashdraw,
+        device.connectionType,
+        device.name,
       );
       console.log(`Printing completed for device: ${device.name}`);
     } catch (error) {
@@ -110,6 +121,9 @@ async function printForRole(imagePath, role, type) {
           role,
           device.printLogo,
           device.openCashdraw,
+          device.connectionType,
+          device.name,
+  
   
         );
         console.log(`Printing completed for device: ${device.name}`);
@@ -155,6 +169,9 @@ async function printForRole(imagePath, role, type) {
                     role,
                     secondaryDevice.printLogo,
                     secondaryDevice.openCashdraw,
+                    secondaryDevice.connectionType,
+                    secondaryDevice.name,
+            
             
                   );
                   console.log(

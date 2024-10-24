@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 const deviceTypes = ["A4 Printer", "Thermal Printer"];
 const deviceRoles = ["كاشير", "دلفري", "مطبخ", "عوائل", "شباب", "نداء اول", "نداء ثاني"];
-const connectionTypes = ["USB", "Ethernet", "Wi-Fi"];
+const connectionTypes = ["USB", "Ethernet", "Wi-Fi","interface"];
 
 const DevicesSchema = new mongoose.Schema(
   {

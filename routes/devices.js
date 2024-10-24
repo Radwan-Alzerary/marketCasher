@@ -8,7 +8,7 @@ const User = require("../models/user");
 // Device Types and Roles
 const deviceTypes = ["A4 Printer", "Thermal Printer"];
 const deviceRoles = ["كاشير", "دلفري", "مطبخ", "نداء اول", "نداء ثاني","شباب","عوائل"];
-const connectionTypes = ["USB", "Ethernet", "Wi-Fi"];
+const connectionTypes = ["USB", "Ethernet", "Wi-Fi","interface"];
 const SystemSetting = require("../models/systemSetting");
 const Category = require("../models/category");
 
