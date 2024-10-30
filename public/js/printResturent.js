@@ -19,7 +19,7 @@ function generateHTML(shopName, data, foods, Comments, foodData) {
           `${foodInvoice.quantity}`,
           `${foodInvoice.foodPrice ? foodInvoice.foodPrice : foodInvoice.price}`,
           `${Number(foodInvoice.quantity) * Number(foodInvoice.foodPrice ? foodInvoice.foodPrice : dummyFood.price)}`,
-          `${foodInvoice.comment}`,
+          `${foodInvoice.comment || ""}`,
       ]);
   });
 
