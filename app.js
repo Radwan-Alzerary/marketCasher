@@ -66,6 +66,11 @@ const checkTokenExpiry = async (req, res, next) => {
 };
 // Create an HTTP server
 const server = http.createServer(app);
+// Pass `io` to the invoice router
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
 
 // Apply the middleware globally, so all routes are protected
 app.use(checkTokenExpiry);
@@ -313,8 +318,6 @@ io.on('connection', (socket) => {
 
 
 
-
-
   // Listen for messages from a customer
   socket.on('message', (message) => {
     console.log('Received message:', message);
@@ -328,6 +331,57 @@ io.on('connection', (socket) => {
     console.log('Customer disconnected:', socket.id);
   });
 });
+async function updateInvoices() {
+  try {
+    // Find all active invoices that are not deleted and not returned
+    const invoices = await Invoice.find({
+      deleted: false,
+      isReturned: false,
+    }).populate('food.id'); // Populate to get 'unit' and 'price'
+
+    for (const invoice of invoices) {
+      let invoiceUpdated = false;
+
+      for (const foodItem of invoice.food) {
+        const food = foodItem.id;
+
+        if (food.unit === 'ساعة' && foodItem.addTime) {
+          console.log('Processing food item:', food.name);
+
+          // Calculate the time difference in minutes
+          const timeDiffInMinutes = (Date.now() - new Date(foodItem.addTime)) / (1000 * 60);
+          
+          // Calculate price and cost per minute
+          const pricePerMinute = foodItem.id.price / 60;
+          const costPerMinute = foodItem.id.cost / 60;
+
+          // Calculate total price and total cost based on time difference
+          foodItem.foodPrice = pricePerMinute * timeDiffInMinutes * foodItem.quantity;
+          foodItem.foodCost = costPerMinute * timeDiffInMinutes * foodItem.quantity;
+
+          invoiceUpdated = true;
+        }
+      }
+
+      if (invoiceUpdated) {
+        // Recalculate foodcost and finalcost
+        invoice.foodcost = invoice.food.reduce((total, item) => total + item.foodCost, 0);
+        invoice.finalcost = invoice.food.reduce((total, item) => total + item.foodPrice, 0);
+
+        await invoice.save();
+      }
+    }
+    io.emit("message", "refresh");
+
+  } catch (error) {
+    console.error('Error updating invoices:', error);
+  }
+}
+
+// Set interval to run every minute (60000 milliseconds)
+setInterval(() => updateInvoices(io), 60000);
+
+
 
 // Start the server
 const PORT = 3000;

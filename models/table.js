@@ -15,6 +15,12 @@ const TableSchema = new mongoose.Schema(
       bookedEndDate: { type: Date },
     },
     Families:{type:Boolean,default:false},
+    iconChange:{type:Boolean,default:false}, 
+    nameChange:{type:Boolean,default:false},
+    colorChange:{type:Boolean,default:false},
+    name:{type:String,default:""},
+    icon:{type:String,default:""},
+    color:{type:String,default:""},
     invoice: [
       {
         type: mongoose.Schema.Types.ObjectId,

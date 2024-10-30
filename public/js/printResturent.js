@@ -11,137 +11,145 @@
  * @returns {String} - The HTML string.
  */
 function generateHTML(shopName, data, foods, Comments, foodData) {
-    const itemRows = [];
-    foods.foods.forEach((dummyFood) => {
+  const itemRows = [];
+  foods.foods.forEach((dummyFood) => {
       const foodInvoice = foodData.find((food) => food.id._id === dummyFood._id);
       itemRows.push([
-        `${dummyFood.name}`,
-        `${foodInvoice.quantity}`,
-        `${foodInvoice.foodPrice ? foodInvoice.foodPrice : foodInvoice.price}`,
-        `${Number(foodInvoice.quantity) * Number(foodInvoice.foodPrice ? foodInvoice.foodPrice : dummyFood.price)}`,
+          `${dummyFood.name}`,
+          `${foodInvoice.quantity}`,
+          `${foodInvoice.foodPrice ? foodInvoice.foodPrice : foodInvoice.price}`,
+          `${Number(foodInvoice.quantity) * Number(foodInvoice.foodPrice ? foodInvoice.foodPrice : dummyFood.price)}`,
+          `${foodInvoice.comment}`,
       ]);
-    });
-  
-    let items = '';
-  
-    for (const item of itemRows) {
+  });
+
+  let items = '';
+
+  for (const item of itemRows) {
       items += `
           <tr>
-            <td class="quantity">${item[1]}</td>
-            <td class="price">${item[0]}</td>
+              <td class="quantity">${item[1]}</td>
+              <td class="name">${item[0]}</td>
           </tr>
-        `;
-    }
-  
-    let CommentField = '';
-    if (Comments) {
-      CommentField = `
-          <div class="centerdiv" style="padding-top: 10px; text-align: center; font-size: 1.6rem;">
-            الملاحظات : ${Comments}
-          </div>
-        `;
-    }
-  
-    const invoicedateString = data.invoicedate;
-    const invoicedate = new Date(invoicedateString);
-  
-    let hours = invoicedate.getHours() - 3;
-  
-    if (hours < 0) {
-      hours += 24;
-      invoicedate.setDate(invoicedate.getDate() - 1);
-    }
-  
-    const day = invoicedate.getDate();
-    const month = invoicedate.getMonth() + 1;
-    const year = invoicedate.getFullYear();
-    const minutes = invoicedate.getMinutes();
-    const seconds = invoicedate.getSeconds();
-  
-    const dateyear = `${day}/${month}/${year}`;
-    const dateclock = `${hours}:${minutes}:${seconds}`;
-  
-    return `
-        <!DOCTYPE html>
-        <html lang="ar">
-        <head>
-          <style>
-            * {
-              font-size: 1.4rem;
-              margin: 0px;
-              font-family: 'Arial';
-            }
-            main {
-              padding: 6px;
-              width: 560px;
-            }
-            .dashed-line {
-              border: none;
-              height: 2px;
-              background-image: repeating-linear-gradient(to right, black, black 8px, transparent 8px, transparent 16px);
-            }
-            .centerdiv {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
-            table, th, td {
-              border: 1px solid black;
-              border-collapse: collapse;
-            }
-            table {
-              width: 100%;
-            }
-            th, td {
-              text-align: center;
-            }
-          </style>
-        </head>
-        <body>
-          <main>
-            <hr class="dashed-line">
-            <div class="centerdiv">
-              <a style="font-weight: bold; margin-top: 3px; margin-bottom: 3px;">
-                ${shopName}
-              </a>
-            </div>
-            <hr class="dashed-line">
-            <div style="margin-top: 10px;">
-              <div style="display: flex; justify-content: space-between;">
-                <div></div>
-              </div>
-              <div style="display: flex; justify-content: space-between; margin-top: 6px;">
-                <div>
-                  التاريخ : ${dateyear}
-                </div>
-                <div>
-                  رقم الطاولة : ${data.tableNumber}
-                </div>
-              </div>
-              <div style="display: flex; justify-content: space-between; margin-top: 4px; margin-bottom: 4px;">
-                <div>
-                  ر.الوصل : ${data.invoicenumber}
-                </div>
-                <div>
-                  الوقت : ${dateclock}
-                </div>
-              </div>
-            </div>
-            <table>
-              <tr>
-                <th>العدد</th>
-                <th>المنتج</th>
-              </tr>
-              ${items}
-            </table>
-            ${CommentField}
-            <hr class="dashed-line" style="margin-top: 20px;">
-          </main>
-        </body>
-        </html>
+          <tr>
+              <td colspan="2" class="comment">${item[4]}</td>
+          </tr>
       `;
   }
-  
+
+  let CommentField = '';
+  if (Comments) {
+      CommentField = `
+          <div class="centerdiv" style="padding-top: 10px; text-align: center; font-size: 1.6rem;">
+              الملاحظات : ${Comments}
+          </div>
+      `;
+  }
+
+  const invoicedateString = data.invoicedate;
+  const invoicedate = new Date(invoicedateString);
+  let hours = invoicedate.getHours() - 3;
+
+  if (hours < 0) {
+      hours += 24;
+      invoicedate.setDate(invoicedate.getDate() - 1);
+  }
+
+  const day = invoicedate.getDate();
+  const month = invoicedate.getMonth() + 1;
+  const year = invoicedate.getFullYear();
+  const minutes = invoicedate.getMinutes();
+  const seconds = invoicedate.getSeconds();
+
+  const dateyear = `${day}/${month}/${year}`;
+  const dateclock = `${hours}:${minutes}:${seconds}`;
+
+  return `
+      <!DOCTYPE html>
+      <html lang="ar">
+      <head>
+        <style>
+          * {
+            font-size: 1.4rem;
+            margin: 0px;
+            font-family: 'Arial';
+          }
+          main {
+            padding: 6px;
+            width: 560px;
+          }
+          .dashed-line {
+            border: none;
+            height: 2px;
+            background-image: repeating-linear-gradient(to right, black, black 8px, transparent 8px, transparent 16px);
+          }
+          .centerdiv {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+          table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+          }
+          table {
+            width: 100%;
+          }
+          th, td {
+            text-align: center;
+          }
+          .comment {
+            font-size: 1.2rem;
+            color: black;
+            text-align: right;
+          }
+        </style>
+      </head>
+      <body>
+        <main>
+          <hr class="dashed-line">
+          <div class="centerdiv">
+            <a style="font-weight: bold; margin-top: 3px; margin-bottom: 3px;">
+              ${shopName}
+            </a>
+          </div>
+          <hr class="dashed-line">
+          <div style="margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between;">
+              <div></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+              <div>
+                التاريخ : ${dateyear}
+              </div>
+              <div>
+                رقم الطاولة : ${data.tableNumber}
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 4px; margin-bottom: 4px;">
+              <div>
+                ر.الوصل : ${data.invoicenumber}
+              </div>
+              <div>
+                الوقت : ${dateclock}
+              </div>
+            </div>
+          </div>
+          <table>
+            <tr>
+              <th>العدد</th>
+              <th>المنتج</th>
+            </tr>
+            ${items}
+          </table>
+          ${CommentField}
+          <hr class="dashed-line" style="margin-top: 20px;">
+        </main>
+      </body>
+      </html>
+  `;
+}
+
   /**
    * Prints the invoice by fetching data and sending the generated HTML for printing.
    *

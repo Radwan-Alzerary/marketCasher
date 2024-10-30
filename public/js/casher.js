@@ -1,7 +1,7 @@
 
 
 
-function newitem(food, invoiceid, newquantity,newPrice) {
+function newitem(food, invoiceid, newquantity, newPrice) {
     // Create the main invoice div
     const invoiceFoodDiv = document.getElementById('invoicefood');
     const invoiceDiv = document.createElement('div');
@@ -27,16 +27,19 @@ function newitem(food, invoiceid, newquantity,newPrice) {
     const priceDiv = document.createElement('input');
     priceDiv.setAttribute('type', 'number');
 
-    priceDiv.classList.add('w-24', 'text-center','border-0');
+    priceDiv.classList.add('w-24', 'text-center', 'border-0');
     priceDiv.setAttribute('oninput', `onPriceChange(event)`);
     priceDiv.setAttribute('id', `price${food._id}`);
     priceDiv.value = Number(newPrice); // Replace `food.price` with the actual property that holds the price
+
 
 
     const removelement = document.createElement('div');
     removelement.classList.add('w-8', 'rounded-full', 'h-8', 'flex', 'justify-around', 'items-center', 'hover:bg-red-400')
     removelement.id = `removeinvoice{"invoiceid":"${invoiceid}","foodid":"${food._id}"}`
 
+
+    
     // Create the food name element
     const foodNameDiv = document.createElement('div');
     foodNameDiv.classList.add('text-sm', 'w-24', 'text-center', 'font-bold');
@@ -129,12 +132,12 @@ function addmoney(money) {
     $("#amontleft").text(moneyamont - Number($("#amontget").val()))
     const amountchagnge = $(`#amontget`).val()
     $('#ReceivedAmountInput').val(amountchagnge)
-    const receivesAmountValue =$(`#amontget`).val()
+    const receivesAmountValue = $(`#amontget`).val()
     const finalCostValue = $('#finalcost').text()
     $("#Received-amount").text(receivesAmountValue)
     if ((receivesAmountValue - finalCostValue) > 0) {
         $("#Remaining-amount").text(receivesAmountValue - finalCostValue)
-    }else{
+    } else {
         $("#Remaining-amount").text(0)
     }
 
@@ -143,12 +146,12 @@ function addmoney(money) {
 function amontgetchange() {
     const amountchagnge = $(`#amontget`).val()
     $('#ReceivedAmountInput').val(amountchagnge)
-    const receivesAmountValue =$(`#amontget`).val()
+    const receivesAmountValue = $(`#amontget`).val()
     const finalCostValue = $('#finalcost').text()
     $("#Received-amount").text(receivesAmountValue)
     if ((receivesAmountValue - finalCostValue) > 0) {
         $("#Remaining-amount").text(receivesAmountValue - finalCostValue)
-    }else{
+    } else {
         $("#Remaining-amount").text(0)
     }
 
@@ -215,7 +218,7 @@ function ReceivedAmountInput() {
     $("#Received-amount").text(receivesAmountValue)
     if ((receivesAmountValue - finalCostValue) > 0) {
         $("#Remaining-amount").text(receivesAmountValue - finalCostValue)
-    }else{
+    } else {
         $("#Remaining-amount").text(0)
     }
     const inputElement = event.target;
@@ -232,22 +235,22 @@ function ReceivedAmountInput() {
     const tableId = searchParams.get("tableid");
     const invoiceId = $("#invoiceidelement").text();
     fetch("/invoice/changeReceivedAmount/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ invoiceId, amountReceived }),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ invoiceId, amountReceived }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        getprices(invoiceId);
-        // $("#finalcost").text();
-        // $("#totalprice").text();
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        // Handle errors
-      });
+        .then((response) => response.json())
+        .then((data) => {
+            getprices(invoiceId);
+            // $("#finalcost").text();
+            // $("#totalprice").text();
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            // Handle errors
+        });
 
 
 
@@ -276,10 +279,10 @@ function getprices(invoiceId) {
             $("#Received-amount").text(receivesAmountValue)
             if ((receivesAmountValue - finalCostValue) > 0) {
                 $("#Remaining-amount").text(receivesAmountValue - finalCostValue)
-            }else{
+            } else {
                 $("#Remaining-amount").text(0)
             }
-        
+
             $("#totalcost").text(data.totalcost);
         })
         .catch(error => {

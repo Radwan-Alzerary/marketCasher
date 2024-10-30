@@ -32,6 +32,8 @@ const fs = require("fs");
 const Devices = require("../models/devices");
 
 
+// Function to update invoices
+
 async function printImageAsync(imagePath, printincount) {
   const setting = await Setting.findOne();
 
@@ -460,12 +462,18 @@ router.post("/food", async (req, res) => {
       if (!food) {
         return res.status(404).json({ error: "Food not found" });
       }
+      let FoodPrice = 0
+      if (food.unit === "ساعة") {
+        FoodPrice = 0;
+      } else {
+        FoodPrice = food.price
+      }
       const newFood = {
         id: food._id,
         quantity: Number(fastClick) || 1,
         discount: 0,
         foodCost: food.cost,
-        foodPrice: food.price,
+        foodPrice: FoodPrice,
         discountType: discountType || "cash",
       };
       food.quantety = food.quantety - (Number(fastClick) || 1);
@@ -482,6 +490,7 @@ router.post("/food", async (req, res) => {
     // Populate the last added food
     const populatedFood = await Food.findById(lastAddedFood);
     if (existingFoodcheck) {
+
       res.json({
         message: "alredyadd",
         food: populatedFood,
@@ -493,13 +502,20 @@ router.post("/food", async (req, res) => {
       });
     } else {
       const editOneFood = await Food.findById(foodId);
+      let populatedFoodPrice = 0
+      if (populatedFood.unit === "ساعة") {
+        populatedFoodPrice = 0;
+      } else {
+        populatedFoodPrice = populatedFood.price
+      }
+
       res.json({
         message: "Food added to the invoice successfully",
         editOneFood: editOneFood,
         food: populatedFood,
         invoiceId: invoice.id,
         newquantity: Number(fastClick) || 1,
-        foodPrice: populatedFood.price,
+        foodPrice: populatedFoodPrice,
       });
     }
   } catch (err) {
@@ -1030,6 +1046,40 @@ router.post("/changeprice", async (req, res) => {
   }
 });
 
+router.post("/changecomment", async (req, res) => {
+  try {
+    const tableId = req.body.tableid;
+    const foodId = req.body.foodid;
+    const comment = req.body.comment;
+    const table = await Table.findById(tableId);
+    if (!table) {
+      return res.status(404).json({ error: "Table not found" });
+    }
+    let invoice = await Invoice.findById(table.invoice[0]);
+
+    const foodItem = invoice.food.find((item) => item.id.toString() === foodId);
+    if (!foodItem) {
+      return res
+        .status(404)
+        .json({ error: "Food item not found in the invoice." });
+    }
+    foodItem.comment = comment;
+    
+    await invoice.save();
+    const editOneFood = await Food.findById(foodId);
+    res.json({
+      message: "quantity changed",
+      editOneFood,
+      foodItem,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+
 router.post("/changedescount", async (req, res) => {
   try {
     const discount = req.body.discount;
@@ -1167,9 +1217,20 @@ router.post("/price", async (req, res) => {
     for (const food of invoice.food) {
       const quantity = food.quantity;
       const discount = food.discount;
-      const price = food.foodPrice ? food.foodPrice : food.id.price;
+      let price = 0
+      if (food.id.unit === "ساعة") {
+        price = food.foodPrice ? food.foodPrice : 0;
+      } else {
+        price = food.foodPrice ? food.foodPrice : food.id.price;
+      }
+
       const cost = food.id.cost;
-      total += price * quantity;
+      if (food.id.unit === "ساعة") {
+        total += price;
+      } else {
+        total += price * quantity;
+      }
+
       totalcost += cost * quantity;
       totaldiscount += discount * quantity;
     }
@@ -1852,7 +1913,7 @@ router.get("/:invoiceId/checout", async (req, res) => {
       fullcost: invoice.fullcost,
       invoicenumber: invoiceNumber,
       fulldiscont: invoice.fulldiscont,
-      user:invoice.user,
+      user: invoice.user,
       systemSetting: systemSetting,
     });
   } catch (err) {

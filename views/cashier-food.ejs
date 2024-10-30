@@ -303,6 +303,7 @@
             refrash();
 
             function refrash() {
+              console.log("refreshing")
               const invoiceFoodDiv = document.getElementById("invoicefood");
               invoiceFoodDiv.innerHTML = "";
 
@@ -379,6 +380,8 @@
                   return null;
                 }
               }
+
+
             }
 
             $(document).on("click", "[id^=selectfood]", function () {
@@ -490,8 +493,92 @@
               const url = new URL(currentUrl);
               const searchParams = new URLSearchParams(url.search);
               const tableId = searchParams.get("tableid");
-            });
 
+              // Create a form with fixed positioning, centered on the screen with a modern style
+              const formHtml = `
+            <div id="formOverlay" style="
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100vw;
+              height: 100vh;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+              z-index: 1000;
+            ">
+              <form id="commentForm" style="
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 12px;
+                box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+                width: 620px;
+                max-width: 90%;
+                text-align: center;
+                font-family: Arial, sans-serif;
+              ">
+                <h3 style="margin-top: 0; color: #333;">اضافة ملاحضة</h3>
+                <label for="commentInput" style="display: block; margin-bottom: 8px; color: #666;">الملاحضات</label>
+                <input type="text" id="commentInput" name="comment" style="
+                  width: 100%;
+                  padding: 10px;
+                  margin-bottom: 20px;
+                  border: 1px solid #ddd;
+                  border-radius: 8px;
+                  outline: none;
+                  font-size: 16px;
+                  box-sizing: border-box;
+                ">
+                <button type="submit" style="
+                  background-color: #12A9B0;
+                  color: white;
+                  padding: 10px 20px;
+                  border: none;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  font-size: 16px;
+                  transition: background-color 0.3s ease;
+                ">حفض</button>
+              </form>
+            </div>
+          `;
+
+              // Append the form overlay to the body
+              $("body").append(formHtml);
+
+              // Add event listener for form submission
+              $("#commentForm").on("submit", function (e) {
+                e.preventDefault(); // Prevent the default form submission behavior
+
+                const comment = $("#commentInput").val(); // Get the comment input value
+
+                // Prepare the data to send to the server
+                const postData = {
+                  comment: comment,
+                  invoiceid: foodjson.invoiceid,
+                  foodid: foodjson.foodid,
+                  tableid: tableId,
+                };
+
+                // Make the POST request
+                $.ajax({
+                  type: "POST",
+                  url: "/invoice/changecomment", // Replace with your actual server endpoint
+                  data: JSON.stringify(postData),
+                  contentType: "application/json",
+                  success: function (response) {
+                    console.log("Server response:", response);
+                    // Remove the overlay after submission
+                    $("#formOverlay").remove();
+                  },
+                  error: function (error) {
+                    console.error("Error:", error);
+                    alert("There was an error submitting your comment.");
+                  },
+                });
+              });
+            });
             function cancele() {
               const currentUrl = window.location.href;
               console.log("Current URL:", currentUrl);
@@ -821,6 +908,46 @@
                   // Handle errors
                 });
             }
+
+            function onCommentChange(event) {
+              const inputElement = event.target;
+
+              // Retrieve the ID of the input element
+              const inputId = inputElement.id;
+              var foodId = inputId.replace("price", "");
+
+              // Use the inputId as needed
+
+              const currentUrl = window.location.href;
+              console.log("Current URL:", currentUrl);
+              const url = new URL(currentUrl);
+              const searchParams = new URLSearchParams(url.search);
+              const tableId = searchParams.get("tableid");
+              const newPrice = $(`#${inputId}`).val();
+              const invoiceId = $("#invoiceidelement").text();
+              fetch("/invoice/changeprice/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  tableId,
+                  invoiceId,
+                  foodId,
+                  newPrice: newPrice,
+                }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  getprices(invoiceId);
+                })
+                .catch((error) => {
+                  console.error("Error:", error);
+                  // Handle errors
+                });
+            }
+
+
 
             function discountchange(event) {
               const inputElement = event.target;

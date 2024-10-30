@@ -1,0 +1,158 @@
+<div id="SystemSetting" class=" w-full overflow-auto flex">
+    <div class="w-1/4 flex justify-center items-center">
+        <img src="<%=setting[0].shoplogo%>">
+    </div>
+    <form action="/setting/update" method="POST" enctype="multipart/form-data"
+        class="flex flex-col my-4 pb-5 float-right justify-center gap-5 items-center  w-3/4 h-5/6 bg-white p-5 rounded-xl z-50">
+        <div class="text-right w-full font-medium text-lg mb-4">
+            <a class="text-right">اعدادات المتجر</a>
+        </div>
+
+        <div class="mb-6 w-full">
+            <label for="default-input"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">اسم
+                المتجر</label>
+            <input value="<%=setting[0].shopname%>" type="text" placeholder="قم بادخال الاسم" name="name"
+                id="default-input"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+        </div>
+
+        <div class="mb-6 w-full">
+            <label for="default-input"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">العنوان</label>
+            <input value="<%=setting[0].adress%>" type="text" placeholder="قم بادخال العنوان" name="adress"
+                id="default-input"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+        </div>
+        <div class="mb-6 w-full">
+            <label for="default-input"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">رقم
+                الهاتف</label>
+            <input value="<%=setting[0].phonnumber%>" type="text" placeholder="قم بادخال رقم الهاتف"
+                name="phonnumber" id="default-input"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+        </div>
+        <div class="mb-6 w-full">
+            <label for="default-input"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">نهاية
+                القائمة</label>
+            <input value="<%=setting[0].invoicefooter%>" type="text" placeholder="قم بادخال كتابة نهاية القائمة"
+                name="invoicefooter" id="default-input"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+        </div>
+        <label class="inline-flex items-center cursor-pointer">
+            <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="printerActive" name="printerActive" class="sr-only peer"
+                    <%=setting[0].printerActive ? 'checked' : '' %> value="true">
+                <div
+                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                </div>
+                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">تفعيل طابعة
+                    رئيسية</span>
+            </label>
+        </label>
+        <label class="inline-flex items-center cursor-pointer">
+            <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="useInvoiceNumber" name="useInvoiceNumber" class="sr-only peer"
+                    <%=setting[0].useInvoiceNumber ? 'checked' : '' %> value="true">
+                <div
+                    class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+                </div>
+                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"
+                >
+عدم تصفير رقم الوصل يوميا                            </span>
+            </label>
+        </label>
+
+        <div class="mb-6 w-full">
+            <label for="default-input"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">ايبي جهاز
+                الطباعة</label>
+            <input value="<%=setting[0].printerip%>" type="text" placeholder="قم بادخال الايبي" name="printerip"
+                id="default-input"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+        </div>
+        <label class="block mb-2 text-sm font-medium text-gray-900 ml-auto dark:text-white"
+            for="file_input">اضافة
+            صورة
+            الوكو</label>
+        <input name="image"
+            class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+            aria-describedby="file_input_help" id="file_input" type="file">
+
+        <input type="text" id="foodcategoryid" name="foodcategoryid" class="hidden">
+        <div class="mb-6 w-full">
+            <label for="default-input"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                ارتفاع باركود الطباعة</label>
+            <input value="<%=setting[0].barcodeYsize%>" type="number"
+                placeholder="قم بادخال ارتفاع باركود الطباعة" name="barcodeYsize" id="default-input"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+        </div>
+        <div class="mb-6 w-full">
+            <label for="default-input"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                عرض باركود الطباعة</label>
+            <input value="<%=setting[0].barcodeXsize%>" type="number" placeholder="قم بادخال عرض باركود الطباعة"
+                name="barcodeXsize" id="default-input"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+        </div>
+
+        <div class="mb-6 w-full">
+            <label for="default-select"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                نوع ورق الطباعة
+            </label>
+            <select name="printerType" id="default-select"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+                <option value="A4" <%=setting[0].printerType==='A4' ? 'selected' : '' %>>A4</option>
+                <option value="Thermal" <%=setting[0].printerType==='Thermal' ? 'selected' : '' %>>حراري
+                </option>
+            </select>
+        </div>
+        <div class="mb-6 w-full">
+            <label for="default-select"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                وقت انتهاء الدوام </label>
+            <select name="closedTimeOffset" id="default-select"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+                <option value="0" <%=setting[0].closedTimeOffset=='0' ? 'selected' : '' %>>انتهاء اليوم</option>
+                <option value="1" <%=setting[0].closedTimeOffset=='1' ? 'selected' : '' %>>1 صباحا
+                </option>
+                <option value="2" <%=setting[0].closedTimeOffset=='2' ? 'selected' : '' %>>2 صباحا
+                </option>
+                <option value="3" <%=setting[0].closedTimeOffset=='3' ? 'selected' : '' %>>3 صباحا
+                </option>
+                <option value="4" <%=setting[0].closedTimeOffset=='4' ? 'selected' : '' %>>4 صباحا
+                </option>
+                <option value="5" <%=setting[0].closedTimeOffset=='5' ? 'selected' : '' %>>5 صباحا
+                </option>
+                <option value="6" <%=setting[0].closedTimeOffset=='6' ? 'selected' : '' %>>6 صباحا
+                </option>
+
+            </select>
+        </div>
+
+        <div class="mb-6 w-full">
+            <label for="default-input"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                وحدة الكمية</label>
+            <input value="<%=setting[0].amountUnit%>" placeholder="وحدة الكمية" name="amountUnit"
+                id="default-input"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+        </div>
+
+        <input type="submit" class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer"
+            value="تعديل">
+    </form>
+</div>

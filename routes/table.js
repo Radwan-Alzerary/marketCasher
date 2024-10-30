@@ -204,7 +204,52 @@ router.get("/getByType/:type", async (req, res) => {
 
 });
 
+router.get("/getOne/:tableId/", async (req, res) => {
+  try {
 
+
+    const id = req.params.tableId
+
+    const tables = await Table.findById(id);
+    res.json(tables);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+router.post('/editable', (req, res) => {
+  // Extract form data from the request
+  const { name, icon, color, iconChange, nameChange, colorChange, tablecategoryid } = req.body;
+
+  // Here, handle any file uploads if applicable (since 'enctype="multipart/form-data"' is used)
+  // For example, using `multer` to handle file uploads
+
+  // Process the data as needed, e.g., save it to a database
+  // Assuming `Table` is your model
+  console.log(req.body)
+  const updateData = {
+    name,
+    icon,
+    color,
+    iconChange: iconChange , // Convert checkbox values to boolean
+    nameChange: nameChange ,
+    colorChange: colorChange ,
+    tablecategoryid
+  };
+
+  // Example database update logic
+  Table.findByIdAndUpdate(tablecategoryid, updateData, { new: true })
+    .then((updatedTable) => {
+      res.json({ success: true, message: 'Edit successful', data: updatedTable });
+    })
+    .catch((error) => {
+      res.status(500).json({
+        message: 'Error updating table',
+        error
+      });
+    });
+});
 
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Counter = require("./CounterSchema"); // Import the Counter model
+const { comment } = require("postcss");
 
 const InvoiceSchema = new mongoose.Schema(
   {
@@ -32,10 +33,11 @@ const InvoiceSchema = new mongoose.Schema(
         discount: { type: Number },
         discountType: { type: String },
         resturentPrint: { type: Boolean, default: false },
-        printCount: { type: Number,default:0 },
+        printCount: { type: Number, default: 0 },
         isReturned: { type: Boolean, default: false }, // New field to track returned status of food items
         returnQuantity: { type: Number, default: 0 }, // Quantity returned
-
+        addTime: { type: Date, default: Date.now() },
+        comment: { type: String }, // Comment for the food item
       },
     ],
     dummyFood: [{
@@ -45,6 +47,7 @@ const InvoiceSchema = new mongoose.Schema(
       foodPrice: { type: Number },
       discount: { type: Number },
       discountType: { type: String },
+      comment: { type: String }, // Comment for the food item
 
     }],
     isReturned: { type: Boolean, default: false }, // New field to track full return status
