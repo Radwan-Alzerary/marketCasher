@@ -472,6 +472,7 @@ router.post("/food", async (req, res) => {
         id: food._id,
         quantity: Number(fastClick) || 1,
         discount: 0,
+        addTime:Date.now(),
         foodCost: food.cost,
         foodPrice: FoodPrice,
         discountType: discountType || "cash",

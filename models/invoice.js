@@ -36,7 +36,7 @@ const InvoiceSchema = new mongoose.Schema(
         printCount: { type: Number, default: 0 },
         isReturned: { type: Boolean, default: false }, // New field to track returned status of food items
         returnQuantity: { type: Number, default: 0 }, // Quantity returned
-        addTime: { type: Date, default: Date.now() },
+        addTime: { type: Date },
         comment: { type: String }, // Comment for the food item
       },
     ],
