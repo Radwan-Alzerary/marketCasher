@@ -365,7 +365,7 @@ async function updateInvoices() {
 
       if (invoiceUpdated) {
         // Recalculate foodcost and finalcost
-        invoice.foodcost = invoice.food.reduce((total, item) => total + item.foodCost, 0);
+        // invoice.foodcost = invoice.food.reduce((total, item) => total + item.foodCost, 0);
         invoice.finalcost = invoice.food.reduce((total, item) => total + item.foodPrice, 0);
 
         await invoice.save();
