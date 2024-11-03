@@ -339,6 +339,7 @@ async function updateInvoices() {
       isReturned: false,
       type: "قيد المعالجة"
     }).populate('food.id'); // Populate to get 'unit' and 'price'
+    console.log(invoices)
     for (const invoice of invoices) {
       let invoiceUpdated = false;
 
@@ -379,7 +380,7 @@ async function updateInvoices() {
 }
 
 // Set interval to run every minute (60000 milliseconds)
-setInterval(() => updateInvoices(io), 500);
+setInterval(() => updateInvoices(io), 60000);
 
 
 
