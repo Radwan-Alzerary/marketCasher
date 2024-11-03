@@ -43,6 +43,11 @@ router.post("/update", upload.single("image"), async (req, res) => {
     setting.closedTimeOffset = req.body.closedTimeOffset;
     setting.printerActive = req.body.printerActive || false;
     setting.useInvoiceNumber = req.body.useInvoiceNumber || false;
+    setting.mainCurrency = req.body.mainCurrency ;
+    setting.buyCurrency = req.body.buyCurrency ;
+    setting.sellCurrency = req.body.sellCurrency ;
+    setting.ExchangeRate = req.body.ExchangeRate ;
+
     console.log(req.body)
     if (req.file) {
       // Delete the previous image if it exists

@@ -30,8 +30,8 @@
             <label for="default-input"
                 class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">رقم
                 الهاتف</label>
-            <input value="<%=setting[0].phonnumber%>" type="text" placeholder="قم بادخال رقم الهاتف"
-                name="phonnumber" id="default-input"
+            <input value="<%=setting[0].phonnumber%>" type="text" placeholder="قم بادخال رقم الهاتف" name="phonnumber"
+                id="default-input"
                 class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required>
         </div>
@@ -62,9 +62,8 @@
                 <div
                     class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
                 </div>
-                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                >
-عدم تصفير رقم الوصل يوميا                            </span>
+                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                    عدم تصفير رقم الوصل يوميا </span>
             </label>
         </label>
 
@@ -77,8 +76,7 @@
                 class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required>
         </div>
-        <label class="block mb-2 text-sm font-medium text-gray-900 ml-auto dark:text-white"
-            for="file_input">اضافة
+        <label class="block mb-2 text-sm font-medium text-gray-900 ml-auto dark:text-white" for="file_input">اضافة
             صورة
             الوكو</label>
         <input name="image"
@@ -87,17 +85,15 @@
 
         <input type="text" id="foodcategoryid" name="foodcategoryid" class="hidden">
         <div class="mb-6 w-full">
-            <label for="default-input"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label for="default-input" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 ارتفاع باركود الطباعة</label>
-            <input value="<%=setting[0].barcodeYsize%>" type="number"
-                placeholder="قم بادخال ارتفاع باركود الطباعة" name="barcodeYsize" id="default-input"
+            <input value="<%=setting[0].barcodeYsize%>" type="number" placeholder="قم بادخال ارتفاع باركود الطباعة"
+                name="barcodeYsize" id="default-input"
                 class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required>
         </div>
         <div class="mb-6 w-full">
-            <label for="default-input"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label for="default-input" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 عرض باركود الطباعة</label>
             <input value="<%=setting[0].barcodeXsize%>" type="number" placeholder="قم بادخال عرض باركود الطباعة"
                 name="barcodeXsize" id="default-input"
@@ -106,8 +102,7 @@
         </div>
 
         <div class="mb-6 w-full">
-            <label for="default-select"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label for="default-select" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 نوع ورق الطباعة
             </label>
             <select name="printerType" id="default-select"
@@ -119,8 +114,54 @@
             </select>
         </div>
         <div class="mb-6 w-full">
-            <label for="default-select"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label for="default-select" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                عملة النظام </label>
+            <select name="mainCurrency" id="default-select" 
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+                <option value="iqd" <%=setting[0].mainCurrency==='iqd' ? 'selected' : '' %>>دينار</option>
+                <option value="usd" <%=setting[0].mainCurrency==='usd' ? 'selected' : '' %>>دولار
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-6 w-full">
+            <label for="default-select" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                عملة الشراء </label>
+            <select name="buyCurrency" id="default-select" 
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+                <option value="iqd" <%=setting[0].buyCurrency==='iqd' ? 'selected' : '' %>>دينار</option>
+                <option value="usd" <%=setting[0].buyCurrency==='usd' ? 'selected' : '' %>>دولار
+                </option>
+            </select>
+        </div>
+        
+        
+        
+        <div class="mb-6 w-full">
+            <label for="default-select" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                عملة البيع </label>
+            <select name="sellCurrency" id="default-select" 
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+                <option value="iqd" <%=setting[0].sellCurrency==='iqd' ? 'selected' : '' %>>دينار</option>
+                <option value="usd" <%=setting[0].sellCurrency==='usd' ? 'selected' : '' %>>دولار
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-6 w-full">
+            <label for="default-input" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                سعر الصرف</label>
+            <input value="<%=setting[0].ExchangeRate%>" placeholder="سعر الصرف" name="ExchangeRate" id="default-input"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                required>
+        </div>
+
+
+        <div class="mb-6 w-full">
+            <label for="default-select" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 وقت انتهاء الدوام </label>
             <select name="closedTimeOffset" id="default-select"
                 class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -143,11 +184,9 @@
         </div>
 
         <div class="mb-6 w-full">
-            <label for="default-input"
-                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
+            <label for="default-input" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 وحدة الكمية</label>
-            <input value="<%=setting[0].amountUnit%>" placeholder="وحدة الكمية" name="amountUnit"
-                id="default-input"
+            <input value="<%=setting[0].amountUnit%>" placeholder="وحدة الكمية" name="amountUnit" id="default-input"
                 class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required>
         </div>

@@ -221,6 +221,8 @@ router.post("/addfood", upload.single("image"), async (req, res) => {
     const Categoryid = req.body.foodcategoryid;
     const barcode = req.body.barcode;
     const unit = req.body.unit;
+    const costCurrency = req.body.costCurrency;
+    const priceCurrency = req.body.priceCurrency;
     const pricenum = parseInt(req.body.price.replace(/[^0-9]/g, ""));
     const costnum = parseInt(req.body.cost.replace(/[^0-9]/g, ""));
     const { name, unlimitecheck, quantety } = req.body;
@@ -236,6 +238,8 @@ router.post("/addfood", upload.single("image"), async (req, res) => {
       image: { url: imagePath },
       quantety,
       unit: unit,
+      costCurrency: costCurrency,
+      priceCurrency: priceCurrency,
     });
 
     const newfood = await food.save();

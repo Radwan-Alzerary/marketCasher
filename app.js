@@ -347,7 +347,6 @@ async function updateInvoices() {
         const food = foodItem.id;
 
         if (food.unit === 'ساعة' && foodItem.addTime) {
-          console.log('Processing food item:', food.name);
 
           // Calculate the time difference in minutes
           const timeDiffInMinutes = (Date.now() - new Date(foodItem.addTime)) / (1000 * 60);

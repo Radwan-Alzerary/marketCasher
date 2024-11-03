@@ -50,6 +50,22 @@ const SettingSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    mainCurrency: {
+        type: String,
+        default: "iqd"
+    },
+    buyCurrency: {
+        type: String,
+        default: "iqd"
+    },
+    sellCurrency: {
+        type: String,
+        default: "iqd"
+    },
+    ExchangeRate: {
+        type: Number
+    },
+
     barcodeXsize: { type: Number, default: 0 },
     barcodeYsize: { type: Number, default: 0 },
 

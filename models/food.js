@@ -10,6 +10,11 @@ const FoodSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    priceCurrency:{
+      type:String,
+      default:"iqd"
+    },
+
     image: {
       url: { type: String },
     },
@@ -43,6 +48,10 @@ const FoodSchema = new mongoose.Schema(
     cost: {
       type: Number,
       default: 0,
+    },
+    costCurrency:{
+      type:String,
+      default:"iqd"
     },
     discount: {
       type: Number,
