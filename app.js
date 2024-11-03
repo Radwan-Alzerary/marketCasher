@@ -337,8 +337,8 @@ async function updateInvoices() {
     const invoices = await Invoice.find({
       deleted: false,
       isReturned: false,
+      type: "قيد المعالجة"
     }).populate('food.id'); // Populate to get 'unit' and 'price'
-
     for (const invoice of invoices) {
       let invoiceUpdated = false;
 
@@ -350,7 +350,7 @@ async function updateInvoices() {
 
           // Calculate the time difference in minutes
           const timeDiffInMinutes = (Date.now() - new Date(foodItem.addTime)) / (1000 * 60);
-          
+
           // Calculate price and cost per minute
           const pricePerMinute = foodItem.id.price / 60;
           const costPerMinute = foodItem.id.cost / 60;
@@ -379,7 +379,7 @@ async function updateInvoices() {
 }
 
 // Set interval to run every minute (60000 milliseconds)
-setInterval(() => updateInvoices(io), 60000);
+setInterval(() => updateInvoices(io), 500);
 
 
 

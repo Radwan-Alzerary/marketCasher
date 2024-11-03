@@ -1024,7 +1024,7 @@
 
           <script>
             // Connect to the Socket.IO server
-            const socket = io('http://localhost:3000', {
+            const socket = io('/', {
               reconnection: true,  // Enable reconnection (default)
               reconnectionAttempts: Infinity,  // Try reconnecting forever
               reconnectionDelay: 1000,  // Wait 1 second before retrying
