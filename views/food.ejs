@@ -706,34 +706,55 @@
     // Attach the input event listener
     numberInput.addEventListener("input", function () {
       // Get the current input value
-      editnumberinput(numberInput);
+      editNumberInput(numberInput);
     });
 
     editpricenumberInput.addEventListener("input", function () {
       // Get the current input value
-      editnumberinput(editpricenumberInput);
+      editNumberInput(editpricenumberInput);
     });
     costnumberInput.addEventListener("input", function () {
       // Get the current input value
-      editnumberinput(costnumberInput);
+      editNumberInput(costnumberInput);
     });
     editcostnumberInput.addEventListener("input", function () {
       // Get the current input value
-      editnumberinput(editcostnumberInput);
+      editNumberInput(editcostnumberInput);
     });
 
-    function editnumberinput(numberInput) {
-      var value = numberInput.value;
-
-      // Remove existing commas from the value
-      var cleanedValue = value.replace(/,/g, "");
-
-      // Format the value with commas
-      var formattedValue = Number(cleanedValue).toLocaleString();
-
-      // Update the input value with the formatted value
-      numberInput.value = formattedValue;
+    function editNumberInput(numberInput) {
+    var position = numberInput.selectionStart;  // Save cursor position
+    var value = numberInput.value;
+    
+    // Only format if the value is not empty
+    if (value) {
+        // Remove all non-digit characters except decimal point
+        var cleanedValue = value.replace(/[^0-9.]/g, "");
+        
+        // Ensure only one decimal point exists
+        var decimalCount = (cleanedValue.match(/\./g) || []).length;
+        if (decimalCount > 1) {
+            cleanedValue = cleanedValue.replace(/\./g, function(match, index) {
+                return index === cleanedValue.indexOf('.') ? '.' : '';
+            });
+        }
+        
+        // Split number into integer and decimal parts
+        var parts = cleanedValue.split('.');
+        
+        // Add commas to integer part
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        
+        // Join back with decimal part if it exists
+        numberInput.value = parts.join('.');
+        
+        // Restore cursor position, adjusting for added commas
+        var addedCommas = (numberInput.value.match(/,/g) || []).length;
+        numberInput.setSelectionRange(position + addedCommas, position + addedCommas);
     }
+
+  }
+
 
     function handleCheckboxChange() {
       var checkbox = document.getElementById("unlimite");

@@ -139,8 +139,9 @@ router.post("/editfood", upload.single("image"), async (req, res) => {
     console.log(req.body);
     food.name = req.body.name;
     food.barcode = req.body.barcode;
-    food.price = parseInt(req.body.price.replace(/[^0-9]/g, ""));
-    food.cost = parseInt(req.body.cost.replace(/[^0-9]/g, ""));
+    food.price = parseFloat(req.body.price.replace(/[^0-9.]/g, "").match(/^\d*\.?\d+/)?.[0] || 0);
+    food.cost = parseFloat(req.body.cost.replace(/[^0-9.]/g, "").match(/^\d*\.?\d+/)?.[0] || 0);
+
     food.quantety = req.body.quantety;
     food.unlimit = req.body.unlimitecheck;
     food.printable = req.body.printable;
@@ -223,8 +224,8 @@ router.post("/addfood", upload.single("image"), async (req, res) => {
     const unit = req.body.unit;
     const costCurrency = req.body.costCurrency;
     const priceCurrency = req.body.priceCurrency;
-    const pricenum = parseInt(req.body.price.replace(/[^0-9]/g, ""));
-    const costnum = parseInt(req.body.cost.replace(/[^0-9]/g, ""));
+    const pricenum = parseFloat(req.body.price.replace(/[^0-9.]/g, "").match(/^\d*\.?\d+/)?.[0] || 0);
+    const costnum = parseFloat(req.body.cost.replace(/[^0-9.]/g, "").match(/^\d*\.?\d+/)?.[0] || 0);
     const { name, unlimitecheck, quantety } = req.body;
     const imagePath = req.file ? "/img/foodimg/" + req.file.filename : null;
     console.log(imagePath);

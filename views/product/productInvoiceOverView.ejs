@@ -107,7 +107,12 @@
     <div class="bg-zinc-100 h-1/4 pt-3">
         <div class="flex justify-around gap-16 mb-1 items-center">
             <div class="font-medium text-sm">
+                <%if(setting.sellCurrency === "usd"){%>
+                    <a id="totalprice">0</a><span> $</span>
+                    <%}else{%>
                 <a id="totalprice">0</a><span> IQD</span>
+                  <%}%>
+
             </div>
             <div class="text-gray-600 text-sm"><a>مجموع السعر</a></div>
         </div>

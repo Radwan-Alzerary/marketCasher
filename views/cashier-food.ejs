@@ -201,9 +201,9 @@
           </script>
 
           <script>
-    <%if (category[0]) {%>
-    var previosopendoor = "<%=category[0].id%>";
-    <%}%>
+              <%if (category[0]) {%>
+              var previosopendoor = "<%=category[0].id%>";
+              <%}%>
               $(document).on('click', '[id^=categorydoor]', function () {
                 var id = this.id;
                 var categoryid = id.replace('categorydoor', '');

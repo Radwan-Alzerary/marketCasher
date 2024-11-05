@@ -1208,10 +1208,13 @@ router.post("/changedeleverycost", async (req, res) => {
 router.post("/price", async (req, res) => {
   try {
     const invoiceId = req.body.invoiceId;
+
     const invoice = await Invoice.findById(invoiceId).populate({
       path: "food.id",
       model: "Food",
     });
+    const setting = await Setting.findOne()
+
     let total = 0;
     let totalcost = 0;
     let totaldiscount = 0;
@@ -1225,6 +1228,12 @@ router.post("/price", async (req, res) => {
         price = food.foodPrice ? food.foodPrice : food.id.price;
       }
 
+      if(food.id.priceCurrency === "usd" && setting.sellCurrency === "iqd"){
+        price = price * setting.ExchangeRate;
+      }else if(food.id.priceCurrency === "iqd" && setting.sellCurrency === "usd"){
+        price = price / setting.ExchangeRate;
+
+      }
       const cost = food.id.cost;
       if (food.id.unit === "ساعة") {
         total += price;

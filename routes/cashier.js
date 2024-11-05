@@ -7,6 +7,7 @@ const User = require("../models/user");
 const isfulladmin = require("../config/auth").isfulladmin;
 const isCashire = require("../config/auth").isCashire;
 const ensureAuthenticated = require("../config/auth").userlogin;
+const Setting = require("../models/pagesetting");
 
 router.get("/", async (req, res) => {
   const category = await Category.find().populate("foods");
@@ -34,11 +35,11 @@ router.get("/menu/", async (req, res) => {
   // const table = await Table.findById(tableid).populate("invoice");
   const table = await Table.find();
   const user = await User.findById(req.user);
-
+  const setting = await Setting.findOne()
   const category = await Category.find().populate("foods");
   console.log(category);
 
-  res.render("cashier-food", { category, table, tableid, role: user.role, systemSetting: systemSetting });
+  res.render("cashier-food", { category, table, tableid, role: user.role, systemSetting: systemSetting,setting:setting });
 });
 
 router.get("/getCategory/", async (req, res) => {

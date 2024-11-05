@@ -59,7 +59,11 @@ width: 70%;
                                             </h3>
                                             <div class="border-t-2 border-violet-50 pb-3 w-full">
                                                 <p class="mt-1 text-lg font-medium text-gray-900">
-                                                    <%= food.price %> IQD
+                                                    <%if(food.priceCurrency === "usd"){ %>
+                                                        <%= food.price %> $
+                                                        <%}else{ %>
+                                                            <%= food.price %> IQD
+                                                        <%} %>
                                                 </p>
                                                 <% if (!food.unlimit) { %>
                                                     <p id="quntityleft-<%= food.id %>"
