@@ -1251,6 +1251,11 @@ router.post("/price", async (req, res) => {
     if (finalprice < 0) {
       finalprice = 0;
     }
+
+    if(setting.sellCurrency === "iqd"){
+      finalprice= Math.ceil(finalprice / 250) * 250;
+    }
+
     res.json({
       total,
       totalcost,
