@@ -15,6 +15,16 @@ const UserSchema = new mongoose.Schema({
   expireDate: {
     type: Date,
   },
+  onlineSync: {
+    isOnlineSync: {
+        type: Boolean,
+        default: false,
+    },
+    OnlineSyncDate: {
+        type: Date,
+    },
+},
+
   role: { type: String, defult: "user" },
   date: {
     type: Date,

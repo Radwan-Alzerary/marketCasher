@@ -9,6 +9,16 @@ const TableSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    onlineSync: {
+      isOnlineSync: {
+          type: Boolean,
+          default: false,
+      },
+      OnlineSyncDate: {
+          type: Date,
+      },
+  },
+
     book: {
       state: { type: Boolean, default: false },
       startBookedDate: { type: Date },

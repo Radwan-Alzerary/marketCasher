@@ -69,7 +69,10 @@ router.get("/getall", async (req, res) => {
 router.get("/categories", async (req, res) => {
   try {
     const systemSetting = await SystemSetting.findOne();
-    const category = await Category.find().populate("foods");
+    const category = await Category.find().populate({
+      path: "foods",
+      match: { active: true },
+    });
     const user = await User.findById(req.user);
     const food = await Food.find({ deleted: false, unlimit: false });
 

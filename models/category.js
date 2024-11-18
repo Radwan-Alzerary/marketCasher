@@ -21,8 +21,19 @@ const CategorySchema = new mongoose.Schema({
     category: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
-      }],
-  
+    }],
+    onlineSync: {
+        isOnlineSync: {
+            type: Boolean,
+            default: false,
+        },
+        OnlineSyncDate: {
+            type: Date,
+        },
+    },
+
+
+
     comments: [CommentSchema]
 }, {
     timestamps: true

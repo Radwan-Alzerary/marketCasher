@@ -54,6 +54,16 @@ const SettingSchema = new mongoose.Schema({
         type: String,
         default: "iqd"
     },
+    onlineSync: {
+        isOnlineSync: {
+            type: Boolean,
+            default: false,
+        },
+        OnlineSyncDate: {
+            type: Date,
+        },
+    },
+
     buyCurrency: {
         type: String,
         default: "iqd"

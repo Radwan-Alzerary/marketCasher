@@ -27,7 +27,7 @@ if (process.env.NODE_ENV === 'production') {
     });
 
     mongoose.connection.on('connected', () => {
-        console.log('Database connected');
+        console.log('Database connected prodConnection');
     });
 } else {
     mongoose.connect(devConnection, {
@@ -36,7 +36,10 @@ if (process.env.NODE_ENV === 'production') {
     });
 
     mongoose.connection.on('connected', () => {
-        console.log('Database connected');
+        console.log('Database connected devConnection');
     });
+
+
+    
 }
 

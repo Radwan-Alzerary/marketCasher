@@ -10,9 +10,9 @@ const FoodSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    priceCurrency:{
-      type:String,
-      default:"iqd"
+    priceCurrency: {
+      type: String,
+      default: "iqd"
     },
 
     image: {
@@ -49,9 +49,9 @@ const FoodSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    costCurrency:{
-      type:String,
-      default:"iqd"
+    costCurrency: {
+      type: String,
+      default: "iqd"
     },
     discount: {
       type: Number,
@@ -67,7 +67,17 @@ const FoodSchema = new mongoose.Schema(
     printable: {
       type: Boolean,
       default: true
+    },
+    onlineSync: {
+      isOnlineSync: {
+        type: Boolean,
+        default: false,
+      },
+      OnlineSyncDate: {
+        type: Date,
+      },
     }
+
   },
   {
     timestamps: true,

@@ -13,6 +13,16 @@ const purchasesInvoiceSchema = new mongoose.Schema(
     fulldiscount:{type:Number,default:0},
     fullgift:{type:Number,default:0},
     fullreturn:{type:Number,default:0},
+    onlineSync: {
+      isOnlineSync: {
+          type: Boolean,
+          default: false,
+      },
+      OnlineSyncDate: {
+          type: Date,
+      },
+  },
+
     items: [
       {
         id: { type: mongoose.Schema.Types.ObjectId, ref: "Food" },

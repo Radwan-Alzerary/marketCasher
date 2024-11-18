@@ -28,6 +28,7 @@ const User = require("./models/user");
 const socketIo = require('socket.io');
 const Table = require("./models/table");
 const Invoice = require("./models/invoice");
+const syncUnsyncedFoods = require("./syncService");
 
 // const Visitor = require('./models/visitor');
 app.use(express.static(path.join(__dirname, "public")));
@@ -83,6 +84,10 @@ app.use(cors({
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+
+
+
+
 
 const defaultPayment = [{ name: "نقدي" }, { name: "اجل" }];
 
@@ -380,6 +385,7 @@ async function updateInvoices() {
 
 // Set interval to run every minute (60000 milliseconds)
 setInterval(() => updateInvoices(io), 60000);
+syncUnsyncedFoods();
 
 
 

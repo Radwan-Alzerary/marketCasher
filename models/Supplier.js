@@ -4,6 +4,16 @@ const SupplierSchema = new mongoose.Schema(
     name: {
       type: String,
     },
+    onlineSync: {
+      isOnlineSync: {
+          type: Boolean,
+          default: false,
+      },
+      OnlineSyncDate: {
+          type: Date,
+      },
+  },
+
     purchasesInvoice: [
       {
         invoiceId: { type: mongoose.Schema.Types.ObjectId, ref: "Food" },

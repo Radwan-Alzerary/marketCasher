@@ -23,6 +23,16 @@ const InvoiceSchema = new mongoose.Schema(
     amountReceived: { type: Number, default: 0 },
     deleveryadress: { type: String },
     resivename: { type: String },
+    onlineSync: {
+      isOnlineSync: {
+          type: Boolean,
+          default: false,
+      },
+      OnlineSyncDate: {
+          type: Date,
+      },
+  },
+
     tableid: { type: mongoose.Schema.Types.ObjectId, ref: "Table" },
     food: [
       {

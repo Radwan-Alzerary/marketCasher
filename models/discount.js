@@ -6,8 +6,19 @@ const DiscountSchema = new mongoose.Schema({
     },
     discountype: { type: String },
     amount: { type: Number, default: 0 },
-    active:{type:Boolean,default : true}
+    onlineSync: {
+        isOnlineSync: {
+            type: Boolean,
+            default: false,
+        },
+        OnlineSyncDate: {
+            type: Date,
+        },
+    },
+
+    active: { type: Boolean, default: true }
 }
+
     , {
         timestamps: true
     });

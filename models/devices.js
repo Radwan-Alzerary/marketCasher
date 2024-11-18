@@ -32,6 +32,15 @@ const DevicesSchema = new mongoose.Schema(
         // required: true,
       },
     ],
+    onlineSync: {
+      isOnlineSync: {
+          type: Boolean,
+          default: false,
+      },
+      OnlineSyncDate: {
+          type: Date,
+      },
+  },
 
     categoryRole: [
       {

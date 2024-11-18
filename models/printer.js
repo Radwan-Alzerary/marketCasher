@@ -12,6 +12,16 @@ const TableSchema = new mongoose.Schema(
     type: {
       type: Boolean,
     },
+    onlineSync: {
+      isOnlineSync: {
+          type: Boolean,
+          default: false,
+      },
+      OnlineSyncDate: {
+          type: Date,
+      },
+  },
+
     ip: {
       type: String,
     },

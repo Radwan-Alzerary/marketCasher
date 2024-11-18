@@ -10,6 +10,16 @@ const DeliverySchema = new mongoose.Schema({
         progress : {type:String},
         finishdate : {type:String}
     }],
+    onlineSync: {
+        isOnlineSync: {
+            type: Boolean,
+            default: false,
+        },
+        OnlineSyncDate: {
+            type: Date,
+        },
+    },
+
 }, {
     timestamps: true
 });
