@@ -45,7 +45,10 @@ router.get("/menu/", async (req, res) => {
 router.get("/getCategory/", async (req, res) => {
   const user = await User.findById(req.user);
 
-  const category = await Category.find().populate("foods");
+  const category = await Category.find().populate({
+    path: "foods",
+    match: { active: true },
+  });
   console.log(category);
 
   res.json( category );
