@@ -1,0 +1,142 @@
+<!-- views/index.ejs -->
+<%- include('../header'); %>
+
+<main class="container mx-auto py-6 px-4 h-full">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">نظام إدارة الأقساط</h2>
+        <div class="flex items-center space-x-4">
+            <input type="text" id="clientSearch" placeholder="البحث عن العملاء..." class="border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button onclick="toggleView()" id="toggleViewBtn" class="text-blue-600 hover:bg-blue-100 rounded-md px-3 py-2 flex items-center space-x-2">
+                <% if (isCardView) { %>
+                    <!-- Table Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h18M3 8h18M3 12h18M3 16h18M3 20h18" />
+                    </svg>
+                    <span>عرض الجدول</span>
+                <% } else { %>
+                    <!-- Grid Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h4M4 12h4M4 18h4M12 6h4M12 12h4M12 18h4M20 6h-4M20 12h-4M20 18h-4" />
+                    </svg>
+                    <span>عرض البطاقات</span>
+                <% } %>
+            </button>
+        </div>
+    </div>
+    <div id="clientList" class="<%= isCardView ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : '' %>">
+        <% if (isCardView) { %>
+            <% clients.forEach(client => { %>
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <h3 class="text-xl font-semibold mb-2"><%= client.name %></h3>
+                    <p class="mb-1 flex items-center">
+                        <!-- Phone Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h2l3.6 7.59a1 1 0 00.9.41h6.2a1 1 0 00.9-1.19l-2-6.33a1 1 0 00-.98-.67h-4a1 1 0 00-.95.68L9.1 12H7a1 1 0 00-1 1v7a1 1 0 001 1h10a1 1 0 001-1v-7a1 1 0 00-1-1h-2.1l1.3-4.13a1 1 0 00-.98-1.28h-3.73a1 1 0 00-.95.68l-2 6.33a1 1 0 00.9 1.19h6.2a1 1 0 00.9-.41L19 5H21" />
+                        </svg>
+                        <%= client.phone %>
+                    </p>
+                    <p class="mb-1 flex items-center">
+                        <!-- Calendar Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        آخر دفعة: <%= client.lastPaymentDate %>
+                    </p>
+                    <p class="mb-3 flex items-center">
+                        <!-- Money Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
+                        </svg>
+                        المبلغ المستحق: <%= client.totalDue %> د.ع
+                    </p>
+                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded <%= client.status === 'late' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">
+                        <%= client.status === 'late' ? 'متأخر' : 'تم الدفع' %>
+                    </span>
+                    <a href="/client/<%= client.id %>" class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200">
+                        عرض التفاصيل
+                    </a>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <!-- Table View -->
+            <div class="bg-white rounded-lg shadow overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الاسم</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الهاتف</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">القسط المستحق</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ آخر قسط</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">المبلغ الحالي</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد الوصولات</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <% clients.forEach(client => { %>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900"><%= client.name %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.phone %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.totalDue %> د.ع</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.lastPaymentDate %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.totalDue %> د.ع</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.receiptCount %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right">
+                                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded <%= client.status === 'late' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">
+                                        <%= client.status === 'late' ? 'متأخر' : 'تم الدفع' %>
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a href="Installment/client/<%= client.id %>" class="text-blue-600 hover:text-blue-900">عرض التفاصيل</a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</main>
+
+<script>
+    let isCardView = <%= isCardView %>;
+
+    function toggleView() {
+        const newView = isCardView ? 'table' : 'card';
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('view', newView);
+        window.location.href = currentUrl.toString();
+    }
+
+    // Handle Search Functionality
+    document.getElementById('clientSearch').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const clientList = document.getElementById('clientList');
+        if (isCardView) {
+            const cards = clientList.querySelectorAll('.bg-white');
+            cards.forEach(card => {
+                const name = card.querySelector('h3').textContent.toLowerCase();
+                const phone = card.querySelector('p').textContent;
+                if (name.includes(searchTerm) || phone.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        } else {
+            const rows = clientList.querySelectorAll('table tbody tr');
+            rows.forEach(row => {
+                const name = row.children[0].textContent.toLowerCase();
+                const phone = row.children[1].textContent;
+                if (name.includes(searchTerm) || phone.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+
+<%- include('../footer',{currentpage:'Installment'}); %>

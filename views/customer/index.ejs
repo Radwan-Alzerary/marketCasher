@@ -1,0 +1,310 @@
+<%- include('../header'); %>
+
+
+    <div class="container mx-auto px-4 py-6 h-full" style="direction: rtl;">
+        <!-- Header -->
+        <header class="mb-8">
+            <h1 class="text-4xl font-extrabold text-center text-gray-800"> إدارة العملاء</h1>
+        </header>
+
+        <!-- Search and Sort -->
+        <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 mb-6">
+            <div class="relative flex-grow">
+                <input type="text" id="search" placeholder="البحث عن العملاء"
+                    class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                <span class="absolute inset-y-0 left-0 flex items-center pr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M9 3a6 6 0 014.472 10.024l4.147 4.147a1 1 0 01-1.414 1.414l-4.147-4.147A6 6 0 119 3zm0 2a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" />
+                    </svg>
+                    </span>
+            </div>
+            <div>
+                <select id="sort"
+                    class="w-full md:w-auto p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">الترتيب حسب</option>
+                    <option value="name">الاسم</option>
+                    <option value="phoneNumber">رقم الهاتف</option>
+                    <option value="specialDiscount">الخصم الخاص</option>
+                </select>
+            </div>
+            <!-- Add Customer Button -->
+            <div class="flex justify-end md:justify-start">
+                <button id="addCustomerBtn"
+                    class="w-full md:w-auto flex items-center justify-center p-3 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    إضافة عميل
+                </button>
+            </div>
+        </div>
+
+        <!-- Customer Table -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            الاسم</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم
+                            الهاتف</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            العنوان</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            الكفيل</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">نسبة
+                            خصم خاص</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="customerList" class="bg-white divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+
+        <!-- Add/Edit Customer Modal -->
+        <div id="customerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+            <div class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full">
+                <div class="px-6 py-4">
+                    <h2 id="modalTitle" class="text-xl font-semibold mb-4 text-gray-800"></h2>
+                    <form id="customerForm" class="space-y-4">
+                        <input type="hidden" id="customerId" name="customerId">
+                        <!-- Name -->
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">الاسم</label>
+                            <input type="text" id="name" name="name" required
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <!-- Phone Number -->
+                        <div>
+                            <label for="phoneNumber" class="block text-sm font-medium text-gray-700">رقم الهاتف</label>
+                            <input type="text" id="phoneNumber" name="phoneNumber"
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <!-- Phone Number 2 -->
+                        <div>
+                            <label for="phoneNumber2" class="block text-sm font-medium text-gray-700">رقم الهاتف
+                                2</label>
+                            <input type="text" id="phoneNumber2" name="phoneNumber2"
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <!-- Guarantor -->
+                        <div>
+                            <label for="guarantor" class="block text-sm font-medium text-gray-700"></label>
+                            <input type="text" id="guarantor" name="guarantor"
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <!-- Addresses -->
+                        <div>
+                            <label for="addresses" class="block text-sm font-medium text-gray-700">العناوين</label>
+                            <textarea id="addresses" name="addresses" rows="2"
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
+                        <!-- Nearest Addresses -->
+                        <div>
+                            <label for="nearestAddresses" class="block text-sm font-medium text-gray-700">أقرب
+                                العناوين</label>
+                            <textarea id="nearestAddresses" name="nearestAddresses" rows="2"
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
+                        <!-- Special Discount -->
+                        <div>
+                            <label for="specialDiscount" class="block text-sm font-medium text-gray-700">الخصم الخاص
+                                (%)</label>
+                            <input type="number" id="specialDiscount" name="specialDiscount" min="0" max="100"
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <!-- Buttons -->
+                        <div class="flex justify-end space-x-3 space-x-reverse mt-6">
+                            <button type="button" id="cancelBtn"
+                                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">إلغاء</button>
+                            <button type="submit"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">حفظ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // DOM Elements
+        const searchInput = document.getElementById('search');
+        const sortSelect = document.getElementById('sort');
+        const addCustomerBtn = document.getElementById('addCustomerBtn');
+        const customerList = document.getElementById('customerList');
+        const customerModal = document.getElementById('customerModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const customerForm = document.getElementById('customerForm');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // Fetch and display customers
+        async function fetchCustomers() {
+            const searchTerm = searchInput.value;
+            const sortBy = sortSelect.value;
+            try {
+                const response = await fetch(`/custemer/query?search=${searchTerm}&sort=${sortBy}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const customers = await response.json();
+                displayCustomers(customers);
+            } catch (error) {
+                console.error('Error fetching customers:', error);
+                customerList.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-red-500">حدث خطأ أثناء جلب بيانات العملاء. يرجى المحاولة مرة أخرى.</td></tr>';
+            }
+        }
+
+        // Display customers in the table
+        function displayCustomers(customers) {
+            customerList.innerHTML = '';
+            if (customers.length === 0) {
+                customerList.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">لم يتم العثور على عملاء.</td></tr>';
+                return;
+            }
+            customers.forEach(customer => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50 transition-colors duration-200';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">${customer.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">${customer.phoneNumber ? customer.phoneNumber : "لا يوجد"}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">${customer.addresses ? customer.addresses : "لا يوجد"}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">${customer.guarantor ? customer.guarantor : "لا يوجد"}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">${customer.specialDiscount ? customer.specialDiscount : 0}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                        <button class="text-blue-600 hover:text-blue-800 mr-3" aria-label="Edit Customer" onclick="editCustomer('${customer._id}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M17.414 2.586a2 2 0 00-2.828 0L5 12.172V15h2.828l9.586-9.586a2 2 0 000-2.828zM5 13v2h2l8.586-8.586-2-2L5 13z" />
+                            </svg>
+                        </button>
+                        <button class="text-red-600 hover:text-red-800" aria-label="Delete Customer" onclick="deleteCustomer('${customer._id}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H3a1 1 0 000 2h1v10a2 2 0 002 2h8a2 2 0 002-2V6h1a1 1 0 100-2h-2V3a1 1 0 00-1-1H6zm2 4a1 1 0 012 0v8a1 1 0 11-2 0V6zm4 0a1 1 0 012 0v8a1 1 0 11-2 0V6z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </td>
+                `; phoneNumber
+
+
+                customerList.appendChild(row);
+            });
+        }
+
+        // Add or update customer
+        async function saveCustomer(event) {
+            event.preventDefault();
+            const formData = new FormData(customerForm);
+            const customerData = Object.fromEntries(formData.entries());
+            const customerId = customerData.customerId;
+
+            if (customerId) {
+                customerData._id = customerId;
+            }
+
+            try {
+                const response = await fetch('/custemer', {
+                    method: customerId ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(customerData),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                customerModal.classList.add('hidden');
+                fetchCustomers();
+            } catch (error) {
+                console.error('Error saving customer:', error);
+                alert('خطأ في حفظ بيانات العميل');
+            }
+        }
+
+        // Edit customer
+        async function editCustomer(id) {
+            try {
+                const response = await fetch(`/custemer/${id}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const customer = await response.json();
+
+                customerForm.reset();
+                customerForm.customerId.value = customer._id || "";
+                customerForm.name.value = customer.name|| "";
+                customerForm.phoneNumber.value = customer.phoneNumber|| "";
+                customerForm.phoneNumber2.value = customer.phoneNumber2|| "";
+                customerForm.guarantor.value = customer.guarantor|| "";
+                customerForm.addresses.value = customer.addresses|| "";
+                customerForm.nearestAddresses.value = customer.nearestAddresses|| "";
+                customerForm.specialDiscount.value = customer.specialDiscount|| 0;
+
+                modalTitle.textContent = 'تعديل بيانات العميل';
+                customerModal.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error fetching customer for edit:', error);
+                alert('خطأ في جلب بيانات العميل للتعديل');
+            }
+        }
+
+        // Delete customer
+        async function deleteCustomer(id) {
+            if (confirm('هل أنت متأكد من حذف هذا العميل؟')) {
+                try {
+                    const response = await fetch(`/custemer/${id}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    fetchCustomers();
+                } catch (error) {
+                    console.error('Error deleting customer:', error);
+                    alert('خطأ في حذف العميل');
+                }
+            }
+        }
+
+        // Debounce function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', debounce(() => fetchCustomers(), 300));
+        sortSelect.addEventListener('change', fetchCustomers);
+
+        addCustomerBtn.addEventListener('click', () => {
+            customerForm.reset();
+            customerForm.customerId.value = '';
+            modalTitle.textContent = 'إضافة عميل جديد';
+            customerModal.classList.remove('hidden');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            customerModal.classList.add('hidden');
+        });
+
+        customerForm.addEventListener('submit', saveCustomer);
+
+        // Initial fetch
+        fetchCustomers();
+    </script>
+
+    <%- include('../footer',{currentpage:'custemer'}); %>

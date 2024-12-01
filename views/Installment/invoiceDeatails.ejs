@@ -1,0 +1,57 @@
+<%- include('../header'); %>
+<!-- views/invoiceDetails.ejs -->
+
+<main class="container mx-auto py-6 px-4">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-4">فاتورة #<%= invoice.id %></h2>
+        <p class="mb-2 flex items-center">
+            <!-- User Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.179 0 4.208.414 6.121 1.204M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.341A12.255 12.255 0 0112 21c-3.066 0-5.893-.991-8.428-2.659M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            العميل: <%= client ? client.name : 'غير معروف' %>
+        </p>
+        <p class="mb-2 flex items-center">
+            <!-- Calendar Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            التاريخ: <%= invoice.date %>
+        </p>
+        <p class="mb-2 flex items-center">
+            <!-- Money Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
+            </svg>
+            المبلغ الإجمالي: <%= invoice.total %> د.ع
+        </p>
+        <p class="mb-2 flex items-center">
+            <!-- Currency Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M12 7v6l4 2" />
+            </svg>
+            المدفوع: <%= invoice.paid %> د.ع
+        </p>
+        <p class="mb-4 flex items-center">
+            <!-- Money Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
+            </svg>
+            الرصيد المتبقي: <%= invoice.remaining %> د.ع
+        </p>
+        <span class="inline-block px-2 py-1 text-xs font-semibold rounded <%= invoice.status === 'late' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %> mb-6">
+            <%= invoice.status === 'late' ? 'متأخر' : 'مدفوع' %>
+        </span>
+        <div>
+            <button onclick="printInvoice(<%= invoice.id %>)" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 flex items-center">
+                <!-- Print Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9H4a2 2 0 00-2 2v8a2 2 0 002 2h16a2 2 0 002-2v-8a2 2 0 00-2-2h-2M6 9V7a2 2 0 012-2h8a2 2 0 012 2v2M6 9h12m-6 4v4m-3-4h6" />
+                </svg>
+                طباعة الفاتورة
+            </button>
+        </div>
+    </div>
+</main>
+<%- include('../footer',{currentpage:'Installment'}); %>

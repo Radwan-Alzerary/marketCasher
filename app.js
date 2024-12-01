@@ -89,7 +89,6 @@ app.set("view engine", "ejs");
 
 
 
-const defaultPayment = [{ name: "نقدي" }, { name: "اجل" }];
 
 async function updateFoodCategories() {
   try {
@@ -134,53 +133,59 @@ async function updateFoodCategories() {
 
 updateFoodCategories();
 
-paymentType
-  .countDocuments()
-  .then((count) => {
-    if (count === 0) {
-      // Create default documents using a forEach loop
-      defaultPayment.forEach((customerItem, index) => {
-        const defaultpaymentType = new paymentType(customerItem);
-        defaultpaymentType
-          .save()
-          .then(() => {
-            console.log(`defaultpaymentType ${index + 1} created.`);
-          })
-          .catch((err) => {
-            console.error(
-              `Error creating defaultpaymentType ${index + 1}:`,
-              err
-            );
-          });
-      });
-    }
-  })
-  .catch((err) => {
-    console.error("Error checking Customer collection:", err);
-  });
+const defaultPayment = [{ name: "نقدي" }, { name: "اجل" }, { name: "قسط" }];
 
-const defaultStorges = [{ name: "معدات" }, { name: "منتجات" }];
-storge
-  .countDocuments()
-  .then((count) => {
-    if (count === 0) {
-      // Create default documents using a forEach loop
-      defaultStorges.forEach((customerItem, index) => {
-        const defaultStorge = new storge(customerItem);
-        defaultStorge
+defaultPayment.forEach((paymentItem, index) => {
+  paymentType
+    .findOne({ name: paymentItem.name }) // Check if the payment type exists
+    .then((existingPayment) => {
+      if (!existingPayment) {
+        // If not found, create and save it
+        const newPaymentType = new paymentType(paymentItem);
+        newPaymentType
           .save()
           .then(() => {
-            console.log(`defaultStorge ${index + 1} created.`);
+            console.log(`Payment type "${paymentItem.name}" added successfully.`);
           })
           .catch((err) => {
-            console.error(`Error creating defaultStorge ${index + 1}:`, err);
+            console.error(`Error adding payment type "${paymentItem.name}":`, err);
           });
-      });
-    }
-  })
-  .catch((err) => {
-    console.error("Error checking Customer collection:", err);
-  });
+      } else {
+        console.log(`Payment type "${paymentItem.name}" already exists.`);
+      }
+    })
+    .catch((err) => {
+      console.error(`Error checking payment type "${paymentItem.name}":`, err);
+    });
+});
+
+
+const defaultStorges = [{ name: "معدات" }, { name: "منتجات" }, { name: "مواد اولية" }];
+
+defaultStorges.forEach((storgeItem, index) => {
+  storge
+    .findOne({ name: storgeItem.name }) // Check if the storage type exists
+    .then((existingStorge) => {
+      if (!existingStorge) {
+        // If not found, create and save it
+        const newStorge = new storge(storgeItem);
+        newStorge
+          .save()
+          .then(() => {
+            console.log(`Storage type "${storgeItem.name}" added successfully.`);
+          })
+          .catch((err) => {
+            console.error(`Error adding storage type "${storgeItem.name}":`, err);
+          });
+      } else {
+        console.log(`Storage type "${storgeItem.name}" already exists.`);
+      }
+    })
+    .catch((err) => {
+      console.error(`Error checking storage type "${storgeItem.name}":`, err);
+    });
+});
+
 
 systemSetting.countDocuments()
   .then((count) => {

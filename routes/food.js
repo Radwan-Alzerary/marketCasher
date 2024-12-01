@@ -6,9 +6,6 @@ const multer = require("multer");
 const fs = require("fs");
 const User = require("../models/user");
 const SystemSetting = require("../models/systemSetting");
-const isfulladmin = require("../config/auth").isfulladmin;
-const isCashire = require("../config/auth").isCashire;
-const ensureAuthenticated = require("../config/auth").userlogin;
 
 // Set up multer storage engine for image upload
 const storage = multer.diskStorage({

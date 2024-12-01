@@ -28,7 +28,6 @@ router.post("/", async (req, res) => {
     const newDevice = new Device(req.body.device);
     console.log(req.body)
     const category = await Category.find()
-
     await newDevice.save();
     res.redirect("/devices");
   } catch (err) {

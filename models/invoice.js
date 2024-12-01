@@ -25,14 +25,19 @@ const InvoiceSchema = new mongoose.Schema(
     resivename: { type: String },
     onlineSync: {
       isOnlineSync: {
-          type: Boolean,
-          default: false,
+        type: Boolean,
+        default: false,
       },
       OnlineSyncDate: {
-          type: Date,
+        type: Date,
       },
-  },
+    },
+    installment: {
+      maintenanceType: { type: String, enum: ['يومي', 'أسبوعي', 'شهري', 'مخصص'] },
+      dateOfinstallment: { type: Date },
+      payment: [{money:{ type: Number} }]
 
+    },
     tableid: { type: mongoose.Schema.Types.ObjectId, ref: "Table" },
     food: [
       {

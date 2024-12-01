@@ -6,9 +6,6 @@ const Invoice = require("../models/invoice");
 const Setting = require("../models/systemSetting");
 const Delevery = require("../models/delevery");
 const User = require("../models/user");
-const isfulladmin = require("../config/auth").isfulladmin;
-const isCashire = require("../config/auth").isCashire;
-const ensureAuthenticated = require("../config/auth").userlogin;
 
 router.get("/", async (req, res) => {
   const table = await Table.find();

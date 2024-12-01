@@ -1,0 +1,20 @@
+<%- include('layout', { body: `
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4 text-gray-700">Create New Customer</h2>
+        <form action="/create" method="POST" class="space-y-4">
+            <input name="name" placeholder="Name" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <input name="phoneNumber" placeholder="Phone Number" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <input name="phoneNumber2" placeholder="Phone Number 2" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <input name="guarantor" placeholder="Guarantor" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <input name="addresses" placeholder="Addresses" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <input name="nearestAddresses" placeholder="Nearest Addresses" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <input name="specialDiscount" type="number" placeholder="Special Discount" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+            <div class="flex justify-end space-x-2">
+                <a href="/" class="p-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-300 ease-in-out">Cancel</a>
+                <button type="submit" class="p-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300 ease-in-out">Create Customer</button>
+            </div>
+        </form>
+    </div>
+    ` }) %>
+    
+    

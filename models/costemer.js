@@ -8,16 +8,28 @@ const CustomerSchema = new mongoose.Schema(
     phoneNumber: {
       type: String,
     },
+    phoneNumber2: {
+      type: String,
+    },
+    guarantor: { type: String },
+
     addresses: { type: String },
+
+    nearestAddresses: { type: String },
+
+    specialDiscount : {type:Number}, 
+
     onlineSync: {
       isOnlineSync: {
-          type: Boolean,
-          default: false,
+        type: Boolean,
+        default: false,
       },
+
       OnlineSyncDate: {
-          type: Date,
+        type: Date,
       },
-  },
+      jop: { type: String }
+    },
 
     invoice: [
       {
