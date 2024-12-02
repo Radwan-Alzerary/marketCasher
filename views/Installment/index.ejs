@@ -47,7 +47,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
                         </svg>
-                        المبلغ المستحق: <%= client.totalDue %> د.ع
+                        المبلغ المستحق: <%= client.totalDue.toFixed(2); %> د.ع
                     </p>
                     <span class="inline-block px-2 py-1 text-xs font-semibold rounded <%= client.status === 'late' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">
                         <%= client.status === 'late' ? 'متأخر' : 'تم الدفع' %>
@@ -78,9 +78,9 @@
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900"><%= client.name %></td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.phone %></td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.totalDue %> د.ع</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.lastPaymentDate %></td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.totalDue %> د.ع</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.totalDue.toFixed(2); %> د.ع</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%=`${new Date(client.lastPaymentDate).getDate().toString().padStart(2, '0')}/${(new Date(client.lastPaymentDate).getMonth() + 1).toString().padStart(2, '0')}/${new Date(client.lastPaymentDate).getFullYear()}`                                     %></td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.totalDue.toFixed(2) %> د.ع</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= client.receiptCount %></td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <span class="inline-block px-2 py-1 text-xs font-semibold rounded <%= client.status === 'late' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">

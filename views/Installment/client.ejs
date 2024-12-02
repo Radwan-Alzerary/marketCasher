@@ -1,19 +1,16 @@
 <%- include('../header'); %>
-<!-- views/clientDetails.ejs -->
 
-<main class="container mx-auto py-6 px-4">
+<main class="container mx-auto py-6 px-4 h-full">
     <div class="bg-white p-6 rounded-lg shadow-md">
         <div class="flex justify-between items-start mb-6">
             <div>
                 <h3 class="text-2xl font-bold mb-2"><%= clientData.name %></h3>
                 <p class="text-gray-600 flex items-center">
-                    <!-- Phone Icon -->
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h2l3.6 7.59a1 1 0 00.9.41h6.2a1 1 0 00.9-1.19l-2-6.33a1 1 0 00-.98-.67h-4a1 1 0 00-.95.68L9.1 12H7a1 1 0 00-1 1v7a1 1 0 001 1h10a1 1 0 001-1v-7a1 1 0 00-1-1h-2.1l1.3-4.13a1 1 0 00-.98-1.28h-3.73a1 1 0 00-.95.68l-2 6.33a1 1 0 00.9 1.19h6.2a1 1 0 00.9-.41L19 5H21" />
                     </svg>
                     الهاتف: <%= clientData.phoneNumber %>
                 </p>
-                
             </div>
             <span class="inline-block px-2 py-1 text-xs font-semibold rounded <%= clientData.status === 'late' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">
                 <%= clientData.status === 'late' ? 'متأخر' : 'تم الدفع' %>
@@ -23,37 +20,16 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
                 <p class="text-gray-600 mb-1">القسط المستحق</p>
-                <p class="text-xl font-semibold"><%= clientData.totalDue %> د.ع</p>
+                <p class="text-xl font-semibold"><%= clientData.totalDue.toFixed(2) %> د.ع</p>
             </div>
             <div>
                 <p class="text-gray-600 mb-1">تاريخ آخر قسط</p>
-                <p class="text-xl font-semibold"><%= clientData.lastPaymentDate %></p>
-            </div>
-            <div>
-                <p class="text-gray-600 mb-1">المبلغ الحالي</p>
-                <p class="text-xl font-semibold"><%= clientData.totalDue %> د.ع</p>
+                <p class="text-xl font-semibold"><%= new Date(clientData.lastPaymentDate).toLocaleDateString('ar-EG') %></p>
             </div>
             <div>
                 <p class="text-gray-600 mb-1">عدد الوصولات</p>
                 <p class="text-xl font-semibold"><%= clientData.receiptCount %></p>
             </div>
-        </div>
-
-        <div class="flex space-x-4 mb-6">
-            <button onclick="printClientDetails(<%= clientData.id %>)" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 flex items-center">
-                <!-- Print Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9H4a2 2 0 00-2 2v8a2 2 0 002 2h16a2 2 0 002-2v-8a2 2 0 00-2-2h-2M6 9V7a2 2 0 012-2h8a2 2 0 012 2v2M6 9h12m-6 4v4m-3-4h6" />
-                </svg>
-                طباعة تفاصيل الحساب المالي
-            </button>
-            <button onclick="printClientReceipts(<%= clientData.id %>)" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 flex items-center">
-                <!-- Print Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9H4a2 2 0 00-2 2v8a2 2 0 002 2h16a2 2 0 002-2v-8a2 2 0 00-2-2h-2M6 9V7a2 2 0 012-2h8a2 2 0 012 2v2M6 9h12m-6 4v4m-3-4h6" />
-                </svg>
-                طباعة تفاصيل الوصولات
-            </button>
         </div>
 
         <h4 class="text-xl font-semibold mb-4">الفواتير</h4>
@@ -72,17 +48,17 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     <% clientData.invoice.forEach(invoice => { %>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900"><%= invoice.invoiceId.id %></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= invoice.invoiceId.date %></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= invoice.invoiceId.total %> د.ع</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= invoice.invoiceId.remaining %> د.ع</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900"><%= invoice.invoiceId.number %></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= new Date(invoice.invoiceId.createdAt).toLocaleDateString('ar-EG') %></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= invoice.invoiceId.finalcost.toFixed(2) %> د.ع</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500"><%= invoice.invoiceId.installment?.remainingAmount?.toFixed(2) || 0 %> د.ع</td>
                             <td class="px-6 py-4 whitespace-nowrap text-right">
-                                <span class="inline-block px-2 py-1 text-xs font-semibold rounded <%= invoice.status === 'late' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">
-                                    <%= invoice.invoiceId.status === 'late' ? 'متأخر' : 'مدفوع' %>
+                                <span class="inline-block px-2 py-1 text-xs font-semibold rounded <%= invoice.invoiceId.installment?.remainingAmount > 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %>">
+                                    <%= invoice.invoiceId.installment?.remainingAmount > 0 ? 'متأخر' : 'مدفوع' %>
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="/invoice/<%= invoice.id %>" class="text-blue-600 hover:text-blue-900">عرض</a>
+                                <a href="/Installment/invoice/<%= invoice.invoiceId._id %>" class="text-blue-600 hover:text-blue-900">عرض</a>
                             </td>
                         </tr>
                     <% }); %>
@@ -92,9 +68,4 @@
     </div>
 </main>
 
-<script>
-    // JavaScript functions are handled in separate scripts.js
-</script>
-
-
-<%- include('../footer',{currentpage:'Installment'}); %>
+<%- include('../footer', { currentpage: 'Installment' }); %>

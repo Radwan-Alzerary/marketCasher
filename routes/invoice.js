@@ -30,6 +30,7 @@ const { printForRole } = require("../service/thermalPrintService");
 const path = require("path");
 const fs = require("fs");
 const Devices = require("../models/devices");
+const { createInstallmentData } = require("../service/createInstallment");
 
 
 // Function to update invoices
@@ -157,7 +158,7 @@ async function printReportAsync(imagePath, printincount, data) {
 async function openCashdraw() {
   try {
     const device = await Devices.findOne({ openCashdraw: "Active" });
-    console.log(device)
+    // console.log(device)
     if (!device || !device.ip) {
       throw new Error('No active Cashier device found or its IP is not configured.');
     }
@@ -472,7 +473,7 @@ router.post("/food", async (req, res) => {
         id: food._id,
         quantity: Number(fastClick) || 1,
         discount: 0,
-        addTime:Date.now(),
+        addTime: Date.now(),
         foodCost: food.cost,
         foodPrice: FoodPrice,
         discountType: discountType || "cash",
@@ -1065,7 +1066,7 @@ router.post("/changecomment", async (req, res) => {
         .json({ error: "Food item not found in the invoice." });
     }
     foodItem.comment = comment;
-    
+
     await invoice.save();
     const editOneFood = await Food.findById(foodId);
     res.json({
@@ -1162,6 +1163,47 @@ router.post("/changepaymentMethod", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+router.post("/changepaymentToInstallment", async (req, res) => {
+  try {
+    const invoiceid = req.body.invoiceId;
+
+    // Find the invoice by its ID and populate the paymentType field
+    let invoice = await Invoice.findById(invoiceid);
+    const oldPaymentMethod = await paymentType.findById(invoice.paymentType);
+    if (!invoice) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+    let newState = "";
+    // If the invoice has no paymentType set, default it to "اجل"
+    if (!invoice.paymentType) {
+      const deferredPaymentType = await paymentType.findOne({ name: "قسط" });
+      invoice.paymentType = deferredPaymentType._id;
+    } else {
+      // Check the current payment type and switch it
+      if (oldPaymentMethod.name === "قسط") {
+        const cashPaymentType = await paymentType.findOne({ name: "نقدي" });
+        invoice.paymentType = cashPaymentType._id;
+        newState = "نقدي";
+      } else if (oldPaymentMethod.name === "نقدي") {
+        const deferredPaymentType = await paymentType.findOne({ name: "قسط" });
+        invoice.paymentType = deferredPaymentType._id;
+        newState = "قسط";
+      } else {
+        return res.status(400).json({ error: "Invalid payment type" });
+      }
+    }
+
+    // Save the updated invoice
+    await invoice.save();
+    res.json({
+      message: "Payment method changed",
+      newPaymentType: newState,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 router.get("/getPaymentType", async (req, res) => {
   try {
@@ -1228,9 +1270,9 @@ router.post("/price", async (req, res) => {
         price = food.foodPrice ? food.foodPrice : food.id.price;
       }
 
-      if(food.id.priceCurrency === "usd" && setting.sellCurrency === "iqd"){
+      if (food.id.priceCurrency === "usd" && setting.sellCurrency === "iqd") {
         price = price * setting.ExchangeRate;
-      }else if(food.id.priceCurrency === "iqd" && setting.sellCurrency === "usd"){
+      } else if (food.id.priceCurrency === "iqd" && setting.sellCurrency === "usd") {
         price = price / setting.ExchangeRate;
 
       }
@@ -1252,8 +1294,8 @@ router.post("/price", async (req, res) => {
       finalprice = 0;
     }
 
-    if(setting.sellCurrency === "iqd"){
-      finalprice= Math.ceil(finalprice / 250) * 250;
+    if (setting.sellCurrency === "iqd") {
+      finalprice = Math.ceil(finalprice / 250) * 250;
     }
 
     res.json({
@@ -1332,77 +1374,99 @@ router.post("/cancele", async (req, res) => {
   }
 });
 
+// Updated /finish route
 router.post("/finish", async (req, res) => {
   try {
-    const table = await Table.findById(req.body.tableId)
+    // Fetch the table by ID
+    const table = await Table.findById(req.body.tableId);
+    if (!table) {
+      return res.status(404).json({ message: "Table not found" });
+    }
+
+    // Fetch the invoice by ID
     let invoice = await Invoice.findById(req.body.invoiceId);
+    if (!invoice) {
+      return res.status(404).json({ message: "Invoice not found" });
+    }
+
+    // Initialize installmentId to null
+    let installmentId = null;
+
+    // If installmentWork is true, create an Installment and get its ID
+    if (req.body.installmentWork) {
+      console.log(installmentId)
+      installmentId = await createInstallmentData(req.body.installment);
+    }
+    console.log(installmentId)
+
+    // Update invoice fields
     invoice.active = false;
     invoice.progressdata = Date.now();
     invoice.fullcost = req.body.totalcost;
     invoice.fulldiscont = req.body.totaldicont;
-    invoice.resivename = req.body.resivename;
+    invoice.resivename = req.body.resivename || "زبون عام";
     invoice.finalcost = req.body.finalcost;
     invoice.foodcost = req.body.foodcost;
+    invoice.installmentInvoice = installmentId; // Assign the Installment ID to invoice.installment
+
+    // Determine invoice type based on table number
     if (table.number > 500) {
       invoice.type = "توصيل";
     } else {
       invoice.type = "مكتمل";
     }
+
+    // Update delivery details
     invoice.tableid = req.body.tableId;
     invoice.deloveryname = req.body.deloveryname;
     invoice.deloveryphone = req.body.deloveryphone;
-    if (!invoice.resivename) {
-      invoice.resivename = "زبون عام";
-    }
 
-    let custemer = await Customer.findOne({ name: invoice.resivename });
-    if (!custemer) {
-
-
-      custemer = new Customer({ name: invoice.resivename, phoneNumber: invoice.deloveryphone, addresses: invoice.deloveryname });
+    // Find or create customer
+    let customer = await Customer.findOne({ name: invoice.resivename });
+    if (!customer) {
+      customer = new Customer({
+        name: invoice.resivename,
+        phoneNumber: invoice.deloveryphone,
+        addresses: invoice.deloveryname,
+        invoice: [{ invoiceId: invoice._id }],
+      });
     } else {
-      custemer.phoneNumber = invoice.deloveryphone
-      custemer.addresses = invoice.deloveryname
-      await custemer.save()
+      // Update customer details if they already exist
+      customer.phoneNumber = invoice.deloveryphone;
+      customer.addresses = invoice.deloveryname;
+
+      // Check if the invoiceId already exists in the customer's invoice array
+      const invoiceExists = customer.invoice.some(
+        (inv) => inv.invoiceId.toString() === invoice._id.toString()
+      );
+
+      // If not, push the invoiceId to the customer's invoice array
+      if (!invoiceExists) {
+        customer.invoice.push({ invoiceId: invoice._id });
+      }
     }
 
-    // Check if the invoiceId already exists in the customer's invoice array
-    const invoiceExists = custemer.invoice.some(
-      (inv) => inv.invoiceId.toString() === invoice._id.toString()
-    );
+    await customer.save();
 
-    // If not, push the invoiceId to the customer's invoice array
-    if (!invoiceExists) {
-      custemer.invoice.push({ invoiceId: invoice._id });
-      await custemer.save();
-    }
+    // Update the table
+    table.lastinvoice = invoice._id;
 
-    const currentable = await Table.findById(invoice.tableid);
-    currentable.lastinvoice = req.body.invoiceId;
+    // Remove the invoiceId from the table's invoice array
+    table.invoice.pull(invoice._id);
 
+    // Save the updated invoice and table
     await invoice.save();
-    await currentable.save();
-
-    const updatedInvoice = await Table.findByIdAndUpdate(
-      req.body.tableId,
-      { $pull: { invoice: req.body.invoiceId } },
-      { new: true }
-    );
-
-    if (!updatedInvoice) {
-      return res
-        .status(404)
-        .json({ message: "Invoice or food item not found" });
-    }
+    await table.save();
 
     res.json({
       message: "Finished the invoice successfully",
     });
   } catch (err) {
     console.error(err);
-    return res.json({ message: "No invoice found in the table", err });
+    return res.status(500).json({ message: "An error occurred", err });
   }
 });
+
 
 router.post("/printinvoice", async (req, res) => {
   try {
@@ -1996,19 +2060,19 @@ router.get("/:tableId/foodToResturentChecout", async (req, res) => {
     });
 
     const invoiceCopy = JSON.parse(JSON.stringify(invoice.toObject()));
-    console.log(invoiceCopy)
+    // console.log(invoiceCopy)
 
     // const oldInvoice = [...invoice];
     invoice.food.forEach(item => {
-      console.log("item.printCount", item.printCount)
-      console.log("item.quantity", item.quantity)
+      // console.log("item.printCount", item.printCount)
+      // console.log("item.quantity", item.quantity)
       item.printCount = item.quantity
-      console.log("xx", item.id.id);
+      // console.log("xx", item.id.id);
     });
 
     invoiceCopy.food = invoiceCopy.food.map(item => {
-      console.log("item.printCount", item.printCount);
-      console.log("item.quantity", item.quantity);
+      // console.log("item.printCount", item.printCount);
+      // console.log("item.quantity", item.quantity);
 
       // Convert printCount and quantity to numbers for the comparison
       const printCountNum = Number(item.printCount);
@@ -2027,7 +2091,7 @@ router.get("/:tableId/foodToResturentChecout", async (req, res) => {
     });
 
 
-    console.log(invoiceCopy)
+    // console.log(invoiceCopy)
     const setting = await Setting.findOne().sort({ number: -1 });
     const tableid = invoice.tableid ? invoice.tableid.number : 0;
     let invoiceNumber = null
@@ -2098,7 +2162,7 @@ router.delete("/:tableId/:invoiceId/food/:foodId", async (req, res) => {
 router.delete("/:tableId/dummyFood/:foodId", async (req, res) => {
   try {
     const { foodId, tableId } = req.params;
-    console.log(foodId, tableId);
+    // console.log(foodId, tableId);
     const table = await Table.findById(tableId);
     if (!table) {
       return res.status(404).json({ error: "Table not found" });

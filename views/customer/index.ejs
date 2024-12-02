@@ -93,23 +93,28 @@
                         </div>
                         <!-- Guarantor -->
                         <div>
-                            <label for="guarantor" class="block text-sm font-medium text-gray-700"></label>
+                            <label for="guarantor" class="block text-sm font-medium text-gray-700">الكفيل</label>
                             <input type="text" id="guarantor" name="guarantor"
                                 class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         </div>
                         <!-- Addresses -->
                         <div>
-                            <label for="addresses" class="block text-sm font-medium text-gray-700">العناوين</label>
+                            <label for="addresses" class="block text-sm font-medium text-gray-700">العنوان</label>
                             <textarea id="addresses" name="addresses" rows="2"
                                 class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
                         </div>
                         <!-- Nearest Addresses -->
                         <div>
-                            <label for="nearestAddresses" class="block text-sm font-medium text-gray-700">أقرب
-                                العناوين</label>
+                            <label for="nearestAddresses" class="block text-sm font-medium text-gray-700">اقرب نقطة دالة</label>
                             <textarea id="nearestAddresses" name="nearestAddresses" rows="2"
                                 class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
                         </div>
+                        <div>
+                            <label for="nearestGuarantorAddresses" class="block text-sm font-medium text-gray-700">عنوان الكفيل</label>
+                            <textarea id="nearestGuarantorAddresses" name="nearestGuarantorAddresses" rows="2"
+                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
+
                         <!-- Special Discount -->
                         <div>
                             <label for="specialDiscount" class="block text-sm font-medium text-gray-700">الخصم الخاص
@@ -241,6 +246,7 @@
                 customerForm.phoneNumber.value = customer.phoneNumber|| "";
                 customerForm.phoneNumber2.value = customer.phoneNumber2|| "";
                 customerForm.guarantor.value = customer.guarantor|| "";
+                customerForm.nearestGuarantorAddresses.value = customer.nearestGuarantorAddresses|| "";
                 customerForm.addresses.value = customer.addresses|| "";
                 customerForm.nearestAddresses.value = customer.nearestAddresses|| "";
                 customerForm.specialDiscount.value = customer.specialDiscount|| 0;

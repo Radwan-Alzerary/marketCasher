@@ -1,57 +1,295 @@
-<%- include('../header'); %>
-<!-- views/invoiceDetails.ejs -->
+<!-- invoiceDetails.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تفاصيل الفاتورة</title>
+    <!-- Include Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <!-- Include your header content here -->
+    </header>
 
-<main class="container mx-auto py-6 px-4">
-    <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-4">فاتورة #<%= invoice.id %></h2>
-        <p class="mb-2 flex items-center">
-            <!-- User Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.179 0 4.208.414 6.121 1.204M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.341A12.255 12.255 0 0112 21c-3.066 0-5.893-.991-8.428-2.659M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            العميل: <%= client ? client.name : 'غير معروف' %>
-        </p>
-        <p class="mb-2 flex items-center">
-            <!-- Calendar Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            التاريخ: <%= invoice.date %>
-        </p>
-        <p class="mb-2 flex items-center">
-            <!-- Money Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
-            </svg>
-            المبلغ الإجمالي: <%= invoice.total %> د.ع
-        </p>
-        <p class="mb-2 flex items-center">
-            <!-- Currency Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M12 7v6l4 2" />
-            </svg>
-            المدفوع: <%= invoice.paid %> د.ع
-        </p>
-        <p class="mb-4 flex items-center">
-            <!-- Money Icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
-            </svg>
-            الرصيد المتبقي: <%= invoice.remaining %> د.ع
-        </p>
-        <span class="inline-block px-2 py-1 text-xs font-semibold rounded <%= invoice.status === 'late' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' %> mb-6">
-            <%= invoice.status === 'late' ? 'متأخر' : 'مدفوع' %>
-        </span>
-        <div>
-            <button onclick="printInvoice(<%= invoice.id %>)" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 flex items-center">
-                <!-- Print Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9H4a2 2 0 00-2 2v8a2 2 0 002 2h16a2 2 0 002-2v-8a2 2 0 00-2-2h-2M6 9V7a2 2 0 012-2h8a2 2 0 012 2v2M6 9h12m-6 4v4m-3-4h6" />
+    <!-- Main Content -->
+    <main class="container mx-auto py-6 px-4">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 id="invoice-title" class="text-2xl font-bold mb-4">فاتورة</h2>
+            <p id="client-name" class="mb-2 flex items-center">
+                <!-- User Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <!-- SVG Path -->
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.179 0 4.208.414 6.121 1.204M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                طباعة الفاتورة
-            </button>
+                <span>العميل: <span id="client-name-value">جارٍ التحميل...</span></span>
+            </p>
+            <p id="invoice-date" class="mb-2 flex items-center">
+                <!-- Calendar Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <!-- SVG Path -->
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>التاريخ: <span id="invoice-date-value">جارٍ التحميل...</span></span>
+            </p>
+            <p id="invoice-total" class="mb-2 flex items-center">
+                <!-- Money Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <!-- SVG Path -->
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
+                </svg>
+                <span>المبلغ الإجمالي: <span id="invoice-total-value">جارٍ التحميل...</span> د.ع</span>
+            </p>
+            <p id="invoice-paid" class="mb-2 flex items-center">
+                <!-- Currency Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <!-- SVG Path -->
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M12 7v6l4 2" />
+                </svg>
+                <span>المدفوع: <span id="invoice-paid-value">جارٍ التحميل...</span> د.ع</span>
+            </p>
+            <p id="invoice-remaining" class="mb-4 flex items-center">
+                <!-- Money Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <!-- SVG Path -->
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
+                </svg>
+                <span>الرصيد المتبقي: <span id="invoice-remaining-value">جارٍ التحميل...</span> د.ع</span>
+            </p>
+            <span id="invoice-status" class="inline-block px-2 py-1 text-xs font-semibold rounded mb-6">
+                <!-- Status will be updated via JavaScript -->
+            </span>
+
+            <!-- Products List -->
+            <h3 class="text-xl font-bold mb-2">المنتجات:</h3>
+            <table class="w-full mb-6">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="py-2 px-4">المنتج</th>
+                        <th class="py-2 px-4">الكمية</th>
+                        <th class="py-2 px-4">السعر</th>
+                        <th class="py-2 px-4">الإجمالي</th>
+                    </tr>
+                </thead>
+                <tbody id="products-table-body">
+                    <!-- Products will be populated here -->
+                </tbody>
+            </table>
+
+            <!-- Payment Form -->
+            <div class="mb-6">
+                <button onclick="togglePaymentForm()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition-colors duration-200 flex items-center">
+                    <!-- Money Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <!-- SVG Path -->
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
+                    </svg>
+                    دفع الفاتورة
+                </button>
+            </div>
+
+            <div id="payment-form-container" class="hidden mb-6">
+                <h3 class="text-xl font-bold mb-2">إدخال مبلغ الدفع:</h3>
+                <form id="payment-form">
+                    <div class="mb-4">
+                        <label for="payment-amount" class="block text-gray-700">المبلغ:</label>
+                        <input type="number" id="payment-amount" name="paymentAmount" min="0" step="0.01" class="w-full px-3 py-2 border rounded" required>
+                    </div>
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-500 transition-colors duration-200">
+                        تأكيد الدفع
+                    </button>
+                </form>
+            </div>
+
+            <div>
+                <button onclick="printInvoice()" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 flex items-center">
+                    <!-- Print Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <!-- SVG Path -->
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9H4a2 2 0 00-2 2v8a2 2 0 002 2h16a2 2 0 002-2v-8a2 2 0 00-2-2h-2M6 9V7a2 2 0 012-2h8a2 2 0 012 2v2M6 9h12m-6 4v4m-3-4h6" />
+                    </svg>
+                    طباعة الفاتورة
+                </button>
+            </div>
         </div>
-    </div>
-</main>
-<%- include('../footer',{currentpage:'Installment'}); %>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <!-- Include your footer content here -->
+    </footer>
+
+    <!-- JavaScript to Fetch and Display Data -->
+    <script>
+        let invoiceId = null; // Global variable to store invoice ID
+
+        // Function to fetch invoice data
+        async function fetchInvoiceData() {
+            try {
+                // Extract invoice ID from the URL path
+                const pathSegments = window.location.pathname.split('/');
+                invoiceId = pathSegments[pathSegments.length - 1];
+
+                if (!invoiceId) {
+                    alert('معرف الفاتورة غير موجود في عنوان URL');
+                    return;
+                }
+
+                // Fetch invoice data from the server
+                const response = await fetch(`/Installment/info/${invoiceId}`);
+                if (!response.ok) {
+                    throw new Error('فشل في جلب بيانات الفاتورة');
+                }
+
+                const data = await response.json();
+                const { invoice, client } = data;
+
+                // Update the HTML elements with fetched data
+                document.getElementById('invoice-title').textContent = `فاتورة #${invoice.number || 'غير متوفر'}`;
+                document.getElementById('client-name-value').textContent = client ? client.name : 'غير معروف';
+                document.getElementById('invoice-date-value').textContent = formatDate(invoice.createdAt);
+                document.getElementById('invoice-total-value').textContent = invoice.finalcost || 'غير متوفر';
+                document.getElementById('invoice-paid-value').textContent = calculatePaidAmount(invoice.installment) || 'غير متوفر';
+                document.getElementById('invoice-remaining-value').textContent = calculateRemainingAmount(invoice.installment) || 'غير متوفر';
+
+                // Update invoice status
+                const statusElement = document.getElementById('invoice-status');
+                const remainingAmount = calculateRemainingAmount(invoice.installment);
+                const status = remainingAmount > 0 ? 'متأخر' : 'مدفوع';
+                statusElement.textContent = status;
+                statusElement.className = `inline-block px-2 py-1 text-xs font-semibold rounded mb-6 ${status === 'متأخر' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
+
+                // Populate products table
+                populateProductsTable(invoice.food);
+
+            } catch (error) {
+                console.error(error);
+                alert('حدث خطأ أثناء جلب بيانات الفاتورة');
+            }
+        }
+
+        // Helper function to format dates
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-EG');
+        }
+
+        // Helper function to calculate paid amount
+        function calculatePaidAmount(installment) {
+            if (!installment || !installment.paymentsTransfer) return 0;
+            return installment.paymentsTransfer.reduce((sum, payment) => sum + (payment.amount || 0), 0);
+        }
+
+        // Helper function to calculate remaining amount
+        function calculateRemainingAmount(installment) {
+            if (!installment) return 0;
+            const totalAmount = installment.totalAmount || 0;
+            const paidAmount = calculatePaidAmount(installment);
+            return totalAmount - paidAmount;
+        }
+
+        // Function to populate the products table
+        function populateProductsTable(products) {
+            const tbody = document.getElementById('products-table-body');
+            tbody.innerHTML = ''; // Clear any existing rows
+
+            products.forEach(product => {
+                const tr = document.createElement('tr');
+
+                // Product Name
+                const nameTd = document.createElement('td');
+                nameTd.className = 'py-2 px-4 border-b';
+                nameTd.textContent = product.name || 'غير متوفر';
+                tr.appendChild(nameTd);
+
+                // Quantity
+                const qtyTd = document.createElement('td');
+                qtyTd.className = 'py-2 px-4 border-b text-center';
+                qtyTd.textContent = product.quantity || 0;
+                tr.appendChild(qtyTd);
+
+                // Price
+                const priceTd = document.createElement('td');
+                priceTd.className = 'py-2 px-4 border-b text-center';
+                priceTd.textContent = product.foodPrice || 0;
+                tr.appendChild(priceTd);
+
+                // Total
+                const totalTd = document.createElement('td');
+                totalTd.className = 'py-2 px-4 border-b text-center';
+                const total = (product.foodPrice || 0) * (product.quantity || 0);
+                totalTd.textContent = total;
+                tr.appendChild(totalTd);
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Function to toggle the payment form visibility
+        function togglePaymentForm() {
+            const paymentFormContainer = document.getElementById('payment-form-container');
+            paymentFormContainer.classList.toggle('hidden');
+        }
+
+        // Function to handle payment form submission
+        async function handlePaymentFormSubmit(event) {
+            event.preventDefault();
+
+            const paymentAmount = parseFloat(document.getElementById('payment-amount').value);
+
+            if (isNaN(paymentAmount) || paymentAmount <= 0) {
+                alert('الرجاء إدخال مبلغ صالح');
+                return;
+            }
+
+            try {
+                // Send payment data to the server
+                const response = await fetch('/Installment/payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        installmentId: invoiceId, // Assuming the installment ID is the same as the invoice ID
+                        paymentAmount: paymentAmount,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('فشل في معالجة الدفع');
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('تمت عملية الدفع بنجاح');
+                    // Refresh the page or update the displayed data
+                    fetchInvoiceData();
+                    // Hide the payment form
+                    togglePaymentForm();
+                } else {
+                    alert(`حدث خطأ: ${result.message}`);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('حدث خطأ أثناء معالجة الدفع');
+            }
+        }
+
+        // Function to print the invoice
+        function printInvoice() {
+            window.print();
+        }
+
+        // Fetch invoice data when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchInvoiceData();
+
+            // Attach event listener to the payment form
+            const paymentForm = document.getElementById('payment-form');
+            paymentForm.addEventListener('submit', handlePaymentFormSubmit);
+        });
+    </script>
+</body>
+</html>

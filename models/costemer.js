@@ -18,7 +18,7 @@ const CustomerSchema = new mongoose.Schema(
     nearestAddresses: { type: String },
 
     specialDiscount : {type:Number}, 
-
+    nearestGuarantorAddresses:{type:String},
     onlineSync: {
       isOnlineSync: {
         type: Boolean,

@@ -32,12 +32,7 @@ const InvoiceSchema = new mongoose.Schema(
         type: Date,
       },
     },
-    installment: {
-      maintenanceType: { type: String, enum: ['يومي', 'أسبوعي', 'شهري', 'مخصص'] },
-      dateOfinstallment: { type: Date },
-      payment: [{money:{ type: Number} }]
-
-    },
+    installmentInvoice: { type: mongoose.Schema.Types.ObjectId, ref: "Installment" },
     tableid: { type: mongoose.Schema.Types.ObjectId, ref: "Table" },
     food: [
       {

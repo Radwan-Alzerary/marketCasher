@@ -6,7 +6,8 @@
   <%-include('./global/backGroundShadow')%>
     <%-include('./product/convertTableForm')%>
       <%-include('./product/moneyBack')%>
-        <%-include('./product/printCount')%>
+      <%-include('./product/printCount')%>
+      <%-include('./product/installment')%>
 
           <div class="flex w-full h-full justify-center">
             <%-include('./product/productInvoiceOverView')%>
@@ -14,6 +15,62 @@
                 <a id="invoiceidelement" class="hidden"></a>
                 <a id="totalcost" class="hidden"></a>
           </div>
+
+
+
+          
+          <script>
+            // Show Installment Form
+            function showInstallmentForm() {
+              document.getElementById("installmentForm").classList.remove("hidden");
+              document.getElementById("shadedbackground").style.display = "block";
+            }
+            // Hide Installment Form on Background Click
+            $("#finishButton").click(() => {
+              document.getElementById("installmentForm").style.display = "none";
+
+                // Your code here
+                console.log("Finish button clicked!");
+            });
+            document.getElementById("shadedbackground").addEventListener("click", () => {
+              document.getElementById("installmentForm").classList.add("hidden");
+              document.getElementById("shadedbackground").style.display = "none";
+            });
+        
+            $("#installmentActive").click(() => {
+              document.getElementById("installmentForm").style.display = "flex";
+
+            });
+        
+
+            // Toggle Specific Date Count Field
+            document.getElementById('installmentType').addEventListener('change', function() {
+              const specificField = document.getElementById('specificDateCount');
+              if (this.value === 'specific') {
+                specificField.classList.remove('hidden');
+              } else {
+                specificField.classList.add('hidden');
+              }
+            });
+            // Calculate Installment Cost and Remaining Amount
+            document.getElementById('initialPayment').addEventListener('input', calculateInstallmentDetails);
+            document.getElementById('installmentCount').addEventListener('input', calculateInstallmentDetails);
+            function calculateInstallmentDetails() {
+              const totalPrice = parseFloat(document.getElementById('totalprice')?.innerText || 0);
+              const initialPayment = parseFloat(document.getElementById('initialPayment').value || 0);
+              const installmentCount = parseInt(document.getElementById('installmentCount').value || 0);
+
+              if (!isNaN(totalPrice) && !isNaN(initialPayment) && installmentCount > 0) {
+                const remaining = totalPrice - initialPayment;
+                const installmentCost = remaining / installmentCount;
+
+                document.getElementById('remainingAfterInitial').value = remaining.toFixed(2);
+                document.getElementById('installmentCost').value = installmentCost.toFixed(2);
+              }
+            }
+          </script>
+
+
 
 
           <script>
@@ -79,6 +136,65 @@
               const invoiceId = $("#invoiceidelement").text(); // Replace with the actual invoice ID
               changePaymentMethod(invoiceId);
             });
+
+
+            document.getElementById('showFormToggle').addEventListener('change', function (e) {
+            const isChecked = e.target.checked; // Get whether the toggle is checked
+            console.log(isChecked); // Log true if checked, false if not
+                if(isChecked){
+                document.getElementById("installInputActive").style.display = "block";}else{
+                    document.getElementById("installInputActive").style.display = "none";
+                }
+                async function changePaymentMethod(invoiceId) {
+                try {
+                  // Define the API endpoint
+                  const endpoint = "/invoice/changepaymentToInstallment";
+
+                  // Make the POST request
+                  const response = await fetch(endpoint, {
+                    method: "POST", // Specify the method as POST
+                    headers: {
+                      "Content-Type": "application/json", // Set the content type to JSON
+                    },
+                    body: JSON.stringify({
+                      invoiceId: invoiceId, // Pass the invoice ID in the body
+                    }),
+                  });
+
+                  // Parse the JSON response
+                  const result = await response.json();
+                  if (result.newPaymentType === "قسط") {
+                    $("#installmentActive").removeClass(
+                      "bg-gray-100 hover:bg-gray-200"
+                    );
+                    $("#installmentActive").addClass("bg-red-200 hover:bg-red-200");
+                  } else if (result.newPaymentType === "نقدي") {
+                    $("#installmentActive").removeClass("bg-red-200 hover:bg-red-200");
+                    $("#installmentActive").addClass("bg-gray-100 hover:bg-gray-200");
+                  }
+
+                  console.log(result);
+                  // Check if the request was successful
+                  if (response.ok) {
+                    console.log("Payment method changed successfully:", result);
+                  } else {
+                    console.error("Error changing payment method:", result.error);
+                  }
+                } catch (error) {
+                  console.error("Network error:", error);
+                }
+              }
+
+
+
+              // Example usage
+              const invoiceId = $("#invoiceidelement").text(); // Replace with the actual invoice ID
+              changePaymentMethod(invoiceId);
+
+          });
+
+
+            
           </script>
 
           <script>
@@ -643,6 +759,16 @@
               const totaldicont = $("#totaldiscount").text();
               const foodcost = $("#totalcost").text();
               const invoiceId = $("#invoiceidelement").text();
+
+              // Installment fields
+              const installmentType = $("#installmentType").val(); // e.g., daily, weekly, monthly, or custom
+              const installmentsCount = parseInt($("#installmentCount").val(), 10); // Number of installments
+              const initialPayment = $("#initialPayment").val(); // Start date of installments
+              const initialStartDate = $("#startDate").val();
+              const notificationDays = $("#notificationDays").val();
+              const remainingAfterInitial = $("#remainingAfterInitial").val();
+              const  installmentWork = document.getElementById('showFormToggle').checked; // Get the current state
+
               fetch("/invoice/finish/", {
                 method: "POST",
                 headers: {
@@ -656,14 +782,24 @@
                   deloveryphone,
                   invoiceId,
                   finalcost,
+                  installmentWork,
                   totalcost,
                   totaldicont,
+                    installment: {
+                      installmentType,
+                    installmentsCount,
+                    initialPayment,
+                    initialStartDate,
+                    notificationDays,
+                    remainingAfterInitial: remainingAfterInitial,
+                  },
+
                 }),
               })
                 .then((response) => response.json())
                 .then((data) => {
                   const ReceivedAmount = $("#Received-amount").text();
-                  const RemainingAmount = $("#Remaining-amount").text();
+                  const RemainingAmount = $("#remainingAfterInitial").text();
                   const deloveryphone = $('#deloveryphone').val();
                   const deloveryname = $('#deloveryname').val();
 
@@ -674,7 +810,7 @@
                   $("#invoiceidelement").text(" ");
 
                   $("#Received-amount").text(0);
-                  $("#Remaining-amount").text(0);
+                  $("#remainingAfterInitial").text(0);
                   $("#ReceivedAmountInput").val(0);
 
                   $("#paymentTypeChange").removeClass("bg-red-200 hover:bg-red-200");

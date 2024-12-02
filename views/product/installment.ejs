@@ -1,0 +1,104 @@
+<!-- Installment Form -->
+<div id="installmentForm"
+    class="hidden fixed flex flex-col justify-center gap-5 items-center w-1/2 bg-white p-5 rounded-xl z-50"
+    style="left: 50%; height: 88%; top: 50%; transform: translate(-50%, -50%)">
+    <!-- Toggle Switch -->
+    <div class="flex items-center justify-center gap-3 mb-5">
+        <label for="showFormToggle" class="text-sm font-medium text-gray-900 dark:text-white">
+            تفعيل القسط
+        </label>
+        <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="showFormToggle" class="sr-only peer">
+            <div
+                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+            </div>
+        </label>
+    </div>
+    <div id="installInputActive" class="hidden w-full">
+
+
+        <!-- Number of Installments -->
+        <div class="mb-2 w-full">
+            <label for="installmentCount"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">عدد الاقساط</label>
+            <input  type="number" name="installmentCount" id="installmentCount" placeholder="قم بادخال عدد الاقساط"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+        </div>
+
+        <!-- Installment Type -->
+        <div class="mb-2 w-full">
+            <label for="installmentType"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">نوع القسط</label>
+            <select name="installmentType" id="installmentType"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <option value="monthly">شهري</option>
+                <option value="daily">يومي</option>
+                <option value="weekly">اسبوعي</option>
+                <option value="specific">محدد بتاريخ وفترة زمنية</option>
+            </select>
+        </div>
+
+        <!-- Specific Date Count -->
+        <div id="specificDateCount" class="mb-2 w-full hidden">
+            <label for="dateCount" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">عدد
+                الأيام</label>
+            <input type="number" name="dateCount" id="dateCount" placeholder="قم بادخال عدد الأيام"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+        </div>
+        <!-- Start Date -->
+        <div class="mb-2 w-full">
+            <label for="startDate" class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">تاريخ
+                بدء القسط</label>
+            <input type="date" name="startDate" id="startDate"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+        </div>
+
+        <!-- Notification Days -->
+        <div class="mb-2 w-full">
+            <label for="notificationDays"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">عدد ايام التنبية</label>
+            <input type="number" name="notificationDays" id="notificationDays" placeholder="قم بادخال عدد ايام التنبية"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+        </div>
+
+        <!-- Initial Payment -->
+        <div class="mb-2 w-full">
+            <label for="initialPayment"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">الدفعة الاولية من
+                التسديد</label>
+            <input type="number" name="initialPayment" id="initialPayment" placeholder="قم بادخال الدفعة الاولية"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+        </div>
+
+        <!-- Installment Cost -->
+        <div class="mb-2 w-full">
+            <label for="installmentCost"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">تكلفة القسط
+                الواحد</label>
+            <input type="text" name="installmentCost" id="installmentCost" placeholder="سيتم حسابه تلقائيًا"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                readonly />
+        </div>
+
+        <!-- Remaining After Initial Payment -->
+        <div class="mb-2 w-full">
+            <label for="remainingAfterInitial"
+                class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">المتبقي من القسط بعد
+                كتابة الدفعة الاولى</label>
+            <input type="text" name="remainingAfterInitial" id="remainingAfterInitial" placeholder="سيتم حسابه تلقائيًا"
+                class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                readonly />
+        </div>
+
+        <!-- Submit Button -->
+        <input type="submit" id="finishButton"
+            class="w-full h-11 bg-green-300 hover:bg-green-400 rounded-lg cursor-pointer" value="اضافة" />
+    </div>
+
+
+</div>
+
+
+<script>
+    // JavaScript to handle the toggle
+</script>
