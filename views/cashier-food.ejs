@@ -23,22 +23,25 @@
             // Show Installment Form
             function showInstallmentForm() {
               document.getElementById("installmentForm").classList.remove("hidden");
-              document.getElementById("shadedbackground").style.display = "block";
+              document.getElementById("shadedbackground").classList.remove("hidden");
+
             }
             // Hide Installment Form on Background Click
             $("#finishButton").click(() => {
               document.getElementById("installmentForm").style.display = "none";
+              document.getElementById("shadedbackground").style.display = "none";
 
                 // Your code here
                 console.log("Finish button clicked!");
             });
             document.getElementById("shadedbackground").addEventListener("click", () => {
-              document.getElementById("installmentForm").classList.add("hidden");
+              document.getElementById("installmentForm").style.display = "none";
               document.getElementById("shadedbackground").style.display = "none";
             });
         
             $("#installmentActive").click(() => {
               document.getElementById("installmentForm").style.display = "flex";
+              document.getElementById("shadedbackground").style.display = "block";
 
             });
         
@@ -815,6 +818,12 @@
 
                   $("#paymentTypeChange").removeClass("bg-red-200 hover:bg-red-200");
                   $("#paymentTypeChange").addClass("bg-gray-100 hover:bg-gray-200");
+
+                  $("#installmentActive").removeClass("bg-red-200 hover:bg-red-200");
+                    $("#installmentActive").addClass("bg-gray-100 hover:bg-gray-200");
+
+                    document.getElementById('showFormToggle').checked = false
+                    document.getElementById("installInputActive").style.display = "none";
 
                   $("#totalcost").text(data.totalcost);
 

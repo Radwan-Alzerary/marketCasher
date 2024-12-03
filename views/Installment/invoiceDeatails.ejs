@@ -1,21 +1,8 @@
-<!-- invoiceDetails.html -->
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <title>تفاصيل الفاتورة</title>
-    <!-- Include Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <!-- Include your header content here -->
-    </header>
-
+<%- include('../header.ejs') %>
     <!-- Main Content -->
     <main class="container mx-auto py-6 px-4">
         <div class="bg-white p-6 rounded-lg shadow-md">
+            <!-- Invoice Details -->
             <h2 id="invoice-title" class="text-2xl font-bold mb-4">فاتورة</h2>
             <p id="client-name" class="mb-2 flex items-center">
                 <!-- User Icon -->
@@ -77,6 +64,38 @@
                 </tbody>
             </table>
 
+            <!-- Payments Table -->
+            <h3 class="text-xl font-bold mb-2">جدول الدفعات المجدولة:</h3>
+            <table class="w-full mb-6">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="py-2 px-4">نوع الدفع</th>
+                        <th class="py-2 px-4">تاريخ الدفع</th>
+                        <th class="py-2 px-4">المبلغ</th>
+                        <th class="py-2 px-4">الحالة</th>
+                        <th class="py-2 px-4">إجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="payments-table-body">
+                    <!-- Payments will be populated here -->
+                </tbody>
+            </table>
+
+            <!-- Payments Transfer Table -->
+            <h3 class="text-xl font-bold mb-2">الدفعات المستلمة:</h3>
+            <table class="w-full mb-6">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="py-2 px-4">نوع الدفع</th>
+                        <th class="py-2 px-4">تاريخ الاستلام</th>
+                        <th class="py-2 px-4">المبلغ</th>
+                    </tr>
+                </thead>
+                <tbody id="payments-transfer-table-body">
+                    <!-- Payments transfer will be populated here -->
+                </tbody>
+            </table>
+
             <!-- Payment Form -->
             <div class="mb-6">
                 <button onclick="togglePaymentForm()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition-colors duration-200 flex items-center">
@@ -85,7 +104,7 @@
                       <!-- SVG Path -->
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
                     </svg>
-                    دفع الفاتورة
+                    دفع مبلغ
                 </button>
             </div>
 
@@ -102,6 +121,7 @@
                 </form>
             </div>
 
+            <!-- Print Invoice Button -->
             <div>
                 <button onclick="printInvoice()" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 flex items-center">
                     <!-- Print Icon -->
@@ -115,14 +135,11 @@
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer>
-        <!-- Include your footer content here -->
-    </footer>
 
     <!-- JavaScript to Fetch and Display Data -->
     <script>
         let invoiceId = null; // Global variable to store invoice ID
+        let installmentId = null; // Global variable to store installment ID
 
         // Function to fetch invoice data
         async function fetchInvoiceData() {
@@ -150,18 +167,32 @@
                 document.getElementById('client-name-value').textContent = client ? client.name : 'غير معروف';
                 document.getElementById('invoice-date-value').textContent = formatDate(invoice.createdAt);
                 document.getElementById('invoice-total-value').textContent = invoice.finalcost || 'غير متوفر';
-                document.getElementById('invoice-paid-value').textContent = calculatePaidAmount(invoice.installment) || 'غير متوفر';
-                document.getElementById('invoice-remaining-value').textContent = calculateRemainingAmount(invoice.installment) || 'غير متوفر';
-
+                document.getElementById('invoice-paid-value').textContent = calculatePaidAmount(invoice.installmentInvoice) || 'غير متوفر';
+                document.getElementById('invoice-remaining-value').textContent = calculateRemainingAmount(invoice.installmentInvoice) || 'غير متوفر';
                 // Update invoice status
                 const statusElement = document.getElementById('invoice-status');
-                const remainingAmount = calculateRemainingAmount(invoice.installment);
+                const remainingAmount = calculateRemainingAmount(invoice.installmentInvoice);
+                console.log(remainingAmount)
+
                 const status = remainingAmount > 0 ? 'متأخر' : 'مدفوع';
                 statusElement.textContent = status;
                 statusElement.className = `inline-block px-2 py-1 text-xs font-semibold rounded mb-6 ${status === 'متأخر' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`;
 
                 // Populate products table
                 populateProductsTable(invoice.food);
+
+                // Store the installment ID
+                installmentId = invoice.installmentInvoice ? invoice.installmentInvoice._id : null;
+
+                // Populate payments table
+                if (invoice.installmentInvoice && invoice.installmentInvoice.payments) {
+                    populatePaymentsTable(invoice.installmentInvoice.payments);
+                }
+
+                // Populate payments transfer table
+                if (invoice.installmentInvoice && invoice.installmentInvoice.paymentsTransfer) {
+                    populatePaymentsTransferTable(invoice.installmentInvoice.paymentsTransfer);
+                }
 
             } catch (error) {
                 console.error(error);
@@ -196,7 +227,7 @@
 
             products.forEach(product => {
                 const tr = document.createElement('tr');
-
+                console.log(product)
                 // Product Name
                 const nameTd = document.createElement('td');
                 nameTd.className = 'py-2 px-4 border-b';
@@ -226,6 +257,126 @@
             });
         }
 
+        // Function to populate the payments table
+        function populatePaymentsTable(payments) {
+            const tbody = document.getElementById('payments-table-body');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            payments.forEach((payment, index) => {
+                const tr = document.createElement('tr');
+
+                // Payment Type
+                const typeTd = document.createElement('td');
+                typeTd.className = 'py-2 px-4 border-b';
+                typeTd.textContent = payment.paymentType || 'غير متوفر';
+                tr.appendChild(typeTd);
+
+                // Payment Date
+                const dateTd = document.createElement('td');
+                dateTd.className = 'py-2 px-4 border-b text-center';
+                dateTd.textContent = formatDate(payment.date);
+                tr.appendChild(dateTd);
+
+                // Amount
+                const amountTd = document.createElement('td');
+                amountTd.className = 'py-2 px-4 border-b text-center';
+                amountTd.textContent = payment.amount || 0;
+                tr.appendChild(amountTd);
+
+                // Status
+                const statusTd = document.createElement('td');
+                statusTd.className = 'py-2 px-4 border-b text-center';
+                statusTd.textContent = payment.isPaid ? 'مدفوع' : 'غير مدفوع';
+                tr.appendChild(statusTd);
+
+                // Action
+                const actionTd = document.createElement('td');
+                actionTd.className = 'py-2 px-4 border-b text-center';
+                if (!payment.isPaid) {
+                    const payButton = document.createElement('button');
+                    payButton.textContent = 'دفع';
+                    payButton.className = 'bg-green-600 text-white px-2 py-1 rounded hover:bg-green-500';
+                    payButton.onclick = () => makeScheduledPayment(index, payment.amount);
+                    actionTd.appendChild(payButton);
+                } else {
+                    actionTd.textContent = '---';
+                }
+                tr.appendChild(actionTd);
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Function to populate the payments transfer table
+        function populatePaymentsTransferTable(paymentsTransfer) {
+            const tbody = document.getElementById('payments-transfer-table-body');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            paymentsTransfer.forEach((payment) => {
+                const tr = document.createElement('tr');
+
+                // Payment Type
+                const typeTd = document.createElement('td');
+                typeTd.className = 'py-2 px-4 border-b';
+                typeTd.textContent = payment.paymentType || 'دفعة';
+                tr.appendChild(typeTd);
+
+                // Date of Payment
+                const dateTd = document.createElement('td');
+                dateTd.className = 'py-2 px-4 border-b text-center';
+                dateTd.textContent = formatDate(payment.dateOfPayment);
+                tr.appendChild(dateTd);
+
+                // Amount
+                const amountTd = document.createElement('td');
+                amountTd.className = 'py-2 px-4 border-b text-center';
+                amountTd.textContent = payment.amount || 0;
+                tr.appendChild(amountTd);
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Function to make a scheduled payment
+        async function makeScheduledPayment(paymentIndex, paymentAmount) {
+            if (!installmentId) {
+                alert('لا يوجد معرف للتقسيط');
+                return;
+            }
+
+            try {
+                // Send payment data to the server
+                const response = await fetch('/Installment/payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        installmentId: installmentId,
+                        paymentAmount: paymentAmount,
+                        paymentIndex: paymentIndex,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('فشل في معالجة الدفع');
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('تمت عملية الدفع بنجاح');
+                    // Refresh the page or update the displayed data
+                    fetchInvoiceData();
+                } else {
+                    alert(`حدث خطأ: ${result.message}`);
+                }
+            } catch (error) {
+                console.error(error);
+                alert('حدث خطأ أثناء معالجة الدفع');
+            }
+        }
+
         // Function to toggle the payment form visibility
         function togglePaymentForm() {
             const paymentFormContainer = document.getElementById('payment-form-container');
@@ -243,15 +394,20 @@
                 return;
             }
 
+            if (!installmentId) {
+                alert('لا يوجد معرف للتقسيط');
+                return;
+            }
+
             try {
                 // Send payment data to the server
-                const response = await fetch('/Installment/payment', {
+                const response = await fetch('/Installment/payment/direct', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        installmentId: invoiceId, // Assuming the installment ID is the same as the invoice ID
+                        installmentId: installmentId,
                         paymentAmount: paymentAmount,
                     }),
                 });
@@ -291,5 +447,4 @@
             paymentForm.addEventListener('submit', handlePaymentFormSubmit);
         });
     </script>
-</body>
-</html>
+<%- include('../footer',{currentpage:'Installment'}); %>

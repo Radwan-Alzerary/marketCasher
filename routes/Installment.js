@@ -23,18 +23,21 @@ router.get('/', async (req, res) => {
                 },
             })
             .lean();
+
         const user = await User.findById(req.user).lean();
         const systemSetting = await SystemSetting.findOne().lean();
-        // Transform customers to clients with necessary installment details
+
+        // Extract notificationDays from system settings
+        const notificationDays = systemSetting?.notificationDays || 0;
+
         // Transform customers to clients with necessary installment details
         const clients = customers.map((customer) => {
             const invoices = customer.invoice
                 .map((inv) => inv.invoiceId)
                 .filter((inv) => inv); // Ensure invoice exists
 
-            // Updated totalDue calculation
+            // Calculate total due amount
             const totalDue = invoices.reduce((sum, inv) => {
-                console.log(inv)
                 const installment = inv.installmentInvoice;
                 if (installment) {
                     const paymentsTransfer = installment.paymentsTransfer || [];
@@ -49,11 +52,40 @@ router.get('/', async (req, res) => {
                 }
             }, 0);
 
-            // Rest of your code remains the same
-            const lastPayment = invoices
+            // Find the next unpaid scheduled payment date
+            const unpaidPayments = invoices
                 .flatMap((inv) => inv.installmentInvoice?.payments || [])
-                .filter((payment) => payment.isPaid)
-                .sort((a, b) => new Date(b.date) - new Date(a.date))[0]?.date || 'غير متوفر';
+                .filter((payment) => !payment.isPaid);
+
+            // Determine the earliest unpaid payment date
+            const nextPaymentDate = unpaidPayments.length > 0
+                ? new Date(Math.min(...unpaidPayments.map(p => new Date(p.date))))
+                : null;
+
+            // Calculate the due date by adding notificationDays
+            let dueDate = null;
+            if (nextPaymentDate) {
+                dueDate = new Date(nextPaymentDate);
+                dueDate.setDate(dueDate.getDate() + notificationDays);
+            }
+
+            // Determine the client's status
+            const now = new Date();
+            let status = ''; // Initialize status
+
+            if (totalDue === 0) {
+                status = 'completed';
+            } else if (dueDate && now > dueDate) {
+                status = 'late';
+            } else {
+                status = 'upcoming';
+            }
+
+            // Get the last payment date
+            const lastPayment = invoices
+                .flatMap((inv) => inv.installmentInvoice?.paymentsTransfer || [])
+                .filter((payment) => payment.dateOfPayment)
+                .sort((a, b) => new Date(b.dateOfPayment) - new Date(a.dateOfPayment))[0]?.dateOfPayment || 'غير متوفر';
 
             return {
                 id: customer._id,
@@ -62,9 +94,9 @@ router.get('/', async (req, res) => {
                 lastPaymentDate: lastPayment,
                 totalDue: totalDue,
                 receiptCount: invoices
-                    .flatMap((inv) => inv.installmentInvoice?.payments || [])
-                    .filter((payment) => payment.isPaid).length,
-                status: totalDue > 0 ? 'late' : 'paid',
+                    .flatMap((inv) => inv.installmentInvoice?.paymentsTransfer || [])
+                    .filter((payment) => payment.dateOfPayment).length,
+                status: status,
             };
         });
 
@@ -77,25 +109,114 @@ router.get('/', async (req, res) => {
             isCardView,
         });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: err.message });
     }
 });
-
-// 2. Process a payment for an installment
+// Installment/payment route
 router.post('/payment', async (req, res) => {
     try {
-        const { installmentId, paymentAmount } = req.body;
-        const invoice = await Invoice.findById(installmentId)
-        id = invoice.installmentInvoice
-        // Process the payment using your existing logic
-        const updatedInstallment = await processPayment(id, parseFloat(paymentAmount));
-
-        res.status(200).json({ success: true, data: updatedInstallment });
+      const { installmentId, paymentAmount, paymentIndex } = req.body;
+  
+      // Fetch the Installment document
+      const installment = await Installment.findById(installmentId);
+      if (!installment) {
+        return res.status(404).json({ success: false, message: 'Installment not found' });
+      }
+  
+      // Validate paymentIndex
+      if (paymentIndex === undefined || paymentIndex < 0 || paymentIndex >= installment.payments.length) {
+        return res.status(400).json({ success: false, message: 'Invalid payment index' });
+      }
+  
+      const payment = installment.payments[paymentIndex];
+  
+      // Check if payment is already paid
+      if (payment.isPaid) {
+        return res.status(400).json({ success: false, message: 'Payment is already made' });
+      }
+  
+      // Update the payment
+      payment.isPaid = true;
+  
+      // Update paymentsTransfer
+      installment.paymentsTransfer.push({
+        paymentType: payment.paymentType,
+        dateOfPayment: new Date(),
+        amount: paymentAmount,
+      });
+  
+      // Recalculate remaining amount
+      installment.remainingAmount -= paymentAmount;
+  
+      await installment.save();
+  
+      res.status(200).json({ success: true, data: installment });
     } catch (error) {
-        res.status(400).json({ success: false, message: error.message });
+      console.error(error);
+      res.status(500).json({ success: false, message: 'An error occurred' });
     }
-});
-// 3. Fetch client details along with their invoices and installments
+  });
+// New route for direct payment
+router.post('/payment/direct', async (req, res) => {
+    try {
+      const { installmentId, paymentAmount } = req.body;
+  
+      // Validate input data
+      if (!installmentId || !paymentAmount) {
+        return res.status(400).json({ success: false, message: 'Installment ID and payment amount are required' });
+      }
+  
+      // Fetch the Installment document
+      const installment = await Installment.findById(installmentId);
+      if (!installment) {
+        return res.status(404).json({ success: false, message: 'Installment not found' });
+      }
+  
+      let remainingPayment = parseFloat(paymentAmount);
+      if (isNaN(remainingPayment) || remainingPayment <= 0) {
+        return res.status(400).json({ success: false, message: 'Invalid payment amount' });
+      }
+  
+      // Track the initial remaining amount for paymentsTransfer record
+      const initialPaymentAmount = remainingPayment;
+  
+      // Process the payment against unpaid installments
+      for (let payment of installment.payments) {
+        if (!payment.isPaid) {
+          if (remainingPayment >= payment.amount) {
+            remainingPayment -= payment.amount;
+            payment.isPaid = true;
+          } else {
+            payment.amount -= remainingPayment;
+            remainingPayment = 0;
+            break;
+          }
+        }
+      }
+  
+      // Update paymentsTransfer
+      installment.paymentsTransfer.push({
+        paymentType: 'direct',
+        dateOfPayment: new Date(),
+        amount: initialPaymentAmount,
+      });
+  
+      // Recalculate remaining amount
+      installment.remainingAmount = installment.payments
+        .filter((payment) => !payment.isPaid)
+        .reduce((sum, payment) => sum + payment.amount, 0);
+  
+      // Save the updated Installment
+      await installment.save();
+  
+      res.status(200).json({ success: true, data: installment });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'An error occurred' });
+    }
+  });
+  // 3. Fetch client details along with their invoices and installments
 router.get('/client/:id', async (req, res) => {
     try {
         const clientId = req.params.id;
@@ -151,7 +272,6 @@ router.get('/client/:id', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
 // 4. Fetch invoice details along with its installment
 router.get('/invoice/:id', async (req, res) => {
     try {
@@ -182,16 +302,14 @@ router.get('/invoice/:id', async (req, res) => {
         invoice.date = invoice.createdAt.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
         // Render the invoice details page
         res.render('Installment/invoiceDeatails', {
-            invoice, client, role: user.role,
+            role: user.role,
             systemSetting,
         });
-    } catch (err) {
+            } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
     }
 });
-
-
 // API endpoint to get invoice data
 router.get('/info/:id', async (req, res) => {
     try {
@@ -215,7 +333,5 @@ router.get('/info/:id', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
-
-
 
 module.exports = router;
