@@ -3,44 +3,65 @@
     <main class="container mx-auto py-6 px-4">
         <div class="bg-white p-6 rounded-lg shadow-md">
             <!-- Invoice Details -->
+            <div class="mb-4">
+                <button onclick="window.history.back()" 
+                    class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-500 transition-colors duration-200 flex items-center">
+                    <!-- Back Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                    العودة
+                </button>
+            </div>
+            
             <h2 id="invoice-title" class="text-2xl font-bold mb-4">فاتورة</h2>
             <p id="client-name" class="mb-2 flex items-center">
                 <!-- User Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <!-- SVG Path -->
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.179 0 4.208.414 6.121 1.204M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- SVG Path -->
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5.121 17.804A13.937 13.937 0 0112 15c2.179 0 4.208.414 6.121 1.204M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 <span>العميل: <span id="client-name-value">جارٍ التحميل...</span></span>
             </p>
             <p id="invoice-date" class="mb-2 flex items-center">
                 <!-- Calendar Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <!-- SVG Path -->
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- SVG Path -->
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span>التاريخ: <span id="invoice-date-value">جارٍ التحميل...</span></span>
             </p>
             <p id="invoice-total" class="mb-2 flex items-center">
                 <!-- Money Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <!-- SVG Path -->
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- SVG Path -->
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
                 </svg>
                 <span>المبلغ الإجمالي: <span id="invoice-total-value">جارٍ التحميل...</span> د.ع</span>
             </p>
             <p id="invoice-paid" class="mb-2 flex items-center">
                 <!-- Currency Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <!-- SVG Path -->
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M12 7v6l4 2" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- SVG Path -->
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M12 7v6l4 2" />
                 </svg>
                 <span>المدفوع: <span id="invoice-paid-value">جارٍ التحميل...</span> د.ع</span>
             </p>
             <p id="invoice-remaining" class="mb-4 flex items-center">
                 <!-- Money Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <!-- SVG Path -->
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 ml-2" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <!-- SVG Path -->
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
                 </svg>
                 <span>الرصيد المتبقي: <span id="invoice-remaining-value">جارٍ التحميل...</span> د.ع</span>
             </p>
@@ -98,11 +119,14 @@
 
             <!-- Payment Form -->
             <div class="mb-6">
-                <button onclick="togglePaymentForm()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition-colors duration-200 flex items-center">
+                <button onclick="togglePaymentForm()"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 transition-colors duration-200 flex items-center">
                     <!-- Money Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <!-- SVG Path -->
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <!-- SVG Path -->
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zM6 6v12M18 6v12M4 10h16M4 14h16" />
                     </svg>
                     دفع مبلغ
                 </button>
@@ -113,9 +137,11 @@
                 <form id="payment-form">
                     <div class="mb-4">
                         <label for="payment-amount" class="block text-gray-700">المبلغ:</label>
-                        <input type="number" id="payment-amount" name="paymentAmount" min="0" step="0.01" class="w-full px-3 py-2 border rounded" required>
+                        <input type="number" id="payment-amount" name="paymentAmount" min="0" step="0.01"
+                            class="w-full px-3 py-2 border rounded" required>
                     </div>
-                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-500 transition-colors duration-200">
+                    <button type="submit"
+                        class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-500 transition-colors duration-200">
                         تأكيد الدفع
                     </button>
                 </form>
@@ -123,11 +149,14 @@
 
             <!-- Print Invoice Button -->
             <div>
-                <button onclick="printInvoice()" class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 flex items-center">
+                <button onclick="printInvoice()"
+                    class="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 flex items-center">
                     <!-- Print Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <!-- SVG Path -->
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9H4a2 2 0 00-2 2v8a2 2 0 002 2h16a2 2 0 002-2v-8a2 2 0 00-2-2h-2M6 9V7a2 2 0 012-2h8a2 2 0 012 2v2M6 9h12m-6 4v4m-3-4h6" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <!-- SVG Path -->
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 9H4a2 2 0 00-2 2v8a2 2 0 002 2h16a2 2 0 002-2v-8a2 2 0 00-2-2h-2M6 9V7a2 2 0 012-2h8a2 2 0 012 2v2M6 9h12m-6 4v4m-3-4h6" />
                     </svg>
                     طباعة الفاتورة
                 </button>
@@ -435,7 +464,63 @@
 
         // Function to print the invoice
         function printInvoice() {
+            // Clone the invoice details section
+            const invoiceDetails = document.querySelector('.bg-white.p-6');
+            if (!invoiceDetails) {
+                console.error("Invoice details not found.");
+                return;
+            }
+
+            const printableInvoice = invoiceDetails.cloneNode(true);
+
+            // Ensure dynamically injected content is updated
+            printableInvoice.querySelectorAll('[id]').forEach((el) => {
+                const originalEl = document.getElementById(el.id);
+                if (originalEl) {
+                    el.innerHTML = originalEl.innerHTML; // Sync dynamically loaded content
+                }
+            });
+
+            // Add print-specific styles
+            const style = document.createElement('style');
+            style.textContent = `
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-invoice, #printable-invoice * {
+                visibility: visible;
+            }
+            #printable-invoice {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 210mm;
+                height: 297mm;
+                padding: 20mm;
+                font-size: 12pt;
+            }
+            @page {
+                size: A4;
+                margin: 0;
+            }
+        }
+    `;
+            printableInvoice.appendChild(style);
+
+            // Create a wrapper div for print content
+            const wrapper = document.createElement('div');
+            wrapper.id = 'printable-invoice';
+            wrapper.appendChild(printableInvoice);
+
+            // Add to body for printing
+            document.body.appendChild(wrapper);
+
+            // Trigger print
             window.print();
+
+            // Clean up after printing
+            document.body.removeChild(wrapper);
         }
 
         // Fetch invoice data when the page loads
@@ -446,5 +531,124 @@
             const paymentForm = document.getElementById('payment-form');
             paymentForm.addEventListener('submit', handlePaymentFormSubmit);
         });
+
+
+        // Function to create a printable version of the invoice
+        function createPrintableInvoice() {
+            const invoiceDetails = document.querySelector('.bg-white.p-6');
+            const printableInvoice = invoiceDetails.cloneNode(true);
+
+            // Remove unnecessary elements
+            const elementsToRemove = printableInvoice.querySelectorAll('button, #payment-form-container');
+            elementsToRemove.forEach(el => el.remove());
+
+            // Add print styles
+            const style = document.createElement('style');
+            style.textContent = `
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printable-invoice, #printable-invoice * {
+        visibility: visible;
+      }
+      #printable-invoice {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 210mm;
+        height: 297mm;
+        padding: 20mm;
+        font-size: 12pt;
+      }
+      @page {
+        size: A4;
+        margin: 0;
+      }
+    }
+  `;
+            printableInvoice.appendChild(style);
+
+            // Add overview section
+            const overview = document.createElement('div');
+            overview.innerHTML = `
+    <h3 class="text-xl font-bold mt-4 mb-2">نظرة عامة على الفاتورة</h3>
+    <p>إجمالي المبلغ: ${document.getElementById('invoice-total-value').textContent} د.ع</p>
+    <p>المبلغ المدفوع: ${document.getElementById('invoice-paid-value').textContent} د.ع</p>
+    <p>الرصيد المتبقي: ${document.getElementById('invoice-remaining-value').textContent} د.ع</p>
+  `;
+            printableInvoice.insertBefore(overview, printableInvoice.querySelector('h3'));
+
+            return printableInvoice;
+        }
+
+        // Function to print individual payment rows
+        function printPaymentRows() {
+            const paymentRows = document.querySelectorAll('#payments-table-body tr');
+            let printContent = '<h2>تفاصيل الدفعات</h2>';
+
+
+        paymentRows.forEach((row, index) => {
+            const cells = row.querySelectorAll("td");
+            printContent += `
+                <div style="page-break-inside: avoid;">
+                    <h3>الدفعة ${index + 1}</h3>
+                    <p>نوع الدفع: ${cells[0].textContent}</p>
+                    <p>تاريخ الدفع: ${cells[1].textContent}</p>
+                    <p>المبلغ: ${cells[2].textContent} د.ع</p>
+                    <p>الحالة: ${cells[3].textContent}</p>
+                </div>
+            `;
+        });
+
+console.log(printContent);
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+    <html>
+      <head>
+        <title>تفاصيل الدفعات</title>
+        <style>
+          body { font-family: Arial, sans-serif; direction: rtl; }
+          @media print {
+            body { width: 210mm; height: 297mm; }
+            @page { size: A4; margin: 20mm; }
+          }
+        </style>
+      </head>
+      <body>${printContent}</body>
+    </html>
+  `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Modify the existing printInvoice function
+        // function printInvoice() {
+        //     const printableInvoice = createPrintableInvoice();
+        //     document.body.appendChild(printableInvoice);
+        //     window.print();
+        //     document.body.removeChild(printableInvoice);
+        // }
+
+        // Add event listeners when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const printInvoiceButton = document.querySelector('button[onclick="printInvoice()"]');
+            printInvoiceButton.onclick = printInvoice;
+
+            const printPaymentsButton = document.createElement('button');
+            printPaymentsButton.textContent = 'طباعة تفاصيل الدفعات';
+            printPaymentsButton.className = 'bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors duration-200 mr-2';
+            printPaymentsButton.onclick = printPaymentRows;
+
+            printInvoiceButton.parentNode.insertBefore(printPaymentsButton, printInvoiceButton);
+        });
+
+        console.log('Invoice printer script loaded successfully.');
+
     </script>
-<%- include('../footer',{currentpage:'Installment'}); %>
+
+
+
+
+    <%- include('../footer',{currentpage:'Installment'}); %>
