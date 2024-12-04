@@ -260,7 +260,7 @@
                 // Product Name
                 const nameTd = document.createElement('td');
                 nameTd.className = 'py-2 px-4 border-b';
-                nameTd.textContent = product.name || 'غير متوفر';
+                nameTd.textContent = product.id?.name || 'غير متوفر';
                 tr.appendChild(nameTd);
 
                 // Quantity

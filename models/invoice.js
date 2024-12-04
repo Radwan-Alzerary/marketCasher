@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Counter = require("./CounterSchema"); // Import the Counter model
-const { comment } = require("postcss");
 
 const InvoiceSchema = new mongoose.Schema(
   {

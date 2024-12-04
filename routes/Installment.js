@@ -317,8 +317,9 @@ router.get('/info/:id', async (req, res) => {
 
         // Find the invoice by ID and populate the installment
         const invoice = await Invoice.findById(invoiceId)
-            .populate('installmentInvoice')
-            .lean();
+        .populate('installmentInvoice')
+        .populate('food.id')
+        .lean();
 
         if (!invoice) {
             return res.status(404).json({ message: 'Invoice not found' });
