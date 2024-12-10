@@ -85,11 +85,6 @@ app.use(cors({
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-
-
-
-
-
 async function updateFoodCategories() {
   try {
     // Connect to MongoDB

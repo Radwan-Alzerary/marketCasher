@@ -16,9 +16,9 @@ const CustomerSchema = new mongoose.Schema(
     addresses: { type: String },
 
     nearestAddresses: { type: String },
-
-    specialDiscount : {type:Number}, 
-    nearestGuarantorAddresses:{type:String},
+    jop: { type: String },
+    specialDiscount: { type: Number },
+    nearestGuarantorAddresses: { type: String },
     onlineSync: {
       isOnlineSync: {
         type: Boolean,

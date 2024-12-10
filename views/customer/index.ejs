@@ -13,10 +13,13 @@
                 <input type="text" id="search" placeholder="البحث عن العملاء"
                     class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
                 <span class="absolute inset-y-0 left-0 flex items-center pr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M9 3a6 6 0 014.472 10.024l4.147 4.147a1 1 0 01-1.414 1.414l-4.147-4.147A6 6 0 119 3zm0 2a4 4 0 100 8 4 4 0 000-8z" clip-rule="evenodd" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="currentColor"
+                        viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M9 3a6 6 0 014.472 10.024l4.147 4.147a1 1 0 01-1.414 1.414l-4.147-4.147A6 6 0 119 3zm0 2a4 4 0 100 8 4 4 0 000-8z"
+                            clip-rule="evenodd" />
                     </svg>
-                    </span>
+                </span>
             </div>
             <div>
                 <select id="sort"
@@ -78,40 +81,55 @@
                             <input type="text" id="name" name="name" required
                                 class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         </div>
+                        <div class="flex  w-full gap-1">
                         <!-- Phone Number -->
-                        <div>
+                        <div class="w-full">
                             <label for="phoneNumber" class="block text-sm font-medium text-gray-700">رقم الهاتف</label>
                             <input type="text" id="phoneNumber" name="phoneNumber"
                                 class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         </div>
                         <!-- Phone Number 2 -->
-                        <div>
+                        <div class="w-full">
                             <label for="phoneNumber2" class="block text-sm font-medium text-gray-700">رقم الهاتف
                                 2</label>
                             <input type="text" id="phoneNumber2" name="phoneNumber2"
                                 class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         </div>
+
+                        </div>
+
                         <!-- Guarantor -->
                         <div>
                             <label for="guarantor" class="block text-sm font-medium text-gray-700">الكفيل</label>
                             <input type="text" id="guarantor" name="guarantor"
                                 class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                         </div>
-                        <!-- Addresses -->
+                        <div class="flex  w-full gap-1">
+                            <!-- Addresses -->
+                            <div class="w-full">
+                                <label for="addresses" class="block text-sm font-medium text-gray-700">العنوان</label>
+                                <textarea id="addresses" name="addresses" rows="1"
+                                    class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            </div>
+                            <!-- Nearest Addresses -->
+                            <div class="w-full">
+                                <label for="nearestAddresses" class="block text-sm font-medium text-gray-700">اقرب نقطة
+                                    دالة</label>
+                                <textarea id="nearestAddresses" name="nearestAddresses" rows="1"
+                                    class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            </div>
+
+                        </div>
                         <div>
-                            <label for="addresses" class="block text-sm font-medium text-gray-700">العنوان</label>
-                            <textarea id="addresses" name="addresses" rows="2"
+                            <label for="jop" class="block text-sm font-medium text-gray-700">الوضيفة</label>
+                            <textarea id="jop" name="jop" rows="1"
                                 class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
                         </div>
-                        <!-- Nearest Addresses -->
+
                         <div>
-                            <label for="nearestAddresses" class="block text-sm font-medium text-gray-700">اقرب نقطة دالة</label>
-                            <textarea id="nearestAddresses" name="nearestAddresses" rows="2"
-                                class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
-                        </div>
-                        <div>
-                            <label for="nearestGuarantorAddresses" class="block text-sm font-medium text-gray-700">عنوان الكفيل</label>
-                            <textarea id="nearestGuarantorAddresses" name="nearestGuarantorAddresses" rows="2"
+                            <label for="nearestGuarantorAddresses" class="block text-sm font-medium text-gray-700">عنوان
+                                الكفيل</label>
+                            <textarea id="nearestGuarantorAddresses" name="nearestGuarantorAddresses" rows="1"
                                 class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
                         </div>
 
@@ -242,14 +260,15 @@
 
                 customerForm.reset();
                 customerForm.customerId.value = customer._id || "";
-                customerForm.name.value = customer.name|| "";
-                customerForm.phoneNumber.value = customer.phoneNumber|| "";
-                customerForm.phoneNumber2.value = customer.phoneNumber2|| "";
-                customerForm.guarantor.value = customer.guarantor|| "";
-                customerForm.nearestGuarantorAddresses.value = customer.nearestGuarantorAddresses|| "";
-                customerForm.addresses.value = customer.addresses|| "";
-                customerForm.nearestAddresses.value = customer.nearestAddresses|| "";
-                customerForm.specialDiscount.value = customer.specialDiscount|| 0;
+                customerForm.name.value = customer.name || "";
+                customerForm.phoneNumber.value = customer.phoneNumber || "";
+                customerForm.phoneNumber2.value = customer.phoneNumber2 || "";
+                customerForm.guarantor.value = customer.guarantor || "";
+                customerForm.nearestGuarantorAddresses.value = customer.nearestGuarantorAddresses || "";
+                customerForm.addresses.value = customer.addresses || "";
+                customerForm.nearestAddresses.value = customer.nearestAddresses || "";
+                customerForm.jop.value = customer.jop || "";
+                customerForm.specialDiscount.value = customer.specialDiscount || 0;
 
                 modalTitle.textContent = 'تعديل بيانات العميل';
                 customerModal.classList.remove('hidden');
