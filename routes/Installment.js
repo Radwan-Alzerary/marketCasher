@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
 
         // Extract notificationDays from system settings
         const notificationDays = systemSetting?.notificationDays || 0;
-        const installmentPayment = await paymentType.findOne({name:"قسط"})
+        const installmentPayment = await paymentType.findOne({ name: "قسط" })
         // Transform customers to clients with necessary installment details
         const clients = customers.map((customer) => {
             console.log(customer.invoice)
@@ -222,13 +222,19 @@ router.post('/payment/direct', async (req, res) => {
 router.get('/client/:id', async (req, res) => {
     try {
         const clientId = req.params.id;
+
+        // Find the `installmentPayment` object
+        const installmentPayment = await paymentType.findOne({ name: "قسط" });
+
         const user = await User.findById(req.user).lean();
         const systemSetting = await SystemSetting.findOne().lean();
-        // Fetch client data and populate invoices and installments
+
+        // Fetch client data
         const clientData = await Customer.findById(clientId)
             .populate({
                 path: 'invoice.invoiceId',
                 model: 'Invoice',
+                match: { paymentType: installmentPayment._id }, // Filter invoices by `paymentType`
                 populate: {
                     path: 'installmentInvoice',
                     model: 'Installment',
@@ -240,10 +246,12 @@ router.get('/client/:id', async (req, res) => {
             return res.status(404).send('Client not found');
         }
 
-        // Process client data to extract installment and status
+        console.log(clientData);
+
+        // Process client data: Filter out null `invoiceId` values
         const invoices = clientData.invoice
             .map((inv) => inv.invoiceId)
-            .filter((inv) => inv); // Ensure invoice exists
+            .filter((inv) => inv); // Remove null or undefined `invoiceId`
 
         clientData.totalDue = invoices.reduce(
             (sum, inv) => sum + (inv.installmentInvoice?.remainingAmount || 0),
@@ -260,9 +268,12 @@ router.get('/client/:id', async (req, res) => {
             .flatMap((inv) => inv.installmentInvoice?.payments || [])
             .filter((payment) => payment.isPaid).length;
 
-        clientData.status = clientData.totalDue > 0 ? 'late' : 'paid';
-        console.log(clientData)
-
+            clientData.status = invoices.some((inv) =>
+                inv.installmentInvoice?.payments?.some((payment) => 
+                    new Date(payment.date) < new Date() && !payment.isPaid
+                )
+            ) ? 'late' : 'paid';
+            console.log(clientData.status)
         res.render('Installment/client', {
             clientData,
             role: user.role,
