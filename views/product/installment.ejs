@@ -63,6 +63,16 @@ class="hidden fixed w-screen h-screen top-0 bg-black opacity-10 z-10"></div>
             <input type="number" name="notificationDays" id="notificationDays" placeholder="قم بادخال عدد ايام التنبية"
               value="0"  class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
         </div>
+<!-- Static Installment Amount -->
+<div class="mb-2 w-full">
+    <label for="staticInstallmentAmount"
+        class="block text-right mb-2 text-sm font-medium text-gray-900 dark:text-white">مبلغ القسط الثابت</label>
+    <input type="number" name="staticInstallmentAmount" id="staticInstallmentAmount" placeholder="قم بإدخال مبلغ القسط الثابت"
+        class="bg-gray-50 text-right border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+    <p class="text-xs text-right text-gray-500 dark:text-gray-400 mt-1">
+        إذا تم إدخال قيمة هنا، سيتم توزيع الأقساط بناءً على هذا المبلغ، وسيُضاف الباقي إلى آخر قسط.
+    </p>
+</div>
 
         <!-- Initial Payment -->
         <div class="mb-2 w-full">

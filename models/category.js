@@ -31,9 +31,6 @@ const CategorySchema = new mongoose.Schema({
             type: Date,
         },
     },
-
-
-
     comments: [CommentSchema]
 }, {
     timestamps: true

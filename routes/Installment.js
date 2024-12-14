@@ -6,6 +6,7 @@ const Customer = require("../models/costemer");
 const { processPayment } = require("../service/createInstallment");
 const Invoice = require("../models/invoice");
 const Installment = require("../models/InstallmentSchema"); // Import the Installment model
+const paymentType = require('../models/paymentType');
 
 // Routes
 
@@ -29,9 +30,10 @@ router.get('/', async (req, res) => {
 
         // Extract notificationDays from system settings
         const notificationDays = systemSetting?.notificationDays || 0;
-
+        const installmentPayment = await paymentType.findOne({name:"قسط"})
         // Transform customers to clients with necessary installment details
         const clients = customers.map((customer) => {
+            console.log(customer.invoice)
             const invoices = customer.invoice
                 .map((inv) => inv.invoiceId)
                 .filter((inv) => inv); // Ensure invoice exists
@@ -116,107 +118,107 @@ router.get('/', async (req, res) => {
 // Installment/payment route
 router.post('/payment', async (req, res) => {
     try {
-      const { installmentId, paymentAmount, paymentIndex } = req.body;
-  
-      // Fetch the Installment document
-      const installment = await Installment.findById(installmentId);
-      if (!installment) {
-        return res.status(404).json({ success: false, message: 'Installment not found' });
-      }
-  
-      // Validate paymentIndex
-      if (paymentIndex === undefined || paymentIndex < 0 || paymentIndex >= installment.payments.length) {
-        return res.status(400).json({ success: false, message: 'Invalid payment index' });
-      }
-  
-      const payment = installment.payments[paymentIndex];
-  
-      // Check if payment is already paid
-      if (payment.isPaid) {
-        return res.status(400).json({ success: false, message: 'Payment is already made' });
-      }
-  
-      // Update the payment
-      payment.isPaid = true;
-  
-      // Update paymentsTransfer
-      installment.paymentsTransfer.push({
-        paymentType: payment.paymentType,
-        dateOfPayment: new Date(),
-        amount: paymentAmount,
-      });
-  
-      // Recalculate remaining amount
-      installment.remainingAmount -= paymentAmount;
-  
-      await installment.save();
-  
-      res.status(200).json({ success: true, data: installment });
+        const { installmentId, paymentAmount, paymentIndex } = req.body;
+
+        // Fetch the Installment document
+        const installment = await Installment.findById(installmentId);
+        if (!installment) {
+            return res.status(404).json({ success: false, message: 'Installment not found' });
+        }
+
+        // Validate paymentIndex
+        if (paymentIndex === undefined || paymentIndex < 0 || paymentIndex >= installment.payments.length) {
+            return res.status(400).json({ success: false, message: 'Invalid payment index' });
+        }
+
+        const payment = installment.payments[paymentIndex];
+
+        // Check if payment is already paid
+        if (payment.isPaid) {
+            return res.status(400).json({ success: false, message: 'Payment is already made' });
+        }
+
+        // Update the payment
+        payment.isPaid = true;
+
+        // Update paymentsTransfer
+        installment.paymentsTransfer.push({
+            paymentType: payment.paymentType,
+            dateOfPayment: new Date(),
+            amount: paymentAmount,
+        });
+
+        // Recalculate remaining amount
+        installment.remainingAmount -= paymentAmount;
+
+        await installment.save();
+
+        res.status(200).json({ success: true, data: installment });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'An error occurred' });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'An error occurred' });
     }
-  });
+});
 // New route for direct payment
 router.post('/payment/direct', async (req, res) => {
     try {
-      const { installmentId, paymentAmount } = req.body;
-  
-      // Validate input data
-      if (!installmentId || !paymentAmount) {
-        return res.status(400).json({ success: false, message: 'Installment ID and payment amount are required' });
-      }
-  
-      // Fetch the Installment document
-      const installment = await Installment.findById(installmentId);
-      if (!installment) {
-        return res.status(404).json({ success: false, message: 'Installment not found' });
-      }
-  
-      let remainingPayment = parseFloat(paymentAmount);
-      if (isNaN(remainingPayment) || remainingPayment <= 0) {
-        return res.status(400).json({ success: false, message: 'Invalid payment amount' });
-      }
-  
-      // Track the initial remaining amount for paymentsTransfer record
-      const initialPaymentAmount = remainingPayment;
-  
-      // Process the payment against unpaid installments
-      for (let payment of installment.payments) {
-        if (!payment.isPaid) {
-          if (remainingPayment >= payment.amount) {
-            remainingPayment -= payment.amount;
-            payment.isPaid = true;
-          } else {
-            payment.amount -= remainingPayment;
-            remainingPayment = 0;
-            break;
-          }
+        const { installmentId, paymentAmount } = req.body;
+
+        // Validate input data
+        if (!installmentId || !paymentAmount) {
+            return res.status(400).json({ success: false, message: 'Installment ID and payment amount are required' });
         }
-      }
-  
-      // Update paymentsTransfer
-      installment.paymentsTransfer.push({
-        paymentType: 'direct',
-        dateOfPayment: new Date(),
-        amount: initialPaymentAmount,
-      });
-  
-      // Recalculate remaining amount
-      installment.remainingAmount = installment.payments
-        .filter((payment) => !payment.isPaid)
-        .reduce((sum, payment) => sum + payment.amount, 0);
-  
-      // Save the updated Installment
-      await installment.save();
-  
-      res.status(200).json({ success: true, data: installment });
+
+        // Fetch the Installment document
+        const installment = await Installment.findById(installmentId);
+        if (!installment) {
+            return res.status(404).json({ success: false, message: 'Installment not found' });
+        }
+
+        let remainingPayment = parseFloat(paymentAmount);
+        if (isNaN(remainingPayment) || remainingPayment <= 0) {
+            return res.status(400).json({ success: false, message: 'Invalid payment amount' });
+        }
+
+        // Track the initial remaining amount for paymentsTransfer record
+        const initialPaymentAmount = remainingPayment;
+
+        // Process the payment against unpaid installments
+        for (let payment of installment.payments) {
+            if (!payment.isPaid) {
+                if (remainingPayment >= payment.amount) {
+                    remainingPayment -= payment.amount;
+                    payment.isPaid = true;
+                } else {
+                    payment.amount -= remainingPayment;
+                    remainingPayment = 0;
+                    break;
+                }
+            }
+        }
+
+        // Update paymentsTransfer
+        installment.paymentsTransfer.push({
+            paymentType: 'direct',
+            dateOfPayment: new Date(),
+            amount: initialPaymentAmount,
+        });
+
+        // Recalculate remaining amount
+        installment.remainingAmount = installment.payments
+            .filter((payment) => !payment.isPaid)
+            .reduce((sum, payment) => sum + payment.amount, 0);
+
+        // Save the updated Installment
+        await installment.save();
+
+        res.status(200).json({ success: true, data: installment });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'An error occurred' });
+        console.error(error);
+        res.status(500).json({ success: false, message: 'An error occurred' });
     }
-  });
-  // 3. Fetch client details along with their invoices and installments
+});
+// 3. Fetch client details along with their invoices and installments
 router.get('/client/:id', async (req, res) => {
     try {
         const clientId = req.params.id;
@@ -233,7 +235,6 @@ router.get('/client/:id', async (req, res) => {
                 },
             })
             .lean();
-        console.log(clientData)
 
         if (!clientData) {
             return res.status(404).send('Client not found');
@@ -305,7 +306,7 @@ router.get('/invoice/:id', async (req, res) => {
             role: user.role,
             systemSetting,
         });
-            } catch (err) {
+    } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
     }
@@ -317,9 +318,9 @@ router.get('/info/:id', async (req, res) => {
 
         // Find the invoice by ID and populate the installment
         const invoice = await Invoice.findById(invoiceId)
-        .populate('installmentInvoice')
-        .populate('food.id')
-        .lean();
+            .populate('installmentInvoice')
+            .populate('food.id')
+            .lean();
 
         if (!invoice) {
             return res.status(404).json({ message: 'Invoice not found' });

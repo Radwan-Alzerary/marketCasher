@@ -5,12 +5,13 @@ const Installment = require("../models/InstallmentSchema"); // Import the Instal
 // Helper function to create installment data
 async function createInstallmentData(reqBody) {
   const {
-    installmentType,
-    installmentsCount,
-    initialPayment,
-    initialStartDate,
-    notificationDays,
-    remainingAfterInitial,
+      installmentType,
+      installmentsCount,
+      initialPayment,
+      initialStartDate,
+      notificationDays,
+      remainingAfterInitial,
+      staticInstallmentAmount, // Optional static installment amount
   } = reqBody;
 
   // Parse numerical values and dates
@@ -23,67 +24,89 @@ async function createInstallmentData(reqBody) {
   const paymentsTransfer = [];
 
   if (parsedInitialPayment > 0) {
-    payments.push({
-      paymentType: 'initial',
-      date: parsedFirstPaymentDate,
-      amount: parsedInitialPayment,
-      isPaid: true, // Mark initial payment as paid
-    });
+      payments.push({
+          paymentType: 'initial',
+          date: parsedFirstPaymentDate,
+          amount: parsedInitialPayment,
+          isPaid: true, // Mark initial payment as paid
+      });
 
-    paymentsTransfer.push({
-      dateOfPayment: parsedFirstPaymentDate,
-      amount: parsedInitialPayment,
-    });
+      paymentsTransfer.push({
+          dateOfPayment: parsedFirstPaymentDate,
+          amount: parsedInitialPayment,
+      });
   }
 
   // Helper function to add the correct interval to a date
   function addInterval(date, intervalType, intervalCount) {
-    const newDate = new Date(date);
-    switch (intervalType) {
-      case 'daily':
-        newDate.setDate(newDate.getDate() + intervalCount);
-        break;
-      case 'weekly':
-        newDate.setDate(newDate.getDate() + 7 * intervalCount);
-        break;
-      case 'monthly':
-        newDate.setMonth(newDate.getMonth() + intervalCount);
-        break;
-      default:
-        throw new Error('Unsupported installment type');
-    }
-    return newDate;
+      const newDate = new Date(date);
+      switch (intervalType) {
+          case 'daily':
+              newDate.setDate(newDate.getDate() + intervalCount);
+              break;
+          case 'weekly':
+              newDate.setDate(newDate.getDate() + 7 * intervalCount);
+              break;
+          case 'monthly':
+              newDate.setMonth(newDate.getMonth() + intervalCount);
+              break;
+          default:
+              throw new Error('Unsupported installment type');
+      }
+      return newDate;
   }
 
-  // Calculate remaining installment dates and amounts
-  const installmentAmount = parsedRemainingAmount / installmentsCount || 0;
-  for (let i = 1; i <= installmentsCount; i++) {
-    payments.push({
-      paymentType: 'installment',
-      date: addInterval(parsedFirstPaymentDate, installmentType, i),
-      amount: parseFloat(installmentAmount.toFixed(2)), // Rounded to 2 decimal places
-      isPaid: false,
-    });
+  // Check if static installment amount is provided and valid
+  let staticAmount = parseFloat(staticInstallmentAmount) || null;
+
+  if (staticAmount !== null && staticAmount > 0) {
+      // Calculate payments with a static installment amount
+      for (let i = 1; i <= installmentsCount; i++) {
+          const isLastInstallment = i === installmentsCount;
+          const amount = isLastInstallment
+              ? parseFloat(
+                  (parsedRemainingAmount - staticAmount * (installmentsCount - 1)).toFixed(2)
+              ) // Add remaining to last installment
+              : staticAmount;
+
+          payments.push({
+              paymentType: 'installment',
+              date: addInterval(parsedFirstPaymentDate, installmentType, i),
+              amount: amount,
+              isPaid: false,
+          });
+      }
+  } else {
+      // Default installment calculation
+      const installmentAmount = parsedRemainingAmount / installmentsCount || 0;
+      for (let i = 1; i <= installmentsCount; i++) {
+          payments.push({
+              paymentType: 'installment',
+              date: addInterval(parsedFirstPaymentDate, installmentType, i),
+              amount: parseFloat(installmentAmount.toFixed(2)), // Rounded to 2 decimal places
+              isPaid: false,
+          });
+      }
   }
 
   // Build the installment object
   const installmentData = {
-    notificationDays,
-    maintenanceType:
-      installmentType === 'custom'
-        ? 'مخصص'
-        : installmentType === 'daily'
-        ? 'يومي'
-        : installmentType === 'weekly'
-        ? 'أسبوعي'
-        : 'شهري',
-    totalAmount: parsedInitialPayment + parsedRemainingAmount,
-    installmentsCount,
-    firstPaymentDate: parsedFirstPaymentDate,
-    paymentInterval: installmentType,
-    remainingAmount: parsedRemainingAmount,
-    payments,
-    paymentsTransfer, // Track initial payment if applicable
+      notificationDays,
+      maintenanceType:
+          installmentType === 'custom'
+              ? 'مخصص'
+              : installmentType === 'daily'
+              ? 'يومي'
+              : installmentType === 'weekly'
+              ? 'أسبوعي'
+              : 'شهري',
+      totalAmount: parsedInitialPayment + parsedRemainingAmount,
+      installmentsCount,
+      firstPaymentDate: parsedFirstPaymentDate,
+      paymentInterval: installmentType,
+      remainingAmount: parsedRemainingAmount,
+      payments,
+      paymentsTransfer, // Track initial payment if applicable
   };
 
   // Create and save the Installment document

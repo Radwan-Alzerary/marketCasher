@@ -779,6 +779,7 @@
               const notificationDays = $("#notificationDays").val();
               const remainingAfterInitial = $("#remainingAfterInitial").val();
               const  installmentWork = document.getElementById('showFormToggle').checked; // Get the current state
+              const  staticInstallmentAmount = parseFloat(document.getElementById('staticInstallmentAmount').value) || null; // Get the current state
 
               fetch("/invoice/finish/", {
                 method: "POST",
@@ -802,6 +803,7 @@
                     initialPayment,
                     initialStartDate,
                     notificationDays,
+                    staticInstallmentAmount,
                     remainingAfterInitial: remainingAfterInitial,
                   },
 

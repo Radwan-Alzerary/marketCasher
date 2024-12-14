@@ -387,8 +387,6 @@ async function updateInvoices() {
 setInterval(() => updateInvoices(io), 60000);
 syncUnsyncedFoods();
 
-
-
 // Start the server
 const PORT = 3000;
 server.listen(PORT, () => {
