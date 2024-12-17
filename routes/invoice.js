@@ -807,41 +807,53 @@ router.post("/finishDummyFood", async (req, res) => {
       return res.status(200).json({ message: 'No dummyFood items to move.' });
     }
 
-    // Counters for tracking total moved items
     let totalMovedItems = 0;
 
     // Create a Map for existing food items for quick lookup by 'id'
     const foodMap = new Map();
 
-    // Add existing food items to the map
+    // Add existing invoice food items to the map
     invoice.food.forEach(item => {
       const itemIdStr = item.id.toString();
       foodMap.set(itemIdStr, { ...item.toObject() });
     });
 
     // Iterate over each dummyFood item
-    invoice.dummyFood.forEach(dummyItem => {
+    for (const dummyItem of invoice.dummyFood) {
       const dummyItemIdStr = dummyItem.id.toString();
-      const currentTime = new Date(); // Use a Date object for addTime
+
+      // Fetch the associated Food document to check its unit
+      const relatedFood = await Food.findById(dummyItem.id);
+      if (!relatedFood) {
+        return res.status(404).json({ error: "Related Food item not found" });
+      }
+
+      const currentTime = new Date();
+
+      let adjustedPrice = dummyItem.foodPrice;
+      // If the unit is "ساعة", set the price to 0
+      if (relatedFood.unit === "ساعة") {
+        adjustedPrice = 0;
+      }
 
       if (foodMap.has(dummyItemIdStr)) {
-        // If the food item already exists in the invoice, just update the quantity
+        // Update existing food item
         const existingFood = foodMap.get(dummyItemIdStr);
         existingFood.quantity += dummyItem.quantity;
-        // Update the addTime to the latest time the item was added (optional)
+        existingFood.foodCost += dummyItem.foodCost; // adjust as needed if cost should accumulate
+        existingFood.foodPrice = adjustedPrice; // Override with adjusted price if needed
         existingFood.addTime = currentTime;
       } else {
-        // If the food item does not exist, add it as a new entry
+        // Create a new food item entry
         const newFoodItem = {
           id: dummyItem.id,
           quantity: dummyItem.quantity,
           foodCost: dummyItem.foodCost,
-          foodPrice: dummyItem.foodPrice,
+          foodPrice: adjustedPrice,
           discount: dummyItem.discount,
           discountType: dummyItem.discountType,
           comment: dummyItem.comment,
-          addTime: currentTime, // Set the addTime
-          // Include any other required fields for the food schema
+          addTime: currentTime,
           resturentPrint: false,
           printCount: 0,
           isReturned: false,
@@ -850,9 +862,8 @@ router.post("/finishDummyFood", async (req, res) => {
         foodMap.set(dummyItemIdStr, newFoodItem);
       }
 
-      // Increment total moved items
       totalMovedItems += 1;
-    });
+    }
 
     // Update the invoice's food array from the map
     invoice.food = Array.from(foodMap.values());
