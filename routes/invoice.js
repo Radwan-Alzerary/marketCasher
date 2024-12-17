@@ -835,10 +835,11 @@ router.post("/finishDummyFood", async (req, res) => {
       // Increment total moved items
       totalMovedItems += 1;
     });
-
+    
     // Update the invoice's food array with the merged items
     invoices.food = Array.from(foodMap.values());
-
+    invoices.food.timeAdd = Date.now();
+    
     // Clear the dummyFood array
     invoices.dummyFood = [];
 
