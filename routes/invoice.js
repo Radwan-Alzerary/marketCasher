@@ -795,69 +795,77 @@ router.post("/finishDummyFood", async (req, res) => {
     if (!table) {
       return res.status(404).json({ error: "Table not found" });
     }
-    console.log(table)
-    const invoiceId = table.invoice[0]
-    // Step 2: Find all invoices for the table with non-empty dummyFood arrays
-    const invoices = await Invoice.findById(invoiceId);
-    console.log(invoices)
-    if (invoices.length === 0) {
+
+    const invoiceId = table.invoice[0];
+    // Step 2: Find the invoice by ID
+    const invoice = await Invoice.findById(invoiceId);
+    if (!invoice) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+
+    if (invoice.dummyFood.length === 0) {
       return res.status(200).json({ message: 'No dummyFood items to move.' });
     }
 
-    // Counters for tracking total moved items and invoices
-    let totalMovedInvoices = 0;
+    // Counters for tracking total moved items
     let totalMovedItems = 0;
-
-    // Step 3: Iterate over each invoice and move dummyFood to food
 
     // Create a Map for existing food items for quick lookup by 'id'
     const foodMap = new Map();
 
     // Add existing food items to the map
-    invoices.food.forEach(item => {
+    invoice.food.forEach(item => {
       const itemIdStr = item.id.toString();
       foodMap.set(itemIdStr, { ...item.toObject() });
     });
 
     // Iterate over each dummyFood item
-    invoices.dummyFood.forEach(dummyItem => {
+    invoice.dummyFood.forEach(dummyItem => {
       const dummyItemIdStr = dummyItem.id.toString();
+      const currentTime = new Date(); // Use a Date object for addTime
+
       if (foodMap.has(dummyItemIdStr)) {
-        // If the food item exists, sum the quantities
+        // If the food item already exists in the invoice, just update the quantity
         const existingFood = foodMap.get(dummyItemIdStr);
         existingFood.quantity += dummyItem.quantity;
-        existingFood.addTime = Date.now();
+        // Update the addTime to the latest time the item was added (optional)
+        existingFood.addTime = currentTime;
       } else {
-        // If the food item does not exist, add it to the map
-        foodMap.set(dummyItemIdStr, {
-          ...dummyItem.toObject(),
-          timeAdd: Date.now()
-        });
-              }
+        // If the food item does not exist, add it as a new entry
+        const newFoodItem = {
+          id: dummyItem.id,
+          quantity: dummyItem.quantity,
+          foodCost: dummyItem.foodCost,
+          foodPrice: dummyItem.foodPrice,
+          discount: dummyItem.discount,
+          discountType: dummyItem.discountType,
+          comment: dummyItem.comment,
+          addTime: currentTime, // Set the addTime
+          // Include any other required fields for the food schema
+          resturentPrint: false,
+          printCount: 0,
+          isReturned: false,
+          returnQuantity: 0
+        };
+        foodMap.set(dummyItemIdStr, newFoodItem);
+      }
 
       // Increment total moved items
       totalMovedItems += 1;
     });
-    invoices.food = Array.from(foodMap.values()).map(item => {
-      // create a copy of the item with timeAdd
-      return {
-        ...item,
-        timeAdd: Date.now()
-      };
-    });
-        // Clear the dummyFood array
-    invoices.dummyFood = [];
+
+    // Update the invoice's food array from the map
+    invoice.food = Array.from(foodMap.values());
+
+    // Clear the dummyFood array
+    invoice.dummyFood = [];
 
     // Save the updated invoice
-    await invoices.save();
-
-    // Increment moved invoices counter
-    totalMovedInvoices += 1;
-
+    await invoice.save();
 
     // Step 4: Send success response
     res.status(200).json({
-      message: `Successfully moved dummyFood items to food for ${totalMovedInvoices} invoices, totaling ${totalMovedItems} items.`,
+      message: `Successfully moved dummyFood items to food for 1 invoice, totaling ${totalMovedItems} items.`,
     });
 
   } catch (error) {
