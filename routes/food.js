@@ -6,6 +6,7 @@ const multer = require("multer");
 const fs = require("fs");
 const User = require("../models/user");
 const SystemSetting = require("../models/systemSetting");
+const path = require("path");
 
 // Set up multer storage engine for image upload
 const storage = multer.diskStorage({
