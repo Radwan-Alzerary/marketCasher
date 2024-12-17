@@ -829,8 +829,11 @@ router.post("/finishDummyFood", async (req, res) => {
         existingFood.addTime = Date.now();
       } else {
         // If the food item does not exist, add it to the map
-        foodMap.set(dummyItemIdStr, dummyItem.toObject());
-      }
+        foodMap.set(dummyItemIdStr, {
+          ...dummyItem.toObject(),
+          timeAdd: Date.now()
+        });
+              }
 
       // Increment total moved items
       totalMovedItems += 1;
