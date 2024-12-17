@@ -48,8 +48,8 @@
                             <div
                                 class="relative hover:bg-slate-200<%if(tables.invoice[0]){%> bg-green-200 <%}else{%> bg-white<%}%> aspect-h-1  aspect-w-1 w-full  overflow-hidden rounded-lg  xl:aspect-h-5 xl:aspect-w-5">
                                 <div onclick="handleFamiliesClick('<%=tables.id%>')"
-                                    class="absolute cursor:pointer bg-black hover:bg-pink-500 <%if(tables.Families){%> bg-pink-200 <%}else{%> bg-black<%}%> z-[500]"
-                                    style="width: 24px;height: 24px;"></div>
+                                    class="absolute cursor:pointer bg-black hover:bg-pink-500 <%if(tables.Families){%> bg-pink-200 <%}else{%> bg-black<%}%> z-[500]" 
+                                    style="width: 24px;height: 24px; z-index: 500;"></div>
 
                                 <div class="text-center flex flex-col justify-center items-center">
 
