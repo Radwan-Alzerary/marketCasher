@@ -6,6 +6,11 @@
   "scripts": {
     "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "bundle": "webpack",
+    "minify": "node scripts/build.js",
+    "first-encrypt": "node scripts/first-encrypt.js",
+    "encrypt-run": "node scripts/encrypt-run.js",
+    "build": "npm run bundle && npm run minify && npm run first-encrypt && npm run encrypt-run",
     "tailwind:css": "npx tailwindcss -i ./views/input.css -o ./public/dist/output.css --watch"
   },
   "author": "radwan alzerary",
@@ -14,10 +19,11 @@
     "cashir-system": "./app.js"
   },
   "dependencies": {
+    "@mapbox/node-pre-gyp": "^1.0.11",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "autoprefixer": "^10.4.16",
     "axios": "^1.7.7",
-    "bcrypt": "^5.1.0",
+    "bcrypt": "^5.1.1",
     "bytenode": "^1.5.6",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
@@ -26,6 +32,7 @@
     "cosmiconfig": "^8.2.0",
     "dotenv": "^16.3.1",
     "ejs": "^3.1.9",
+    "esbuild": "^0.24.0",
     "express": "^4.21.0",
     "express-session": "^1.17.3",
     "flowbite": "^1.7.0",
@@ -49,5 +56,12 @@
     "socket.io": "^4.8.0",
     "tailwindcss": "^3.3.5",
     "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "google-closure-compiler": "^20240317.0.0",
+    "terser": "^5.37.0",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
   }
 }

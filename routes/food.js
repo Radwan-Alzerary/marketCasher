@@ -227,7 +227,15 @@ router.post("/addfood", upload.single("image"), async (req, res) => {
     const pricenum = parseFloat(req.body.price.replace(/[^0-9.]/g, "").match(/^\d*\.?\d+/)?.[0] || 0);
     const costnum = parseFloat(req.body.cost.replace(/[^0-9.]/g, "").match(/^\d*\.?\d+/)?.[0] || 0);
     const { name, unlimitecheck, quantety } = req.body;
+    const imageFolder = path.join(__dirname, "../public/img/foodimg");
+    if (!fs.existsSync(imageFolder)) {
+      fs.mkdirSync(imageFolder, { recursive: true });
+    }
+
+    // Save image path if file exists
     const imagePath = req.file ? "/img/foodimg/" + req.file.filename : null;
+    console.log(imagePath);
+
     console.log(imagePath);
 
     const food = new Food({

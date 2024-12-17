@@ -826,6 +826,7 @@ router.post("/finishDummyFood", async (req, res) => {
         // If the food item exists, sum the quantities
         const existingFood = foodMap.get(dummyItemIdStr);
         existingFood.quantity += dummyItem.quantity;
+        existingFood.addTime = Date.now();
       } else {
         // If the food item does not exist, add it to the map
         foodMap.set(dummyItemIdStr, dummyItem.toObject());
@@ -1317,14 +1318,23 @@ router.post("/previesinvoice", async (req, res) => {
     if (table.invoice.length > 0) {
       return res.json({ Massage: "table have invoice", reloded: false });
     } else {
-      table.invoice.push(table.lastinvoice);
-      table.save();
+      if(table.lastinvoice){
+        table.invoice.push(table.lastinvoice);
+        table.save();
+        res.json({
+          Massage: "loaded old invoice",
+          reloded: true,
+          lastinvoiceid: table.lastinvoice,
+        });  
+      }else{
+        res.json({
+          Massage: "no old invoice",
+          reloded: false,
+          lastinvoiceid: null,
+        });  
 
-      res.json({
-        Massage: "loaded old invoice",
-        reloded: true,
-        lastinvoiceid: table.lastinvoice,
-      });
+      }
+
     }
   } catch (error) {
     console.error(error);
