@@ -361,9 +361,9 @@ async function updateInvoices() {
           const costPerMinute = foodItem.id.cost / 60;
 
           // Calculate total price and total cost based on time difference
-          foodItem.foodPrice = pricePerMinute * timeDiffInMinutes * foodItem.quantity;
-          foodItem.foodCost = costPerMinute * timeDiffInMinutes * foodItem.quantity;
-
+          foodItem.foodPrice = Math.round(pricePerMinute * timeDiffInMinutes * foodItem.quantity);
+          foodItem.foodCost = Math.round(costPerMinute * timeDiffInMinutes * foodItem.quantity);
+          
           invoiceUpdated = true;
         }
       }
