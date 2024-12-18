@@ -65,6 +65,8 @@ function printA4invoice(invoiceId, resivename, loction, phonenumber, ReceivedAmo
                                 </div>
                                 <div class="invoice-title" style="flex-grow: 1; text-align: center;">${settingVal.shopname}</div>
                                 <div class="invoice-info" style="text-align: right;">
+                                    <p>فاتورة مبيعات</p>
+
                                     <p>رقم الفاتورة: ${data.invoicenumber}</p>
                                     <p>تاريخ الإصدار: ${formattedDate}</p>
                                     <p>صفحة: ${pageIndex + 1}</p>
