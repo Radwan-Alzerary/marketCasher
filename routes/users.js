@@ -89,8 +89,7 @@ router.post('/register', async (req, res) => {
       const tokenResponse = await axios.post(`http://95.179.178.183:4000/checkToken`, {
         token: serialNumber,
       });
-
-      if (!tokenResponse.data.result) {
+      if (!tokenResponse.data.valid) {
         return res.status(400).json({ msg: "التوكين غير صالح او منتهي الصلاحية" });
       }
 
