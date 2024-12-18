@@ -135,9 +135,9 @@ function printA4invoice(invoiceId, resivename, loction, phonenumber, ReceivedAmo
 
                             <!-- Footer Text (Repeat on every page) -->
                             <div class="footer-text" style="display: flex; width: 100%; justify-content: space-between; padding-top: 10px; border-top: 1px solid #ddd; position: absolute; bottom: 20px; left: 0; right: 0;">
-                                <p style="width: 33%;">${settingVal.adress}</p>
+                                <p style="width: 33%;text-align: center;">${settingVal.adress}</p>
                                 <p style="width: 33%; text-align: center;">${settingVal.invoicefooter}</p>
-                                <p style="width: 33%; text-align: right;">${settingVal.phonnumber}</p>
+                                <p style="width: 33%; text-align: center;">${settingVal.phonnumber}</p>
                             </div>
                         </div>
                     `;
