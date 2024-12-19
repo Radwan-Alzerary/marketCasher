@@ -40,6 +40,10 @@ const systemSettingSchema = new mongoose.Schema(
         type: Date,
       },
     },
+    lastBackup:{
+      type:Date
+    }
+
   },
   {
     timestamps: true,
