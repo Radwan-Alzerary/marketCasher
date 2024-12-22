@@ -68,7 +68,7 @@ async function initializeSystemSetting(customSpecialId = generateSpecialId()) {
       
       console.log("New systemSetting created:", newSetting);
     } else {
-      console.log("Existing systemSetting found:", existingSetting);
+      // console.log("Existing systemSetting found:", existingSetting);
     }
   } catch (error) {
     console.error("Error initializing systemSetting:", error);

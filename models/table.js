@@ -37,6 +37,8 @@ const TableSchema = new mongoose.Schema(
         ref: "Invoice",
       },
     ],
+    computerId: { type: String }, // Link to the computer
+
     lastinvoice: { type: mongoose.Schema.Types.ObjectId, ref: "Invoice" },
   },
   {

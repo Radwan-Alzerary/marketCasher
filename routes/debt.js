@@ -96,6 +96,13 @@ router.post(
   async (req, res) => {
     const customerId = req.body.costemerId;
     let amount = Number(req.body.amount);
+    let note = req.body.note;
+    const dept = {
+      note: note || "",
+      PaymentValue: amount || 0,
+      date: Date.now()
+    }
+
     console.log(req.body);
     try {
       // Find the customer by ID
@@ -114,10 +121,14 @@ router.post(
             amount - (updatedInvoice.finalcost - updatedInvoice.amountReceived);
           updatedInvoice.amountReceived = updatedInvoice.finalcost;
           updatedInvoice.paymentType = fullPaymentType.id
+          updatedInvoice.PayOffDebts.push(dept);
+
           await updatedInvoice.save();
         } else {
           updatedInvoice.amountReceived =
             updatedInvoice.amountReceived + amount;
+            updatedInvoice.PayOffDebts.push(dept);
+
           await updatedInvoice.save();
           break;
         }

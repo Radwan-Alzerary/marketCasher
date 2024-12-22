@@ -24,6 +24,7 @@ const UserSchema = new mongoose.Schema({
         type: Date,
     },
 },
+computerId: { type: String }, // Link to the computer
 
   role: { type: String, defult: "user" },
   date: {

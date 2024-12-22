@@ -22,6 +22,8 @@ const FoodSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    computerId: { type: String }, // Link to the computer
+
     manualBarcode: { type: String },
     unit: { type: String, default: "" },
     unlimit: {

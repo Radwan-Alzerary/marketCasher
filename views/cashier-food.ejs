@@ -286,36 +286,7 @@
                 const foodId = event.detail.selection.value._id;
                 console.log("ID:", table);
                 const tableId = table; // Replace with the actual table ID
-                fetch("/invoice/food/", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({ tableId, foodId }),
-                })
-                  .then((response) => response.json())
-                  .then((data) => {
-                    if (data.editOneFood && !data.editOneFood.unlimit) {
-                      const totalTd = document.getElementById(`quntityleft-${foodId}`);
-                      totalTd.innerHTML = data.editOneFood.quantety + " المتبقي";
-                    }
-
-                    if (data.message == "alredyadd") {
-                      console.log(data);
-                      $(`#quantity${data.updatedfoodid}`).val(`${data.newquantity}`);
-                      console.log($(`#quantity${data.food._id}`).text());
-                      getprices($("#invoiceidelement").text());
-                    } else {
-                      invoiceid = $("#invoiceidelement").text();
-                      console.log(data.food);
-                      newitem(data.food, invoiceid, data.newquantity, data.foodPrice);
-                      getprices($("#invoiceidelement").text());
-                    }
-                  })
-                  .catch((error) => {
-                    console.error("Error:", error);
-                    // Handle errors
-                  });
+                postNewProduct(foodId)
               });
           </script>
 
@@ -511,9 +482,10 @@
 
             }
 
-            $(document).on("click", "[id^=selectfood]", function () {
-              var id = this.id;
-              const foodId = id.replace("selectfood", "");
+            function postNewProduct(id){
+
+
+              const foodId = id;
 
               const currentUrl = window.location.href;
               console.log("Current URL:", currentUrl);
@@ -556,7 +528,14 @@
                   console.error("Error:", error);
                   // Handle errors
                 });
-            });
+
+
+            }
+
+            $(document).on("click", "[id^=selectfood]", function () {
+          
+            }
+          );
 
             $(document).on("click", "[id^=removeinvoice]", function () {
               var id = this.id;

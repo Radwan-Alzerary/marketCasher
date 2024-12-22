@@ -36,6 +36,8 @@ const InstallmentSchema = new mongoose.Schema(
     remainingAmount: { type: Number }, // Remaining amount to be paid
     payments: [PaymentSchema],
     paymentsTransfer: [PaymentTransferSchema],
+    computerId: { type: String }, // Link to the computer
+
   },
   {
     timestamps: true,

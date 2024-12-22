@@ -21,7 +21,7 @@ width: 70%;
                             </div>
                             <% } %>
         </div>
-
+        
         <!-- Numbers -->
         <div class="w-full flex gap-2 h-12 sm:h-14 overflow-x-auto">
             <% for (let i=1; i <=20; i++) { %>
@@ -43,7 +43,7 @@ width: 70%;
                                 <% categorys.foods.forEach(function(food) { %>
                                     <% if (food.active) { %>
                                         <div class="group text-center rounded-lg <%= food.quantety < 1 && !food.unlimit ? 'bg-red-50' : 'bg-white' %>"
-                                            id="selectfood<%= food.id %>">
+                                            id="selectfood<%= food.id %>" onclick="postNewProduct('<%= food.id %>')">
                                             <div
                                                 class="aspect-w-1 aspect-h-1  overflow-hidden rounded-t-lg bg-gray-200">
                                                 <% if (food.image && food.image.url) { %>

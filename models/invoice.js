@@ -59,6 +59,12 @@ const InvoiceSchema = new mongoose.Schema(
       comment: { type: String }, // Comment for the food item
 
     }],
+    PayOffDebts:[{
+      note:{type:String,default:""},
+      PaymentValue : {type:Number,default:0},
+      date:{type:Date}
+    }],
+
     isReturned: { type: Boolean, default: false }, // New field to track full return status
     returnReason: { type: String }, // Reason for return
 
@@ -70,6 +76,8 @@ const InvoiceSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "paymentType",
     },
+    computerId: { type: String }, // Link to the computer
+
   },
   {
     timestamps: true,

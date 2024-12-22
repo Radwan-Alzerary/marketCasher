@@ -15,6 +15,7 @@ const DiscountSchema = new mongoose.Schema({
             type: Date,
         },
     },
+    computerId: { type: String }, // Link to the computer
 
     active: { type: Boolean, default: true }
 }

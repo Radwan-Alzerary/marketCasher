@@ -12,6 +12,7 @@ const storgeSchema = new mongoose.Schema({
             type: Date,
         },
     },
+    computerId: { type: String }, // Link to the computer
 
     
 }, {

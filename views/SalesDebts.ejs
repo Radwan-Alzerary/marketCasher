@@ -2,8 +2,9 @@
 <div class="w-full h-full">
   <div class="w-full h-full overflow-auto p-6">
     <div class="relative overflow-x-auto sm:rounded-lg">
+      <!-- Search Bar -->
       <div class="flex items-center justify-between pb-4">
-        <label for="table-search" class="sr-only"> Search </label>
+        <label for="table-search" class="sr-only">Search</label>
         <div class="relative">
           <div
             class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
@@ -23,7 +24,7 @@
             </svg>
           </div>
         </div>
-        <div class="flex  gap-5 w-full mt-3">
+        <div class="flex gap-5 w-full mt-3">
           <input
             type="text"
             id="table-search"
@@ -32,166 +33,242 @@
           />
         </div>
       </div>
+      <!-- Customers Grid -->
       <div class="grid grid-cols-3 gap-4">
-          <%filteredCustomers.forEach(function(deptCostemer,index) { %>
-            <div class="w-full rounded-xl bg-white p-2 relative">
-                <div>
-                  <p class="text-center text-lg font-bold m-0"><%=deptCostemer.name%></p>
-                </div>
-                <!-- <hr></hr> -->
-          
-                <div>
-                  <p class="text-center text-4xl font-bold my-1 text-red-500">
-                    <%let totalDept=0%>
-                    <%deptCostemer.invoice.forEach(function(incoice,index) {%>
-                        <%if(incoice.invoiceId){%>
-                            <%totalDept+= (incoice.invoiceId.finalcost - incoice.invoiceId.amountReceived)%>
-
-                        <%}%>
-
-
-                        <%})%>
-                        <%= totalDept.toLocaleString() %>
-
-                  </p>
-                </div>
-                <hr></hr>
-          
-                <div class="relative h-28 overflow-x-auto">
-                  <table class="w-full text-sm text-left text-gray-500 mt-4">
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                      <tr>
-                        <th scope="col" class="text-center">رقم الوصل</th>
-                        <th scope="col" class="text-center">المبلغ</th>
-                        <th scope="col" class="text-center">التاريخ</th>
+        <% filteredCustomers.forEach(function(deptCostemer, index) { %>
+          <div class="w-full rounded-xl bg-white p-4 relative shadow-md">
+            <!-- Customer Name -->
+            <div class="mb-2">
+              <p class="text-center text-xl font-bold m-0"><%= deptCostemer.name %></p>
+            </div>
+            <!-- Total Debt -->
+            <div>
+              <p class="text-center text-4xl font-bold my-1 text-red-500">
+                <% let totalDept = 0 %>
+                <% deptCostemer.invoice.forEach(function(incoice) { %>
+                  <% if (incoice.invoiceId) { %>
+                    <% totalDept += (incoice.invoiceId.finalcost - incoice.invoiceId.amountReceived) %>
+                  <% } %>
+                <% }) %>
+                <%= totalDept.toLocaleString() %>
+              </p>
+            </div>
+            <hr />
+            <!-- Invoices Table -->
+            <div class="relative max-h-40 overflow-y-auto">
+              <table class="w-full text-sm text-left text-gray-500 mt-4">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                  <tr>
+                    <th scope="col" class="text-center">رقم الوصل</th>
+                    <th scope="col" class="text-center">المبلغ</th>
+                    <th scope="col" class="text-center">التاريخ</th>
+                    <th scope="col" class="text-center">المدفوعات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% deptCostemer.invoice.forEach(function(incoice) { %>
+                    <% if (incoice.invoiceId) { %>
+                      <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="text-center text-xs">
+                          <%= incoice.invoiceId.number %>
+                        </td>
+                        <td class="text-center text-xs">
+                          <%= (incoice.invoiceId.finalcost - incoice.invoiceId.amountReceived).toLocaleString() %>
+                        </td>
+                        <td class="text-center text-xs">
+                          <%= new Date(incoice.invoiceId.progressdata).toLocaleDateString() %>
+                        </td>
+                        <td class="text-center text-xs">
+                          <button
+                            type="button"
+                            onclick="togglePayments('<%= deptCostemer.id %>', '<%= incoice.invoiceId._id %>')"
+                            class="text-blue-500 hover:underline"
+                          >
+                            عرض المدفوعات
+                          </button>
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                        <%deptCostemer.invoice.forEach(function(incoice,index) {%>
+                      <!-- Payments List -->
+                      <tr id="payments-<%= deptCostemer.id %>-<%= incoice.invoiceId._id %>" class="hidden">
+                        <td colspan="4">
+                          <div class="p-4 bg-gray-50 rounded">
+                            <h4 class="font-semibold mb-2">المدفوعات:</h4>
+                            <% if (incoice.invoiceId.PayOffDebts && incoice.invoiceId.PayOffDebts.length > 0) { %>
+                              <table class="w-full text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                                  <tr>
+                                    <th scope="col" class="text-center">المبلغ</th>
+                                    <th scope="col" class="text-center">التاريخ</th>
+                                    <th scope="col" class="text-center">ملاحظة</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <% incoice.invoiceId.PayOffDebts.forEach(function(payment) { %>
+                                    <tr>
+                                      <td class="text-center"><%= payment.PaymentValue %></td>
+                                      <td class="text-center"><%= new Date(payment.date).toLocaleDateString() %></td>
+                                      <td class="text-center"><%= payment.note %></td>
+                                      <td class="text-center">
+                                        <button
+                                          type="button"
+                                          class="text-blue-500 hover:text-blue-700"
+                                          onclick="printPayment('<%= payment._id %>')"
+                                        >
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 inline">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5v-3a1.5 1.5 0 011.5-1.5h7.5a1.5 1.5 0 011.5 1.5v3M6 9.75h12M3 12.75h18m-5.25 6.75v-3h-7.5v3m0 0H5.25a2.25 2.25 0 01-2.25-2.25v-6A2.25 2.25 0 015.25 9.75h13.5a2.25 2.25 0 012.25 2.25v6a2.25 2.25 0 01-2.25 2.25h-3.75z"/>
+                                          </svg>
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  <% }) %>
+                                  
+                                </tbody>
+                              </table>
+                            <% } else { %>
+                              <p>لا توجد مدفوعات.</p>
+                            <% } %>
+                          </div>
+                        </td>
+                      </tr>
+                    <% } %>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+            <!-- Payment Actions -->
+            <div class="w-full border-t mt-4 pt-4 flex flex-col gap-4">
+              <button
+                type="button"
+                onclick="fullDebtPayment('<%= deptCostemer.id %>')"
+                class="bg-green-500 hover:bg-green-600 text-white font-medium rounded text-sm px-5 py-2.5 text-center w-full"
+              >
+                تسديد كامل
+              </button>
+              <div class="w-full">
+                <input
+                  class="w-full mb-2 border p-2 rounded"
+                  type="number"
+                  placeholder="المبلغ المسدد"
+                  id="AmountPayment<%= deptCostemer.id %>"
+                />
+                <input
+                class="w-full mb-2 border p-2 rounded"
+                type="text"
+                placeholder="الملاحضات (اختياري)"
+                id="Note<%= deptCostemer.id %>"
+              />
 
-                        <tr class="bg-white border-b hover:bg-gray-50" key={invo._id}>
-                          <td class="text-center text-xs">
-                            <%if(incoice.invoiceId){%>
-                                 <%=incoice.invoiceId.number%>
-                            <%}%>
-                          </td>
-                          <td class="text-center text-xs">
-                            <%if(incoice.invoiceId){%>
-                                <%=incoice.invoiceId.finalcost - incoice.invoiceId.amountReceived%>
-
-                                <%}%>
-    
-                          </td>
-                          <td class="text-center text-xs">
-                            <%if(incoice.invoiceId){%>
-                                <%= new Date(incoice.invoiceId.progressdata).toLocaleDateString() %>
-
-                                <%}%>
-    
-                          </td>
-                        </tr>
-                        <%})%>
-
-                    </tbody>
-                  </table>
-                </div>
-                <div class="w-full bottom-0 border border-t-1 h-12 left-0 rounded flex bg-green-100 cursor-pointer hover:bg-green-200 justify-center items-center gap-4">
-                  <button
-                    type="button"
-                    onclick="fullDebtPayment('<%=deptCostemer.id%>')"
-                  >
-                    تسديد كامل
-                  </button>
-          
-
-                </div>
-          
-                  <div  class="  w-full p-2 bg-gray-100 rounded">
-                    <input
-                    class="w-full"
-                      type="number"
-                      placeholder="المبلغ المسدد"
-                      value={partialPaymentAmount}
-                      id="AmountPayment<%=deptCostemer.id%>"
-                    />
-                    <button
-                      type="button"
-                      onclick="AmountPayment('<%=deptCostemer.id%>')"
-                      class="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded text-sm px-5 py-2.5 text-center w-full"
-                    >
-                      تسديد الجزء
-                    </button>
-                  </div>
+                <button
+                  type="button"
+                  onclick="AmountPayment('<%= deptCostemer.id %>')"
+                  class="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded text-sm px-5 py-2.5 text-center w-full"
+                >
+                  تسديد جزء
+                </button>
               </div>
-          
-          <%})%>
+            </div>
+          </div>
+        <% }) %>
       </div>
     </div>
   </div>
 </div>
 <script>
-    function fullDebtPayment(costemerId){
-        const data = {
-        costemerId: costemerId
+  function togglePayments(costemerId, invoiceId) {
+    const paymentsRow = document.getElementById(`payments-${costemerId}-${invoiceId}`);
+    if (paymentsRow.classList.contains('hidden')) {
+      paymentsRow.classList.remove('hidden');
+    } else {
+      paymentsRow.classList.add('hidden');
+    }
+  }
+
+  function savePaymentNote(paymentId) {
+    const note = document.getElementById(`note-${paymentId}`).value;
+    const data = {
+      paymentId: paymentId,
+      note: note,
     };
 
-    // Make a fetch POST request to the specified endpoint
+    fetch('/debt/savePaymentNote', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Success:', data);
+        alert('تم حفظ الملاحظة بنجاح');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert('حدث خطأ أثناء حفظ الملاحظة');
+      });
+  }
+
+  function fullDebtPayment(costemerId) {
+    const data = {
+      costemerId: costemerId,
+    };
+
     fetch('/debt/fullDebtPayment', {
-        method: 'POST', // HTTP method
-        headers: {
-            'Content-Type': 'application/json' // Set content type to JSON
-        },
-        body: JSON.stringify(data) // Convert data to JSON string
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     })
-    .then(response => {
+      .then((response) => {
         if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
+          throw new Error('Network response was not ok ' + response.statusText);
         }
-        return response.json(); // Parse the JSON response
-    })
-    .then(data => {
-        document.location.reload()
-        console.log('Success:', data); // Handle the success response
-    })
-    .catch(error => {
-        console.error('Error:', error); // Handle any errors
-    });
+        return response.json();
+      })
+      .then((data) => {
+        document.location.reload();
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
 
-    }
-
-    function AmountPayment(costemerId){
-      const amount =   $(`#AmountPayment${costemerId}`).val()
-        const data = {
-        costemerId: costemerId,
-        amount:amount
+  function AmountPayment(costemerId) {
+    const amount = document.getElementById(`AmountPayment${costemerId}`).value;
+    const note = document.getElementById(`Note${costemerId}`).value;
+    const data = {
+      costemerId: costemerId,
+      note:note,
+      amount: amount,
     };
 
-    // Make a fetch POST request to the specified endpoint
     fetch('/debt/AmountPayment', {
-        method: 'POST', // HTTP method
-        headers: {
-            'Content-Type': 'application/json' // Set content type to JSON
-        },
-        body: JSON.stringify(data) // Convert data to JSON string
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     })
-    .then(response => {
+      .then((response) => {
         if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
+          throw new Error('Network response was not ok ' + response.statusText);
         }
-        return response.json(); // Parse the JSON response
-    })
-    .then(data => {
-        document.location.reload()
-        console.log('Success:', data); // Handle the success response
-    })
-    .catch(error => {
-        console.error('Error:', error); // Handle any errors
-    });
-
-    }
-
-
-
-
+        return response.json();
+      })
+      .then((data) => {
+        document.location.reload();
+        console.log('Success:', data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
 </script>
-<%- include('footer',{currentpage:'SalesDebts'}); %>
+<%- include('footer', { currentpage: 'SalesDebts' }); %>

@@ -19,6 +19,7 @@ const DeliverySchema = new mongoose.Schema({
             type: Date,
         },
     },
+    computerId: { type: String }, // Link to the computer
 
 }, {
     timestamps: true

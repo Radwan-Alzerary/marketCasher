@@ -30,6 +30,7 @@ const CustomerSchema = new mongoose.Schema(
       },
       jop: { type: String }
     },
+    computerId: { type: String }, // Link to the computer
 
     invoice: [
       {

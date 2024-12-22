@@ -13,6 +13,7 @@ const SupplierSchema = new mongoose.Schema(
           type: Date,
       },
   },
+  computerId: { type: String }, // Link to the computer
 
     purchasesInvoice: [
       {

@@ -50,7 +50,7 @@ async function syncUnsyncedData() {
                     { 'onlineSync': { $exists: false } }  // Check if onlineSync field does not exist
                 ]
             });
-            console.log(`Found ${unsyncedDocuments.length} unsynced ${name} documents`);
+            // console.log(`Found ${unsyncedDocuments.length} unsynced ${name} documents`);
 
             for (const doc of unsyncedDocuments) {
                 try {
@@ -68,7 +68,7 @@ async function syncUnsyncedData() {
                         await doc.save();
                     }
                 } catch (error) {
-                    console.error(`Failed to sync ${name} ${doc._id}:`, error.message);
+                    // console.error(`Failed to sync ${name} ${doc._id}:`, error.message);
                 }
             }
         } catch (error) {

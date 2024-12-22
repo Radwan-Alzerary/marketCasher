@@ -48,6 +48,7 @@ const DevicesSchema = new mongoose.Schema(
         ref: "Category",
       },
     ],
+    computerId: { type: String }, // Link to the computer
 
     reportPrinter: {
       type: String,

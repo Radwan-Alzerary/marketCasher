@@ -75,6 +75,7 @@ const SettingSchema = new mongoose.Schema({
     ExchangeRate: {
         type: Number
     },
+    computerId: { type: String }, // Link to the computer
 
     barcodeXsize: { type: Number, default: 0 },
     barcodeYsize: { type: Number, default: 0 },
