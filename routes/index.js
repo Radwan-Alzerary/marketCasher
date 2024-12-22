@@ -20,4 +20,5 @@ router.use("/setting", ensureAuthenticated, require("./setting"));
 router.use("/devices",ensureAuthenticated, require("./devices"));
 router.use("/report",ensureAuthenticated, require("./report"));
 router.use("/Installment",ensureAuthenticated, require("./Installment"));
+router.use("/purchasesDept",ensureAuthenticated, require("./purchasesDept"));
 module.exports = router;

@@ -13,6 +13,13 @@ const purchasesInvoiceSchema = new mongoose.Schema(
     fulldiscount:{type:Number,default:0},
     fullgift:{type:Number,default:0},
     fullreturn:{type:Number,default:0},
+    PayOffDebts:[{
+      note:{type:String,default:""},
+      PaymentValue : {type:Number,default:0},
+      date:{type:Date}
+    }],
+
+
     onlineSync: {
       isOnlineSync: {
           type: Boolean,

@@ -1,0 +1,361 @@
+<%- include('header') %>
+<div class="h-full" style="direction: rtl;">
+
+  <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-8">
+    <h1 class="text-3xl font-bold mb-8 text-gray-800">نظام إدارة الفواتير</h1>
+    
+    <!-- Search & Sort UI -->
+    <div class="mb-4 flex flex-wrap items-center gap-4">
+      <input type="text" id="searchSupplier" placeholder="البحث عن المورد" class="border rounded p-2 flex-grow">
+      <input type="text" id="searchInvoiceNumber" placeholder="البحث برقم الفاتورة" class="border rounded p-2 flex-grow">
+      <select id="sortBy" class="border rounded p-2">
+        <option value="debt">ترتيب حسب الدين المتبقي</option>
+        <option value="date">ترتيب حسب التاريخ</option>
+        <option value="name">ترتيب حسب الاسم</option>
+      </select>
+      <button id="sortOrder" class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition duration-300">
+        تصاعدي
+      </button>
+    </div>
+    
+    <!-- Invoice Table -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-semibold mb-4 text-gray-700">الفواتير مع الديون المستحقة</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="p-3 text-right">رقم الفاتورة</th>
+              <th class="p-3 text-right">المورد</th>
+              <th class="p-3 text-right">التاريخ</th>
+              <th class="p-3 text-right">التكلفة الإجمالية</th>
+              <th class="p-3 text-right">الدين المستحق</th>
+              <th class="p-3 text-right">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="invoiceList">
+            <!-- سيتم ملء الفواتير هنا -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Invoice Details -->
+  <div id="invoiceModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+      <div class="mt-3 text-center">
+        <h3 class="text-2xl font-semibold text-gray-700 mb-4">تفاصيل الفاتورة</h3>
+        <div id="invoiceDetailsContent" class="text-right mb-6">
+          <!-- سيتم ملء تفاصيل الفاتورة هنا -->
+        </div>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-3">العناصر</h4>
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="p-3 text-right">العنصر</th>
+                <th class="p-3 text-right">الكمية</th>
+                <th class="p-3 text-right">التكلفة</th>
+                <th class="p-3 text-right">الخصم</th>
+                <th class="p-3 text-right">الهدية</th>
+                <th class="p-3 text-right">المرتجع</th>
+              </tr>
+            </thead>
+            <tbody id="itemsTable">
+              <!-- سيتم ملء العناصر هنا -->
+            </tbody>
+          </table>
+        </div>
+
+        <h4 class="text-xl font-semibold text-gray-700 mb-3">مدفوعات الدين</h4>
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="p-3 text-right">التاريخ</th>
+                <th class="p-3 text-right">المبلغ</th>
+                <th class="p-3 text-right">ملاحظة</th>
+                <th class="p-3 text-right">المبلغ المتبقي</th> <!-- NEW COLUMN -->
+
+              </tr>
+            </thead>
+            <tbody id="paymentsTable">
+              <!-- سيتم ملء المدفوعات هنا -->
+            </tbody>
+          </table>
+        </div>
+
+        <button id="closeInvoiceModal" class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition duration-300">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+<!-- Modal: Adding Payment -->
+<div id="paymentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+  <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+    <div class="mt-3 text-center">
+      <h3 class="text-2xl font-semibold text-gray-700 mb-4">إضافة دفعة جديدة</h3>
+
+      <!-- NEW: Show the current remaining debt before adding a new payment -->
+      <p class="text-right font-semibold mb-2" id="currentRemain"></p>
+      
+      <form id="paymentForm" class="grid grid-cols-1 gap-4">
+        <input type="date" id="paymentDate" class="border rounded p-2" required>
+        <input type="number" id="paymentAmount" placeholder="المبلغ" class="border rounded p-2" required>
+        <input type="text" id="paymentNote" placeholder="ملاحظة" class="border rounded p-2">
+        <button type="submit" class="bg-blue-500 text-white rounded p-2 hover:bg-blue-600 transition duration-300">إضافة دفعة</button>
+        <button type="button" id="closePaymentModal" class="bg-gray-300 text-gray-700 rounded p-2 hover:bg-gray-400 transition duration-300">إلغاء</button>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+  <script>
+    let invoices = [];          // Will be loaded from server
+    let currentInvoice = null;  // Currently opened invoice
+    let sortAscending = true;
+
+    // Fetch all invoices from the server
+    async function fetchInvoices() {
+      try {
+        const res = await fetch('/purchasesDept/getInvoice');  // <-- Adjust if your endpoint is different
+        if(!res.ok) throw new Error("Failed to fetch invoices");
+        invoices = await res.json();
+        populateInvoiceList();
+      } catch (error) {
+        console.error("Error fetching invoices:", error);
+      }
+    }
+
+    // Calculate remaining debt for an invoice
+    function calculateRemainingDebt(invoice) {
+      const totalPaid = invoice.PayOffDebts.reduce((sum, payment) => sum + payment.PaymentValue, 0);
+      return invoice.fullCost - totalPaid;
+    }
+
+    // Populate the invoice table
+    function populateInvoiceList(filteredInvoices = invoices) {
+      const listBody = document.getElementById('invoiceList');
+      listBody.innerHTML = filteredInvoices.map(invoice => {
+        const remainingDebt = calculateRemainingDebt(invoice);
+        return `
+          <tr class="border-b">
+            <td class="p-3">${invoice.serialNumber}</td>
+            <td class="p-3">${invoice.Supplier}</td>
+            <td class="p-3">${new Date(invoice.invoiceDate).toLocaleDateString('en-CA')}</td>
+            <td class="p-3">${invoice.fullCost} د.ع</td>
+            <td class="p-3">${remainingDebt} د.ع</td>
+            <td class="p-3">
+              <button onclick="viewInvoiceDetails('${invoice._id}')" class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition duration-300">
+                عرض التفاصيل
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // View a single invoice details
+    async function viewInvoiceDetails(invoiceId) {
+      try {
+        // fetch one invoice by ID from the server
+        const res = await fetch(`/purchasesDept/${invoiceId}`);
+        if (!res.ok) throw new Error("Error fetching invoice details");
+        currentInvoice = await res.json();
+
+        populateInvoiceDetails();
+        populateItemsTable();
+        populatePaymentsTable();
+        document.getElementById('invoiceModal').classList.remove('hidden');
+      } catch (error) {
+        console.error("Error loading invoice details:", error);
+      }
+    }
+
+    // Fill invoice details
+    function populateInvoiceDetails() {
+      const detailsDiv = document.getElementById('invoiceDetailsContent');
+      detailsDiv.innerHTML = `
+        <p><strong>رقم الفاتورة:</strong> ${currentInvoice.serialNumber}</p>
+        <p><strong>المورد:</strong> ${currentInvoice.Supplier}</p>
+        <p><strong>التاريخ:</strong> ${new Date(currentInvoice.invoiceDate).toLocaleDateString('en-CA')}</p>
+        <p><strong>نوع الدفع:</strong> ${currentInvoice.PaymentType?.name || ''}</p>
+        <p><strong>المستودع:</strong> ${currentInvoice.storge?.name || ''}</p>
+        <p><strong>التكلفة الإجمالية:</strong> ${currentInvoice.fullCost} د.ع</p>
+        <p><strong>الكمية الإجمالية:</strong> ${currentInvoice.fullquantity}</p>
+        <p><strong>الخصم الإجمالي:</strong> ${currentInvoice.fulldiscount} د.ع</p>
+        <p><strong>الهدايا الإجمالية:</strong> ${currentInvoice.fullgift}</p>
+        <p><strong>المرتجعات الإجمالية:</strong> ${currentInvoice.fullreturn}</p>
+      `;
+    }
+
+    // Fill items table
+    function populateItemsTable() {
+      const tableBody = document.getElementById('itemsTable');
+      tableBody.innerHTML = currentInvoice.items.map(item => `
+        <tr class="border-b">
+          <td class="p-3">${item.id?.name || item.id}</td>
+          <td class="p-3">${item.quantity}</td>
+          <td class="p-3">${item.cost} د.ع</td>
+          <td class="p-3">${item.discount} د.ع</td>
+          <td class="p-3">${item.gift}</td>
+          <td class="p-3">${item.return}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Fill payments table
+    function populatePaymentsTable() {
+  const tableBody = document.getElementById('paymentsTable');
+
+  // We'll accumulate the sum of all payments as we go
+  let cumulativeSum = 0;
+
+  // Map over the PayOffDebts array to build rows
+  tableBody.innerHTML = currentInvoice.PayOffDebts.map(payment => {
+    // Add this payment to the running total
+    cumulativeSum += payment.PaymentValue;
+
+    // Calculate the remaining amount after this payment
+    const remain = currentInvoice.fullCost - cumulativeSum;
+
+    // Return the row's HTML
+    return `
+      <tr class="border-b">
+        <td class="p-3">${new Date(payment.date).toLocaleDateString('en-CA')}</td>
+        <td class="p-3">${payment.PaymentValue} د.ع</td>
+        <td class="p-3">${payment.note}</td>
+        <td class="p-3">${remain} د.ع</td>
+      </tr>
+    `;
+  }).join('');
+
+  // Create the "Add Payment" button (unchanged)
+  const addPaymentButton = document.createElement('button');
+  addPaymentButton.textContent = 'إضافة دفعة';
+  addPaymentButton.className = 'bg-green-500 text-white rounded px-4 py-2 mt-4 hover:bg-green-600 transition duration-300';
+  addPaymentButton.onclick = openPaymentModal;
+  tableBody.parentNode.insertAdjacentElement('afterend', addPaymentButton);
+}
+    // Open the Payment Modal
+    function openPaymentModal() {
+  // 1. Calculate the total amount paid so far
+  const totalPaid = currentInvoice.PayOffDebts.reduce((sum, payment) => sum + payment.PaymentValue, 0);
+
+  // 2. Calculate the remaining amount before this new payment
+  const remainBeforePayment = currentInvoice.fullCost - totalPaid;
+
+  // 3. Display it in the modal
+  document.getElementById('currentRemain').textContent = `المبلغ المتبقي الحالي: ${remainBeforePayment} د.ع`;
+
+  // 4. Show the modal
+  document.getElementById('paymentModal').classList.remove('hidden');
+}
+
+
+document.getElementById('paymentAmount').addEventListener('input', function() {
+  const paymentValue = parseFloat(this.value) || 0;
+  const totalPaid = currentInvoice.PayOffDebts.reduce((sum, payment) => sum + payment.PaymentValue, 0);
+  const remainBeforePayment = currentInvoice.fullCost - totalPaid;
+  const remainAfterPayment = remainBeforePayment - paymentValue;
+
+  // Show both in the modal, for example:
+  document.getElementById('currentRemain').textContent = `
+    المبلغ المتبقي الحالي: ${remainBeforePayment} د.ع
+    | بعد الدفعة: ${remainAfterPayment} د.ع
+  `;
+});
+
+    // Submit new payment
+// Submit new payment
+document.getElementById('paymentForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const date = document.getElementById('paymentDate').value;
+  const amount = parseFloat(document.getElementById('paymentAmount').value);
+  const note = document.getElementById('paymentNote').value;
+
+  try {
+    // Make an API call to add the payment
+    const res = await fetch(`/purchasesDept/${currentInvoice._id}/payments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date, PaymentValue: amount, note })
+    });
+    if (!res.ok) throw new Error("Error adding payment");
+
+    const updatedInvoice = await res.json();
+    currentInvoice = updatedInvoice;
+
+    // Re-populate the payments table inside the modal
+    populatePaymentsTable();
+
+    // **Re-fetch the entire invoice list** to see updated debts
+    await fetchInvoices();
+
+    // Close the payment modal and reset the form
+    closePaymentModal();
+    this.reset();
+  } catch (error) {
+    console.error("Error adding payment:", error);
+  }
+});
+    // Close modals
+    document.getElementById('closeInvoiceModal').addEventListener('click', () => {
+      document.getElementById('invoiceModal').classList.add('hidden');
+    });
+    document.getElementById('closePaymentModal').addEventListener('click', closePaymentModal);
+
+    function closePaymentModal() {
+      document.getElementById('paymentModal').classList.add('hidden');
+    }
+
+    // Sorting
+    function sortInvoices(key) {
+      invoices.sort((a, b) => {
+        if (key === 'debt') {
+          return calculateRemainingDebt(a) - calculateRemainingDebt(b);
+        } else if (key === 'date') {
+          return new Date(a.invoiceDate) - new Date(b.invoiceDate);
+        } else if (key === 'name') {
+          return a.Supplier.localeCompare(b.Supplier);
+        }
+      });
+      if (!sortAscending) {
+        invoices.reverse();
+      }
+      populateInvoiceList();
+    }
+
+    document.getElementById('sortBy').addEventListener('change', function() {
+      sortInvoices(this.value);
+    });
+
+    document.getElementById('sortOrder').addEventListener('click', function() {
+      sortAscending = !sortAscending;
+      this.textContent = sortAscending ? 'تصاعدي' : 'تنازلي';
+      sortInvoices(document.getElementById('sortBy').value);
+    });
+
+    // Searching
+    function searchInvoices() {
+      const supplierSearchTerm = document.getElementById('searchSupplier').value.toLowerCase();
+      const invoiceNumberSearchTerm = document.getElementById('searchInvoiceNumber').value.toLowerCase();
+
+      const filteredInvoices = invoices.filter(invoice =>
+        invoice.Supplier?.toLowerCase().includes(supplierSearchTerm) &&
+        invoice.serialNumber?.toLowerCase().includes(invoiceNumberSearchTerm)
+      );
+      populateInvoiceList(filteredInvoices);
+    }
+
+    document.getElementById('searchSupplier').addEventListener('input', searchInvoices);
+    document.getElementById('searchInvoiceNumber').addEventListener('input', searchInvoices);
+
+    // On page load, fetch all invoices
+    fetchInvoices();
+  </script>
+
+<%- include('footer',{currentpage:'purchasesDept'}); %>
